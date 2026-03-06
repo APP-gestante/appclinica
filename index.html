@@ -421,7 +421,7 @@
             overflow-y: visible;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            padding: 4px 24px 8px 16px;
+            padding: 4px 0 8px 0;
             scroll-snap-type: x proximity;
         }
 
@@ -445,6 +445,14 @@
             flex-shrink: 0;
             scroll-snap-align: start;
             width: 76px;
+        }
+
+        .quick-btn:first-child {
+            margin-left: 16px;
+        }
+
+        .quick-btn:last-child {
+            margin-right: 24px;
         }
 
         .quick-btn:active {
