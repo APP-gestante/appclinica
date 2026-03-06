@@ -113,8 +113,8 @@
             right: 0;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 16px 24px 100px;
-            /* Extra padding at bottom for FAB */
+            padding: 16px 24px 24px;
+            /* Normal padding */
             scrollbar-width: none;
         }
 
@@ -324,36 +324,33 @@
             color: var(--red);
         }
 
-        /* ===== FLOATING ACTION BUTTON (FAB) ===== */
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            margin-bottom: env(safe-area-inset-bottom, 0px);
-            left: 24px;
-            right: 24px;
-            height: 56px;
-            background: var(--accent);
-            border-radius: 16px;
+        /* ===== MAIN BUTTON ===== */
+        .main-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            width: 100%;
+            height: 56px;
+            background: var(--accent);
+            border-radius: 16px;
             color: var(--white);
             font-size: 16px;
             font-weight: 600;
             text-decoration: none;
             box-shadow: 0 8px 24px rgba(229, 152, 125, 0.35);
             transition: transform 0.2s, background 0.2s;
-            z-index: 200;
+            margin-top: 24px;
+            margin-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
         }
 
-        .fab:hover,
-        .fab:active {
+        .main-btn:hover,
+        .main-btn:active {
             transform: translateY(-2px);
             background: #de886a;
         }
 
-        .fab svg {
+        .main-btn svg {
             width: 20px;
             height: 20px;
             stroke: var(--white);
@@ -483,21 +480,19 @@
                 </div>
             </div>
 
-            <!-- Bottom spacing before FAB -->
-            <div style="height: 20px;"></div>
+            <!-- ===== MAIN BUTTON ===== -->
+            <a href="#" class="main-btn ripple"
+                onclick="alert('Funcionalidade de agendamento em breve!'); return false;">
+                <svg viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Agendar Nova
+            </a>
 
         </div>
 
     </div>
-
-    <!-- ===== FLOATING ACTION BUTTON ===== -->
-    <a href="#" class="fab ripple" onclick="alert('Funcionalidade de agendamento em breve!'); return false;">
-        <svg viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-        Agendar Nova
-    </a>
 
 </body>
 
