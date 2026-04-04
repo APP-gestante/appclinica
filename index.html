@@ -4,1088 +4,297 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gerar Vida – Dashboard</title>
-    <meta name="description"
-        content="Caderneta Digital Inteligente para gestantes. Acompanhe sua gravidez semana a semana com o app Gerar Vida." />
+    <title>Gerar Vida – Entrar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        /* ===== DESIGN TOKENS ===== */
         :root {
             --bg: #F4F6F4;
             --primary: #8DAA91;
             --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63;
             --accent: #E5987D;
             --dark-card: #301B28;
             --text: #2D312E;
-            --text-secondary: #8DAA91;
+            --text-mid: #6B7471;
             --text-inactive: #A0AAB2;
             --white: #ffffff;
             --radius: 20px;
-            --header-h: 100px;
-            --nav-h: 72px;
         }
 
-        /* ===== RESET ===== */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html,
-        body {
+        html, body {
             height: 100%;
             height: 100dvh;
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             overflow: hidden;
-            position: relative;
-        }
-
-        /* ===== FIXED HEADER ===== */
-        header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: var(--bg);
-            padding: env(safe-area-inset-top, 16px) 24px 14px;
-            padding-top: max(env(safe-area-inset-top, 16px), 44px);
-        }
-
-        .header-top {
             display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOP SECTION (dark) ── */
+        .top-section {
+            background: var(--dark-card);
+            padding: max(env(safe-area-inset-top, 16px), 56px) 32px 40px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-
-        .header-greet {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            letter-spacing: 0.2px;
-            margin-bottom: 2px;
-        }
-
-        .header-week {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
-
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2.5px solid var(--primary);
-            box-shadow: 0 2px 12px rgba(141, 170, 145, 0.35);
-        }
-
-        /* Progress Bar */
-        .progress-wrap {
-            height: 7px;
-            background: var(--primary-light);
-            border-radius: 99px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 57.14%;
-            /* week 24 / 42 weeks */
-            background: linear-gradient(90deg, var(--accent), #f0ab8a);
-            border-radius: 99px;
-            position: relative;
-            transition: width 1s ease;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 13px;
-            height: 13px;
-            background: var(--accent);
-            border-radius: 50%;
-            border: 2.5px solid var(--white);
-            box-shadow: 0 2px 6px rgba(229, 152, 125, 0.5);
-        }
-
-        /* ===== SCROLLABLE MAIN ===== */
-        .main-scroll {
-            position: absolute;
-            top: calc(var(--header-h) + 20px);
-            bottom: var(--nav-h);
-            left: 0;
-            right: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding-bottom: 16px;
-        }
-
-        .main-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* ===== CARD CAROUSEL ===== */
-        .carousel-section {
-            padding: 18px 0 0;
-        }
-
-        .carousel-viewport {
-            overflow: hidden;
-            position: relative;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: transform;
-        }
-
-        .card {
-            flex: 0 0 calc(100% - 48px);
-            margin: 0 24px;
-            height: 320px;
-            border-radius: var(--radius);
-            position: relative;
-            overflow: hidden;
+            gap: 0;
             flex-shrink: 0;
         }
 
-        /* Card 1 – Dark 3D Fetus */
-        .card-dark {
-            background: var(--dark-card);
+        /* Logo placeholder */
+        .logo-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 22px;
+            background: var(--primary);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 24px rgba(141,170,145,0.35);
+        }
+        .logo-wrap svg {
+            width: 36px; height: 36px;
+            stroke: white;
+            fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
         }
 
-        .card-dark .card-label {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 2;
-        }
-
-        .card-dark .card-label span {
-            display: block;
-            color: rgba(255, 255, 255, 0.55);
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .card-dark .card-label strong {
-            display: block;
-            color: var(--white);
-            font-size: 22px;
+        .app-name {
+            font-size: 28px;
             font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .fetus-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            /* Ajusta para mostrar a imagem inteira sem cortar */
-            object-position: center;
-            /* Centraliza a imagem */
-            opacity: 0.92;
-        }
-
-        /* Glow overlay on dark card */
-        .card-dark::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 70%, rgba(229, 152, 125, 0.18) 0%, transparent 65%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .card-dark .card-label {
-            z-index: 5;
-        }
-
-        /* Arrow buttons */
-        .arrow-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            width: 34px;
-            height: 34px;
-            background: rgba(141, 170, 145, 0.22);
-            border: 1.5px solid rgba(141, 170, 145, 0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-            backdrop-filter: blur(6px);
-        }
-
-        .arrow-btn:hover {
-            background: rgba(141, 170, 145, 0.4);
-        }
-
-        .arrow-btn:active {
-            transform: translateY(-50%) scale(0.92);
-        }
-
-        .arrow-btn svg {
-            width: 14px;
-            height: 14px;
-        }
-
-        .arrow-left {
-            left: 32px;
-        }
-
-        .arrow-right {
-            right: 32px;
-        }
-
-        /* Card 2 – White Nutritional */
-        .card-white {
-            background: var(--white);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            margin-left: 16px;
-            /* gap between cards when peeking */
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .card-white .card-section-top {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 20px 8px;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .card-white .section-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.4px;
+            color: var(--white);
+            letter-spacing: -0.5px;
             margin-bottom: 6px;
         }
-
-        .card-white .size-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 10px;
-        }
-
-        .avocado-img {
-            height: 90px;
-            object-fit: contain;
-        }
-
-        .size-tags {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .size-tag {
-            background: var(--bg);
-            border-radius: 99px;
-            padding: 4px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .card-white .card-section-bottom {
-            flex: 1.1;
-            padding: 14px 20px 16px;
-        }
-
-        .nutri-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1.4px;
-            margin-bottom: 8px;
-        }
-
-        .nutri-title {
+        .app-tagline {
             font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 10px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+            text-align: center;
         }
 
-        .food-icons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-
-        .food-chip {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(141, 170, 145, 0.12);
-            border-radius: 99px;
-            padding: 5px 10px 5px 6px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .food-chip .emoji {
-            font-size: 15px;
-        }
-
-        .nutri-tip {
-            font-size: 11.5px;
-            color: #6b7471;
-            line-height: 1.5;
-        }
-
-        /* Dots */
-        .dots {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            margin-top: 14px;
-        }
-
-        .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 99px;
-            background: var(--primary-light);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .dot.active {
-            background: var(--accent);
-            width: 20px;
-        }
-
-        /* ===== QUICK ACTIONS ===== */
-        .section-wrap {
-            padding: 20px 0 0;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 14px;
-            padding: 0 24px;
-        }
-
-        /* Carrossel horizontal */
-        .quick-scroll {
-            display: flex;
-            flex-direction: row;
-            gap: 12px;
-            overflow-x: auto;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: 4px 0 8px 16px;
-        }
-
-        .quick-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .quick-btn {
+        /* ── BOTTOM SECTION ── */
+        .bottom-section {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: transform 0.18s ease;
-            background: transparent;
-            border: none;
-            padding: 0;
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            flex-shrink: 0;
-            width: 76px;
+            padding: 32px 24px max(env(safe-area-inset-bottom, 24px), 32px);
+            overflow-y: auto;
         }
 
-        .quick-btn:last-child {
-            margin-right: 24px;
-            /* Fallback for iOS ignoring right-padding in scroll areas */
-        }
-
-        .quick-btn:active {
-            transform: scale(0.92);
-        }
-
-        .quick-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px rgba(141, 170, 145, 0.38);
-            transition: box-shadow 0.2s, background 0.2s;
-        }
-
-        .quick-btn:hover .quick-icon {
-            background: #7a9a7e;
-            box-shadow: 0 6px 20px rgba(141, 170, 145, 0.52);
-        }
-
-        .quick-icon svg {
-            width: 26px;
-            height: 26px;
-            stroke: white;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .quick-label {
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--text);
-            text-align: center;
-            line-height: 1.3;
-            white-space: nowrap;
-        }
-
-        /* ===== UPCOMING CARD ===== */
-        .upcoming-card {
-            margin: 20px 24px 0;
-            background: var(--white);
-            border-radius: var(--radius);
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            transition: transform 0.18s, box-shadow 0.18s;
-        }
-
-        .upcoming-card:active {
-            transform: scale(0.98);
-        }
-
-        .upcoming-icon-wrap {
-            width: 46px;
-            height: 46px;
-            background: linear-gradient(135deg, var(--accent), #f0ab8a);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .upcoming-icon-wrap svg {
-            width: 22px;
-            height: 22px;
-            stroke: white;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .upcoming-info {
-            flex: 1;
-        }
-
-        .upcoming-top {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-
-        .upcoming-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .upcoming-sub {
-            font-size: 11.5px;
-            color: #9aa09d;
-            margin-top: 1px;
-        }
-
-        .chevron-right {
-            width: 20px;
-            height: 20px;
-            stroke: var(--primary-light);
-            fill: none;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ===== TIPS SECTION ===== */
-        .tips-section {
-            padding: 20px 24px 0;
-        }
-
-        .tips-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-
-        .tips-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tip-card {
-            flex: 0 0 150px;
-            background: var(--white);
-            border-radius: 16px;
-            padding: 14px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            transition: transform 0.18s;
-        }
-
-        .tip-card:active {
-            transform: scale(0.96);
-        }
-
-        .tip-emoji {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .tip-title {
+        .section-label {
             font-size: 12px;
             font-weight: 700;
-            color: var(--text);
-            line-height: 1.3;
-            margin-bottom: 5px;
+            color: var(--text-inactive);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            text-align: center;
         }
 
-        .tip-desc {
-            font-size: 10.5px;
-            color: #9aa09d;
-            line-height: 1.4;
-        }
-
-        /* Bottom nav removed */
-
-        /* ===== BOTTOM NAV ===== */
-        nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: var(--nav-h);
-            background: var(--white);
-            border-top: 1px solid #ececec;
-            display: flex;
-            align-items: flex-start;
-            padding-top: 10px;
-            z-index: 100;
-            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.07);
-        }
-
-        .nav-item {
-            flex: 1;
+        /* ── ROLE CARDS ── */
+        .role-list {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            transition: transform 0.15s;
-            border: none;
-            background: transparent;
-            padding: 0;
-            text-decoration: none;
+            gap: 12px;
+            flex: 1;
         }
 
-        .nav-item:active {
-            transform: scale(0.88);
-        }
-
-        .nav-icon-wrap-bottom {
-            width: 36px;
-            height: 36px;
+        .role-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            transition: background 0.2s;
-        }
-
-        .nav-item.active .nav-icon-wrap-bottom {
-            background: rgba(141, 170, 145, 0.15);
-        }
-
-        .nav-item svg.nav-svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--text-inactive);
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: stroke 0.2s;
-        }
-
-        .nav-item.active svg.nav-svg {
-            stroke: var(--primary);
-        }
-
-        .nav-label {
-            font-size: 9.5px;
-            font-weight: 600;
-            color: var(--text-inactive);
-            transition: color 0.2s;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--primary);
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .main-scroll>* {
-            animation: fadeUp 0.4s ease both;
-        }
-
-        .main-scroll>*:nth-child(1) {
-            animation-delay: 0.05s;
-        }
-
-        .main-scroll>*:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .main-scroll>*:nth-child(3) {
-            animation-delay: 0.15s;
-        }
-
-        .main-scroll>*:nth-child(4) {
-            animation-delay: 0.2s;
-        }
-
-        .main-scroll>*:nth-child(5) {
-            animation-delay: 0.25s;
-        }
-
-        /* Touch ripple */
-        .ripple {
+            gap: 18px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+            text-decoration: none;
             position: relative;
             overflow: hidden;
         }
 
-        .ripple::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(141, 170, 145, 0.15);
-            opacity: 0;
-            border-radius: inherit;
-            transition: opacity 0.3s;
+        .role-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
         }
 
-        .ripple:active::after {
-            opacity: 1;
+        .role-card.patient:hover, .role-card.patient:focus {
+            border-color: var(--accent);
         }
+        .role-card.doctor:hover, .role-card.doctor:focus {
+            border-color: var(--primary);
+        }
+        .role-card.secretary:hover, .role-card.secretary:focus {
+            border-color: var(--primary-dk);
+        }
+
+        /* Subtle background tint */
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            opacity: 0.06;
+            transform: translate(20px, -20px);
+        }
+        .role-card.patient::before { background: var(--accent); }
+        .role-card.doctor::before { background: var(--primary); }
+        .role-card.secretary::before { background: var(--dark-card); }
+
+        .role-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 26px;
+            line-height: 1;
+        }
+        .role-icon.patient-icon { background: rgba(229,152,125,0.15); }
+        .role-icon.doctor-icon  { background: rgba(141,170,145,0.18); }
+        .role-icon.sec-icon     { background: rgba(48,27,40,0.08); }
+
+        .role-text { flex: 1; }
+        .role-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            margin-bottom: 4px;
+        }
+        .role-desc {
+            font-size: 12.5px;
+            color: var(--text-mid);
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .role-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .role-card.patient .role-arrow { background: rgba(229,152,125,0.15); }
+        .role-card.doctor  .role-arrow { background: rgba(141,170,145,0.18); }
+        .role-card.secretary .role-arrow { background: rgba(48,27,40,0.08); }
+
+        .role-arrow svg {
+            width: 16px; height: 16px;
+            fill: none; stroke-width: 2.5;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+        .role-card.patient .role-arrow svg { stroke: var(--accent); }
+        .role-card.doctor  .role-arrow svg { stroke: var(--primary-dk); }
+        .role-card.secretary .role-arrow svg { stroke: var(--dark-card); }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-inactive);
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        /* ── ENTRY ANIMATION ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .role-card {
+            animation: fadeUp 0.35s ease both;
+        }
+        .role-card:nth-child(1) { animation-delay: 0.05s; }
+        .role-card:nth-child(2) { animation-delay: 0.12s; }
+        .role-card:nth-child(3) { animation-delay: 0.19s; }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .top-section { animation: fadeDown 0.4s ease both; }
     </style>
-    <script>
-        // Redireciona para onboarding se for a primeira visita
-        if (!localStorage.getItem('onboarded')) {
-            window.location.replace('onboarding.html');
-        }
-    </script>
 </head>
 
 <body>
 
-    <!-- ===== FIXED HEADER ===== -->
-    <header>
-        <div class="header-top">
-            <div>
-                <p class="header-greet">Bem-vinda, Maria! 🌿</p>
-                <h1 class="header-week">Semana 24</h1>
-            </div>
-            <img class="avatar" src="assets/avatar_maria.png" alt="Avatar de Maria" />
-        </div>
-        <!-- Progress Bar -->
-        <div class="progress-wrap" role="progressbar" aria-valuenow="24" aria-valuemin="1" aria-valuemax="42"
-            aria-label="Progresso gestacional: semana 24 de 42">
-            <div class="progress-fill"></div>
-        </div>
-    </header>
-
-    <!-- ===== SCROLLABLE CONTENT ===== -->
-    <main class="main-scroll">
-
-        <!-- === CAROUSEL === -->
-        <section class="carousel-section" aria-label="Card informativo da semana">
-            <div class="carousel-viewport">
-                <div class="carousel-track" id="carouselTrack">
-
-                    <!-- Card 1: Dark 3D Fetus -->
-                    <div class="card card-dark" id="card1">
-                        <div class="card-label">
-                            <span>Sua Semana</span>
-                            <strong>Semana 24</strong>
-                        </div>
-                        <!-- BUG4 FIX: botão expandir específico para abrir tela 3D -->
-                        <button onclick="event.stopPropagation(); window.location.href='feto3d.html'"
-                            aria-label="Ver bebê em 3D tela cheia"
-                            style="position:absolute;top:14px;right:14px;z-index:20;background:rgba(141,170,145,0.22);border:1.5px solid rgba(141,170,145,0.5);border-radius:99px;padding:5px 12px;display:flex;align-items:center;gap:5px;cursor:pointer;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C5D5C8"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path
-                                    d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                            </svg>
-                            <span style="font-size:9px;font-weight:700;color:#C5D5C8;letter-spacing:0.5px;">VER
-                                EM 3D</span>
-                        </button>
-                        <img class="fetus-img" src="assets/fetus_3d.png" alt="Bebê na semana 24" />
-                        <!-- Arrow Left - BUG2 FIX: stopPropagation para não abrir 3D -->
-                        <button class="arrow-btn arrow-left" onclick="event.stopPropagation(); changeCard(-1)"
-                            aria-label="Card anterior">
-                            <svg viewBox="0 0 24 24" stroke="#8DAA91" fill="none" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6" />
-                            </svg>
-                        </button>
-                        <!-- Arrow Right - BUG2 FIX: stopPropagation -->
-                        <button class="arrow-btn arrow-right" onclick="event.stopPropagation(); changeCard(1)"
-                            aria-label="Próximo card">
-                            <svg viewBox="0 0 24 24" stroke="#8DAA91" fill="none" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Card 2: White Nutritional -->
-                    <div class="card card-white" id="card2">
-                        <!-- Size comparison -->
-                        <div class="card-section-top">
-                            <span class="section-label">Comparação de Tamanho</span>
-                            <span class="size-title">Bebê do tamanho de um abacate 🥑</span>
-                            <img class="avocado-img" src="assets/avocado.png"
-                                alt="Abacate representando o tamanho do bebê" />
-                            <div class="size-tags">
-                                <span class="size-tag">📏 30 cm</span>
-                                <span class="size-tag">⚖️ 600 g</span>
-                            </div>
-                        </div>
-                        <!-- Nutrition -->
-                        <div class="card-section-bottom">
-                            <p class="nutri-label">Foco Nutricional da Semana</p>
-                            <p class="nutri-title">Ferro & Ômega-3 em foco ✨</p>
-                            <div class="food-icons">
-                                <span class="food-chip"><span class="emoji">🥬</span> Folhas verdes</span>
-                                <span class="food-chip"><span class="emoji">🐟</span> Peixe</span>
-                                <span class="food-chip"><span class="emoji">🫘</span> Feijão</span>
-                            </div>
-                            <p class="nutri-tip">O ferro ajuda a prevenir anemia e o ômega-3 contribui para o
-                                desenvolvimento cerebral do bebê.</p>
-                        </div>
-                        <!-- Arrows on card 2 -->
-                        <button class="arrow-btn arrow-left" onclick="changeCard(-1)" aria-label="Card anterior">
-                            <svg viewBox="0 0 24 24" stroke="#8DAA91" fill="none" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6" />
-                            </svg>
-                        </button>
-                        <button class="arrow-btn arrow-right" onclick="changeCard(1)" aria-label="Próximo card">
-                            <svg viewBox="0 0 24 24" stroke="#8DAA91" fill="none" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                        </button>
-                    </div>
-
-                </div><!-- /track -->
-            </div><!-- /viewport -->
-
-            <!-- Dots -->
-            <div class="dots" id="dots">
-                <div class="dot active" onclick="goToCard(0)" aria-label="Card 1"></div>
-                <div class="dot" onclick="goToCard(1)" aria-label="Card 2"></div>
-            </div>
-        </section>
-
-        <!-- === QUICK ACTIONS === -->
-        <section class="section-wrap" aria-label="Atalhos rápidos">
-            <h2 class="section-title">Atalhos Rápidos</h2>
-            <div class="quick-scroll">
-
-                <!-- 1. Exames -->
-                <a href="area_medica.html#exames" class="quick-btn ripple" aria-label="Exames" id="btn-exames"
-                    style="text-decoration:none;">
-                    <div class="quick-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                            <line x1="9" y1="12" x2="15" y2="12" />
-                            <line x1="9" y1="16" x2="15" y2="16" />
-                        </svg>
-                    </div>
-                    <span class="quick-label">Exames</span>
-                </a>
-
-                <!-- 2. Chat Agente -->
-                <a href="chat.html" class="quick-btn ripple" aria-label="Chat com Equipe" id="btn-chat"
-                    style="text-decoration:none;">
-                    <div class="quick-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                    </div>
-                    <span class="quick-label">Chat</span>
-                </a>
-
-                <!-- 3. Meus Meds -->
-                <a href="area_medica.html" class="quick-btn ripple" aria-label="Meus Medicamentos" id="btn-meds"
-                    style="text-decoration:none;">
-                    <div class="quick-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M10.5 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7" />
-                            <path d="m8 12 5-5" />
-                            <ellipse cx="16.5" cy="15.5" rx="5.5" ry="5.5" transform="rotate(-45 16.5 15.5)" />
-                        </svg>
-                    </div>
-                    <span class="quick-label">Meus Meds</span>
-                </a>
-
-                <!-- 4. Consultas -->
-                <a href="consultas.html" class="quick-btn ripple" aria-label="Consultas" id="btn-consultas"
-                    style="text-decoration:none;">
-                    <div class="quick-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                    </div>
-                    <span class="quick-label">Consultas</span>
-                </a>
-
-                <!-- 5. Nomes (NOVO) -->
-                <a href="nomes.html" class="quick-btn ripple" aria-label="Escolha de Nomes" id="btn-nomes"
-                    style="text-decoration:none;">
-                    <div class="quick-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                            <line x1="12" y1="11" x2="12" y2="16" />
-                            <line x1="9.5" y1="13.5" x2="14.5" y2="13.5" />
-                        </svg>
-                    </div>
-                    <span class="quick-label">Nomes</span>
-                </a>
-
-            </div><!-- /quick-scroll -->
-        </section>
-
-        <!-- === UPCOMING APPOINTMENT === -->
-        <div class="upcoming-card ripple" role="button" tabindex="0" aria-label="Próxima consulta: Pré-natal, 12 mar"
-            onclick="window.location.href='consultas.html'">
-            <div class="upcoming-icon-wrap">
-                <svg viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-            </div>
-            <div class="upcoming-info">
-                <p class="upcoming-top">Próxima Consulta</p>
-                <p class="upcoming-title">Pré-natal — Dra. Ana Lima</p>
-                <p class="upcoming-sub">12 de março · Clínica Gerar Vida · 10h00</p>
-            </div>
-            <svg class="chevron-right" viewBox="0 0 24 24">
-                <polyline points="9 18 15 12 9 6" />
+    <!-- TOP -->
+    <div class="top-section">
+        <div class="logo-wrap">
+            <svg viewBox="0 0 24 24">
+                <!-- Heart with pulse line -->
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
         </div>
+        <h1 class="app-name">Gerar Vida</h1>
+        <p class="app-tagline">Pré-natal digital para clínicas privadas</p>
+    </div>
 
-        <!-- === TIPS SECTION === -->
-        <section class="tips-section" aria-label="Dicas da semana">
-            <h2 class="section-title">Dicas da Semana 💡</h2>
-            <div class="tips-scroll">
+    <!-- BOTTOM -->
+    <div class="bottom-section">
 
-                <div class="tip-card">
-                    <div class="tip-emoji">🧘‍♀️</div>
-                    <p class="tip-title">Exercícios leves</p>
-                    <p class="tip-desc">Caminhadas de 20 min ajudam na circulação e humor.</p>
+        <p class="section-label">Entrar como</p>
+
+        <div class="role-list">
+
+            <!-- PACIENTE -->
+            <a href="home.html" class="role-card patient">
+                <div class="role-icon patient-icon">🤰</div>
+                <div class="role-text">
+                    <p class="role-title">Paciente</p>
+                    <p class="role-desc">Acompanhe sua gravidez, consultas e exames</p>
                 </div>
-
-                <div class="tip-card">
-                    <div class="tip-emoji">💧</div>
-                    <p class="tip-title">Hidratação</p>
-                    <p class="tip-desc">Beba pelo menos 2,5 L de água por dia nesta fase.</p>
+                <div class="role-arrow">
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
+            </a>
 
-                <div class="tip-card">
-                    <div class="tip-emoji">😴</div>
-                    <p class="tip-title">Sono de qualidade</p>
-                    <p class="tip-desc">Durma de lado (esquerdo) para melhorar o fluxo sanguíneo.</p>
+            <!-- MÉDICO -->
+            <a href="dashboard_medico.html" class="role-card doctor">
+                <div class="role-icon doctor-icon">👩‍⚕️</div>
+                <div class="role-text">
+                    <p class="role-title">Médico(a)</p>
+                    <p class="role-desc">Gerencie pacientes, agenda e prontuários</p>
                 </div>
-
-                <div class="tip-card">
-                    <div class="tip-emoji">🎵</div>
-                    <p class="tip-title">Estimulação sonora</p>
-                    <p class="tip-desc">O bebê já ouve! Converse, cante ou coloque música.</p>
+                <div class="role-arrow">
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
+            </a>
 
-            </div>
-        </section>
+            <!-- SECRETARIA -->
+            <a href="dashboard_secretaria.html" class="role-card secretary">
+                <div class="role-icon sec-icon">📋</div>
+                <div class="role-text">
+                    <p class="role-title">Secretaria / Time</p>
+                    <p class="role-desc">Agenda, agendamentos e gestão da clínica</p>
+                </div>
+                <div class="role-arrow">
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+            </a>
 
-        <!-- Bottom spacer -->
-        <div style="height: 16px;"></div>
+        </div>
 
-    </main>
+        <p class="footer">Gerar Vida · Versão 1.2.0</p>
 
-    <!-- ===== BOTTOM NAV (Home Ativo) ===== -->
-    <nav aria-label="Navegação principal">
+    </div>
 
-        <!-- Home (ativo na Dashboard) -->
-        <a href="index.html" class="nav-item active" aria-label="Home" id="nav-home">
-            <div class="nav-icon-wrap-bottom">
-                <svg class="nav-svg" viewBox="0 0 24 24">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-            </div>
-            <span class="nav-label">Home</span>
-        </a>
-
-        <!-- Perfil (link para perfil.html) -->
-        <a href="perfil.html" class="nav-item" aria-label="Perfil" id="nav-perfil" style="text-decoration:none;">
-            <div class="nav-icon-wrap-bottom">
-                <svg class="nav-svg" viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                </svg>
-            </div>
-            <span class="nav-label">Perfil</span>
-        </a>
-
-    </nav>
-
-    </div><!-- /phone-frame -->
-    </div><!-- /phone-shell -->
-
-    <script>
-        /* ===== CAROUSEL LOGIC ===== */
-        const track = document.getElementById('carouselTrack');
-        const cards = track.querySelectorAll('.card');
-        const dotsEl = document.getElementById('dots').querySelectorAll('.dot');
-        let current = 0;
-        let startX = 0;
-        let isDragging = false;
-
-        function updateCarousel() {
-            const cardEl = cards[0];
-            const cardW = cardEl.offsetWidth + 48; // margin compensation
-            track.style.transform = `translateX(-${current * cardW}px)`;
-            dotsEl.forEach((d, i) => d.classList.toggle('active', i === current));
-        }
-
-        function changeCard(dir) {
-            current = Math.max(0, Math.min(cards.length - 1, current + dir));
-            updateCarousel();
-        }
-
-        function goToCard(index) {
-            current = index;
-            updateCarousel();
-        }
-
-        // Touch swipe
-        track.addEventListener('touchstart', e => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-        }, { passive: true });
-
-        track.addEventListener('touchend', e => {
-            if (!isDragging) return;
-            const dx = e.changedTouches[0].clientX - startX;
-            if (Math.abs(dx) > 50) changeCard(dx < 0 ? 1 : -1);
-            isDragging = false;
-        });
-
-        // Mouse drag support (desktop preview)
-        track.addEventListener('mousedown', e => {
-            startX = e.clientX;
-            isDragging = true;
-        });
-        track.addEventListener('mouseup', e => {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            if (Math.abs(dx) > 50) changeCard(dx < 0 ? 1 : -1);
-            isDragging = false;
-        });
-
-        // Bottom nav specific active state removed
-
-        // ===== INITIAL SETUP =====
-        updateCarousel();
-    </script>
 </body>
-
 </html>
