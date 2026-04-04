@@ -614,6 +614,225 @@
             line-height: 1.4;
         }
 
+        /* ===== DICAS DE ESPECIALISTAS ===== */
+        .experts-section {
+            padding: 24px 24px 0;
+        }
+
+        .experts-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .experts-scroll::-webkit-scrollbar { display: none; }
+
+        .video-card {
+            flex: 0 0 148px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: var(--white);
+            box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+            cursor: pointer;
+            transition: transform 0.18s;
+        }
+
+        .video-card:active { transform: scale(0.95); }
+
+        .video-thumb {
+            width: 100%;
+            height: 86px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-play {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.22);
+            border: 2px solid rgba(255,255,255,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .video-play svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+            margin-left: 2px;
+        }
+
+        .video-category-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.22);
+            padding: 3px 8px;
+            border-radius: 99px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .video-info {
+            padding: 10px 12px 12px;
+        }
+
+        .video-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+            margin-bottom: 5px;
+        }
+
+        .video-meta {
+            font-size: 10.5px;
+            color: var(--text-inactive);
+            font-weight: 500;
+        }
+
+        /* ── VIDEO MODAL ── */
+        .video-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 400;
+            display: flex;
+            align-items: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .video-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .video-modal-sheet {
+            width: 100%;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            padding: 12px 20px 40px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .video-modal-overlay.open .video-modal-sheet {
+            transform: translateY(0);
+        }
+
+        .vm-handle {
+            width: 40px;
+            height: 4px;
+            border-radius: 99px;
+            background: rgba(0,0,0,0.12);
+            margin: 0 auto 20px;
+        }
+
+        .vm-thumb {
+            width: 100%;
+            height: 160px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .vm-play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            border: 2.5px solid rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+
+        .vm-play-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+            margin-left: 3px;
+        }
+
+        .vm-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .vm-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .vm-desc {
+            font-size: 13px;
+            color: var(--text-inactive);
+            line-height: 1.6;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .vm-prof {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .vm-prof-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .vm-prof-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .vm-watch-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .vm-watch-btn:active { opacity: 0.85; }
+
         /* Bottom nav removed */
 
         /* ===== BOTTOM NAV ===== */
@@ -1029,10 +1248,108 @@
             </div>
         </section>
 
+        <!-- === DICAS DE ESPECIALISTAS === -->
+        <section class="experts-section" aria-label="Dicas de especialistas">
+            <h2 class="section-title">Dicas de Especialistas 🎬</h2>
+            <div class="experts-scroll">
+
+                <!-- 1. Nutrição -->
+                <div class="video-card" onclick="openVideoModal(0)">
+                    <div class="video-thumb" style="background: linear-gradient(135deg, #8DAA91 0%, #5E7E63 100%);">
+                        <div class="video-play">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <span class="video-category-badge">Nutrição</span>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Alimentação na semana 24</p>
+                        <p class="video-meta">8 min · Nutricionista</p>
+                    </div>
+                </div>
+
+                <!-- 2. Fisioterapia -->
+                <div class="video-card" onclick="openVideoModal(1)">
+                    <div class="video-thumb" style="background: linear-gradient(135deg, #5E7E63 0%, #3d5e42 100%);">
+                        <div class="video-play">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <span class="video-category-badge">Fisioterapia</span>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Exercícios seguros no 2º trimestre</p>
+                        <p class="video-meta">12 min · Fisioterapeuta</p>
+                    </div>
+                </div>
+
+                <!-- 3. Sono do Bebê -->
+                <div class="video-card" onclick="openVideoModal(2)">
+                    <div class="video-thumb" style="background: linear-gradient(135deg, #301B28 0%, #4a2a3d 100%);">
+                        <div class="video-play">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <span class="video-category-badge">Sono</span>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Como preparar o sono do bebê</p>
+                        <p class="video-meta">10 min · Especialista do Sono</p>
+                    </div>
+                </div>
+
+                <!-- 4. Parto -->
+                <div class="video-card" onclick="openVideoModal(3)">
+                    <div class="video-thumb" style="background: linear-gradient(135deg, #E5987D 0%, #c97055 100%);">
+                        <div class="video-play">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <span class="video-category-badge">Parto</span>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">O que esperar do parto normal</p>
+                        <p class="video-meta">15 min · Obstetra</p>
+                    </div>
+                </div>
+
+                <!-- 5. Amamentação -->
+                <div class="video-card" onclick="openVideoModal(4)">
+                    <div class="video-thumb" style="background: linear-gradient(135deg, #D4A0B5 0%, #b87a98 100%);">
+                        <div class="video-play">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <span class="video-category-badge">Amamentação</span>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Primeiros passos na amamentação</p>
+                        <p class="video-meta">9 min · Consultora</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- Bottom spacer -->
         <div style="height: 16px;"></div>
 
     </main>
+
+    <!-- ===== VIDEO MODAL ===== -->
+    <div class="video-modal-overlay" id="videoModal" onclick="closeVideoModal(event)">
+        <div class="video-modal-sheet" onclick="event.stopPropagation()">
+            <div class="vm-handle"></div>
+            <div class="vm-thumb" id="vmThumb">
+                <div class="vm-play-btn">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+            </div>
+            <p class="vm-category" id="vmCategory"></p>
+            <h2 class="vm-title" id="vmTitle"></h2>
+            <p class="vm-desc" id="vmDesc"></p>
+            <div class="vm-prof">
+                <div class="vm-prof-dot" id="vmProfDot"></div>
+                <span class="vm-prof-name" id="vmProfName"></span>
+            </div>
+            <button class="vm-watch-btn" id="vmBtn" onclick="watchVideo()">▶ Assistir agora</button>
+        </div>
+    </div>
 
     <!-- ===== BOTTOM NAV (Home Ativo) ===== -->
     <nav aria-label="Navegação principal">
@@ -1119,6 +1436,100 @@
 
         // ===== INITIAL SETUP =====
         updateCarousel();
+    </script>
+
+    <script>
+        /* ===== DICAS DE ESPECIALISTAS ===== */
+        const videos = [
+            {
+                title: 'Alimentação na Semana 24',
+                category: 'Nutrição',
+                categoryColor: '#8DAA91',
+                bg: 'linear-gradient(135deg, #8DAA91 0%, #5E7E63 100%)',
+                desc: 'O que comer nesta fase da gestação para garantir os nutrientes essenciais para você e para o crescimento saudável do bebê.',
+                prof: '🥗 Dra. Carla Nunes — Nutricionista',
+                profBg: 'rgba(141,170,145,0.15)',
+                duration: '8 min',
+                url: null
+            },
+            {
+                title: 'Exercícios Seguros no 2º Trimestre',
+                category: 'Fisioterapia',
+                categoryColor: '#5E7E63',
+                bg: 'linear-gradient(135deg, #5E7E63 0%, #3d5e42 100%)',
+                desc: 'Movimentos e alongamentos indicados para o segundo trimestre, com foco em alívio das dores lombares e fortalecimento do assoalho pélvico.',
+                prof: '🧘‍♀️ Dra. Renata Alves — Fisioterapeuta Obstétrica',
+                profBg: 'rgba(94,126,99,0.12)',
+                duration: '12 min',
+                url: null
+            },
+            {
+                title: 'Como Preparar o Sono do Bebê',
+                category: 'Sono',
+                categoryColor: '#9b6e8a',
+                bg: 'linear-gradient(135deg, #301B28 0%, #4a2a3d 100%)',
+                desc: 'Técnicas para criar uma rotina saudável de sono desde os primeiros dias, e como o ambiente do quarto influencia a qualidade do descanso do bebê.',
+                prof: '🌙 Dr. Felipe Torres — Especialista do Sono Infantil',
+                profBg: 'rgba(48,27,40,0.08)',
+                duration: '10 min',
+                url: null
+            },
+            {
+                title: 'O Que Esperar do Parto Normal',
+                category: 'Parto',
+                categoryColor: '#E5987D',
+                bg: 'linear-gradient(135deg, #E5987D 0%, #c97055 100%)',
+                desc: 'Um guia tranquilo sobre as etapas do parto normal: sinais de trabalho de parto, dilatação, expulsão e o pós-parto imediato.',
+                prof: '💫 Dra. Ana Lima — Obstetra',
+                profBg: 'rgba(229,152,125,0.12)',
+                duration: '15 min',
+                url: null
+            },
+            {
+                title: 'Primeiros Passos na Amamentação',
+                category: 'Amamentação',
+                categoryColor: '#b87a98',
+                bg: 'linear-gradient(135deg, #D4A0B5 0%, #b87a98 100%)',
+                desc: 'Pega correta, posições mais confortáveis, como saber se o bebê está se alimentando bem e como lidar com os primeiros desafios da amamentação.',
+                prof: '🤱 Ana Beatriz Costa — Consultora de Amamentação',
+                profBg: 'rgba(212,160,181,0.15)',
+                duration: '9 min',
+                url: null
+            }
+        ];
+
+        let currentVideo = null;
+
+        function openVideoModal(index) {
+            const v = videos[index];
+            currentVideo = v;
+
+            document.getElementById('vmThumb').style.background = v.bg;
+            document.getElementById('vmCategory').textContent = v.category;
+            document.getElementById('vmCategory').style.color = v.categoryColor;
+            document.getElementById('vmTitle').textContent = v.title;
+            document.getElementById('vmDesc').textContent = v.desc;
+            document.getElementById('vmProfDot').textContent = v.prof.split(' ')[0];
+            document.getElementById('vmProfDot').style.background = v.profBg;
+            document.getElementById('vmProfName').textContent = v.prof.split(' ').slice(1).join(' ');
+            document.getElementById('vmBtn').style.background = v.categoryColor;
+
+            document.getElementById('videoModal').classList.add('open');
+        }
+
+        function closeVideoModal(e) {
+            if (!e || e.target === document.getElementById('videoModal')) {
+                document.getElementById('videoModal').classList.remove('open');
+            }
+        }
+
+        function watchVideo() {
+            if (currentVideo && currentVideo.url) {
+                window.open(currentVideo.url, '_blank');
+            } else {
+                alert('Vídeo disponível em breve pela sua clínica. 🎬');
+            }
+        }
     </script>
 </body>
 
