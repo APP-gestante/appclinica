@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Monitor de Glicose</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4; --primary: #8DAA91; --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63; --accent: #E5987D;
+            --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
+            --white: #ffffff; --radius: 20px; --header-h: 70px;
+            --red: #E15B5B; --yellow: #F5A623; --orange: #F08C3B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; height: 100dvh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        header {
+            position: absolute; top: 0; left: 0; right: 0; height: var(--header-h); z-index: 100;
+            background: var(--bg); display: flex; align-items: flex-end;
+            padding: 0 20px 14px; padding-top: max(env(safe-area-inset-top, 0px), 36px);
+            justify-content: space-between;
+        }
+        .header-back {
+            width: 38px; height: 38px; border-radius: 12px; background: rgba(141,170,145,0.12);
+            border: none; cursor: pointer; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .header-back:active { transform: scale(0.9); }
+        .header-back svg { width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+        .add-btn {
+            height: 36px; padding: 0 16px; border-radius: 99px; background: var(--accent);
+            color: white; font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(229,152,125,0.4);
+            transition: transform 0.15s;
+        }
+        .add-btn:active { transform: scale(0.95); }
+
+        .scroll-area {
+            position: absolute; top: var(--header-h); left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; padding-bottom: max(env(safe-area-inset-bottom, 16px), 24px);
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* ── GAUGE CARD ── */
+        .gauge-card {
+            margin: 20px 20px 0; background: var(--white); border-radius: 20px;
+            padding: 20px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            display: flex; align-items: center; gap: 20px;
+        }
+        .gauge-circle {
+            width: 88px; height: 88px; border-radius: 50%; flex-shrink: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 5px solid var(--primary-light); position: relative;
+        }
+        .gauge-value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+        .gauge-unit { font-size: 10px; font-weight: 600; color: var(--text-inactive); }
+        .gauge-info { flex: 1; }
+        .gauge-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .gauge-sub { font-size: 12px; color: var(--text-mid); line-height: 1.4; }
+        .gauge-status {
+            display: inline-block; margin-top: 8px;
+            font-size: 10.5px; font-weight: 700; padding: 4px 12px;
+            border-radius: 99px;
+        }
+
+        /* ── STATS ── */
+        .stats-row { display: flex; gap: 10px; padding: 12px 20px 0; }
+        .stat-box { flex: 1; background: var(--white); border-radius: 16px; padding: 12px 8px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; line-height: 1; }
+        .stat-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 4px; line-height: 1.3; }
+
+        /* ── LIST ── */
+        .section-wrap { padding: 24px 20px 0; }
+        .section-title { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; margin-bottom: 12px; }
+        .glucose-list { display: flex; flex-direction: column; gap: 10px; }
+        .glucose-row {
+            background: var(--white); border-radius: 16px; padding: 14px 16px;
+            display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); animation: fadeUp 0.3s ease both;
+        }
+        .gr-bar { width: 6px; border-radius: 99px; flex-shrink: 0; align-self: stretch; }
+        .gr-info { flex: 1; }
+        .gr-value { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
+        .gr-value span { font-size: 12px; font-weight: 500; color: var(--text-mid); }
+        .gr-meta { font-size: 11.5px; color: var(--text-mid); margin-top: 4px; }
+        .gr-status { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 99px; flex-shrink: 0; white-space: nowrap; }
+
+        /* Status colors */
+        .s-normal   { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .s-pre      { background: rgba(245,166,35,0.15);  color: #B87A00; }
+        .s-high     { background: rgba(225,91,91,0.15);   color: var(--red); }
+        .s-low      { background: rgba(141,170,145,0.12); color: var(--primary-dk); }
+        .c-normal   { background: var(--primary); }
+        .c-pre      { background: var(--yellow); }
+        .c-high     { background: var(--red); }
+        .c-low      { background: var(--primary-light); }
+
+        .empty-state { text-align: center; padding: 32px 20px; color: var(--text-inactive); font-size: 13px; font-weight: 500; }
+        .empty-state p:first-child { font-size: 32px; margin-bottom: 8px; }
+
+        /* ── LEGEND ── */
+        .legend-wrap { background: var(--white); border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .legend-title { font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+        .legend-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-text { font-size: 12px; font-weight: 500; color: var(--text); }
+        .legend-val { font-size: 11px; color: var(--text-mid); margin-left: auto; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 400;
+            display: flex; align-items: flex-end; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-sheet {
+            width: 100%; background: var(--white); border-radius: 24px 24px 0 0;
+            padding: 12px 20px max(env(safe-area-inset-bottom, 24px), 28px);
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(0,0,0,0.12); margin: 0 auto 20px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-label { font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; display: block; }
+        .input-field {
+            width: 100%; height: 56px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 0 16px; font-size: 24px; font-weight: 800;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            outline: none; text-align: center; transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        .input-field.normal-size { font-size: 15px; font-weight: 600; text-align: left; }
+        .input-select {
+            width: 100%; height: 50px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 0 14px; font-size: 14px; font-weight: 600;
+            color: var(--text); font-family: 'Inter', sans-serif; outline: none;
+            -webkit-appearance: none; appearance: none; transition: border-color 0.2s;
+        }
+        .input-select:focus { border-color: var(--primary); }
+        .modal-cta {
+            width: 100%; padding: 16px; border-radius: 14px; background: var(--primary);
+            color: white; font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; margin-top: 4px; transition: background 0.15s;
+        }
+        .modal-cta:active { background: var(--primary-dk); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="home.html" class="header-back" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="header-title">Glicose</h1>
+        <button class="add-btn" onclick="openModal()">+ Registrar</button>
+    </header>
+
+    <div class="scroll-area">
+
+        <!-- GAUGE CARD (última medição) -->
+        <div class="gauge-card" id="gaugeCard" style="display:none;">
+            <div class="gauge-circle" id="gaugeCircle">
+                <span class="gauge-value" id="gaugeValue">—</span>
+                <span class="gauge-unit">mg/dL</span>
+            </div>
+            <div class="gauge-info">
+                <p class="gauge-label">Última medição</p>
+                <p class="gauge-sub" id="gaugeMeta">—</p>
+                <span class="gauge-status" id="gaugeStatus"></span>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <p class="stat-num" id="statCount">0</p>
+                <p class="stat-label">Medições</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statAvg">—</p>
+                <p class="stat-label">Média geral</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statMin">—</p>
+                <p class="stat-label">Menor</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statMax">—</p>
+                <p class="stat-label">Maior</p>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <h2 class="section-title">Histórico</h2>
+            <div class="glucose-list" id="glucoseList"></div>
+        </div>
+
+        <div class="section-wrap" style="padding-bottom: 24px;">
+            <h2 class="section-title" style="margin-bottom:12px;">Classificação</h2>
+            <div class="legend-wrap">
+                <p class="legend-title">Referência gestacional</p>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--primary-light);"></div>
+                    <span class="legend-text">Hipoglicemia</span>
+                    <span class="legend-val">&lt; 70 mg/dL</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--primary);"></div>
+                    <span class="legend-text">Normal em jejum</span>
+                    <span class="legend-val">70–95 mg/dL</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--primary);"></div>
+                    <span class="legend-text">Normal pós-refeição</span>
+                    <span class="legend-val">&lt; 140 mg/dL</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--yellow);"></div>
+                    <span class="legend-text">Atenção</span>
+                    <span class="legend-val">96–125 / 140–199 mg/dL</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--red);"></div>
+                    <span class="legend-text">Elevada</span>
+                    <span class="legend-val">≥ 126 / ≥ 200 mg/dL</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal" onclick="handleOverlay(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h2 class="modal-title">Registrar Glicose</h2>
+
+            <div class="input-group">
+                <label class="input-label">Glicose (mg/dL)</label>
+                <input class="input-field" type="number" id="inputValue" placeholder="95" min="20" max="600" inputmode="numeric"/>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Momento da medição</label>
+                <select class="input-select" id="inputMoment">
+                    <option value="Jejum">Em jejum</option>
+                    <option value="Pós-café">Pós-café (1h)</option>
+                    <option value="Pós-almoço">Pós-almoço (1h)</option>
+                    <option value="Pós-jantar">Pós-jantar (1h)</option>
+                    <option value="2h pós-café">2h após café</option>
+                    <option value="2h pós-almoço">2h após almoço</option>
+                    <option value="2h pós-jantar">2h após jantar</option>
+                    <option value="Antes de dormir">Antes de dormir</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Observação — opcional</label>
+                <input class="input-field normal-size" type="text" id="inputNote" placeholder="Ex: senti tontura antes..." maxlength="80"/>
+            </div>
+
+            <button class="modal-cta" onclick="saveReading()">Salvar</button>
+        </div>
+    </div>
+
+    <script>
+        const storageKey = 'gv_glicose';
+        function load() { return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
+        function save(d) { localStorage.setItem(storageKey, JSON.stringify(d)); }
+
+        function classify(value, moment) {
+            const isFasting = moment.includes('Jejum') || moment.includes('jejum');
+            if (value < 70) return { label: 'Hipoglicemia', s: 's-low', c: 'c-low' };
+            if (isFasting) {
+                if (value <= 95)  return { label: 'Normal',  s: 's-normal', c: 'c-normal' };
+                if (value <= 125) return { label: 'Atenção',  s: 's-pre',    c: 'c-pre' };
+                return             { label: 'Elevada',  s: 's-high',   c: 'c-high' };
+            } else {
+                if (value < 140)  return { label: 'Normal',  s: 's-normal', c: 'c-normal' };
+                if (value < 200)  return { label: 'Atenção',  s: 's-pre',    c: 'c-pre' };
+                return             { label: 'Elevada',  s: 's-high',   c: 'c-high' };
+            }
+        }
+
+        function fmtDateTime(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' · ' +
+                   d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function updateGauge() {
+            const list = load();
+            const card = document.getElementById('gaugeCard');
+            if (list.length === 0) { card.style.display = 'none'; return; }
+            card.style.display = 'flex';
+            const last = list[list.length - 1];
+            const c = classify(last.value, last.moment);
+            document.getElementById('gaugeValue').textContent = last.value;
+            document.getElementById('gaugeMeta').textContent = fmtDateTime(last.datetime) + ' · ' + last.moment;
+            const statusEl = document.getElementById('gaugeStatus');
+            statusEl.textContent = c.label;
+            statusEl.className = 'gauge-status ' + c.s;
+            // Circle border color
+            const colors = { 'c-normal': 'var(--primary)', 'c-pre': 'var(--yellow)', 'c-high': 'var(--red)', 'c-low': 'var(--primary-light)' };
+            document.getElementById('gaugeCircle').style.borderColor = colors[c.c] || 'var(--primary-light)';
+        }
+
+        function updateStats() {
+            const list = load();
+            document.getElementById('statCount').textContent = list.length;
+            if (list.length === 0) {
+                ['statAvg','statMin','statMax'].forEach(id => document.getElementById(id).textContent = '—');
+                return;
+            }
+            const vals = list.map(r => r.value);
+            document.getElementById('statAvg').textContent = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+            document.getElementById('statMin').textContent = Math.min(...vals);
+            document.getElementById('statMax').textContent = Math.max(...vals);
+        }
+
+        function renderList() {
+            const list = load();
+            const container = document.getElementById('glucoseList');
+            container.innerHTML = '';
+            if (list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>🩸</p><p>Nenhuma medição registrada ainda.<br>Toque em "+ Registrar" para começar.</p></div>';
+                return;
+            }
+            [...list].reverse().forEach(r => {
+                const c = classify(r.value, r.moment);
+                const row = document.createElement('div');
+                row.className = 'glucose-row';
+                row.innerHTML = `
+                    <div class="gr-bar ${c.c}"></div>
+                    <div class="gr-info">
+                        <p class="gr-value">${r.value}<span> mg/dL</span></p>
+                        <p class="gr-meta">${fmtDateTime(r.datetime)} · ${r.moment}${r.note ? ' · ' + r.note : ''}</p>
+                    </div>
+                    <span class="gr-status ${c.s}">${c.label}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function openModal() { document.getElementById('modal').classList.add('open'); }
+        function closeModal() { document.getElementById('modal').classList.remove('open'); }
+        function handleOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+
+        function saveReading() {
+            const value = parseInt(document.getElementById('inputValue').value);
+            const moment = document.getElementById('inputMoment').value;
+            const note = document.getElementById('inputNote').value.trim();
+            if (!value || value < 20) { alert('Informe um valor válido de glicose.'); return; }
+            const list = load();
+            list.push({ id: Date.now(), value, moment, note: note || null, datetime: new Date().toISOString() });
+            save(list);
+            document.getElementById('inputValue').value = '';
+            document.getElementById('inputNote').value = '';
+            closeModal();
+            updateGauge();
+            updateStats();
+            renderList();
+        }
+
+        updateGauge();
+        updateStats();
+        renderList();
+    </script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Paciente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4; --primary: #8DAA91; --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63; --accent: #E5987D; --dark-card: #301B28;
+            --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
+            --white: #ffffff; --radius: 20px;
+            --red: #E15B5B; --yellow: #F5A623;
+            --header-h: 70px; --tabs-h: 58px; --nav-h: 72px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; height: 100dvh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── HEADER ── */
+        header {
+            position: absolute; top: 0; left: 0; right: 0; height: var(--header-h);
+            z-index: 100; background: var(--white);
+            display: flex; align-items: flex-end; padding: 0 20px 12px;
+            padding-top: max(env(safe-area-inset-top, 0px), 36px);
+            gap: 12px; box-shadow: 0 1px 0 rgba(0,0,0,0.07);
+        }
+        .header-back {
+            width: 36px; height: 36px; border-radius: 11px;
+            background: rgba(141,170,145,0.12); border: none; cursor: pointer;
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: background 0.2s, transform 0.15s;
+        }
+        .header-back:active { transform: scale(0.9); }
+        .header-back svg { width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-center { flex: 1; }
+        .header-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+        .header-sub { font-size: 12px; color: var(--text-mid); margin-top: 1px; font-weight: 500; }
+
+        .risk-chip {
+            font-size: 10px; font-weight: 700; padding: 4px 10px;
+            border-radius: 99px; flex-shrink: 0;
+        }
+        .risk-low  { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .risk-med  { background: rgba(245,166,35,0.15);  color: #B87A00; }
+        .risk-high { background: rgba(225,91,91,0.15);   color: var(--red); }
+
+        /* ── TABS ── */
+        .tabs-wrap {
+            position: absolute; top: var(--header-h); left: 0; right: 0;
+            z-index: 90; background: var(--white);
+            padding: 10px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .tab-pill-container {
+            display: flex; background: var(--bg); border-radius: 99px; padding: 3px; gap: 2px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px 0; border: none; border-radius: 99px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: background 0.2s, color 0.2s; background: transparent;
+            color: var(--text-inactive); font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active { background: var(--white); color: var(--text); box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+
+        /* ── SCROLL ── */
+        .main-scroll {
+            position: absolute;
+            top: calc(var(--header-h) + var(--tabs-h));
+            bottom: var(--nav-h); left: 0; right: 0;
+            overflow-y: auto; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            padding: 20px 20px;
+        }
+        .main-scroll::-webkit-scrollbar { display: none; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── PATIENT CARD ── */
+        .patient-header-card {
+            background: var(--dark-card); border-radius: 20px;
+            padding: 20px; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .ph-initials {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: white; flex-shrink: 0;
+        }
+        .ph-info { flex: 1; }
+        .ph-name { font-size: 17px; font-weight: 800; color: white; }
+        .ph-meta { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+        .ph-chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .ph-chip {
+            font-size: 10.5px; font-weight: 700; padding: 5px 12px;
+            border-radius: 99px; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9);
+        }
+        .ph-chip.accent { background: rgba(229,152,125,0.3); color: #f4b9a5; }
+
+        /* ── INFO CARDS ── */
+        .info-card { background: var(--white); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .ic-title { font-size: 11px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+        .ic-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .ic-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .ic-key { font-size: 13px; color: var(--text-mid); font-weight: 500; }
+        .ic-val { font-size: 13px; font-weight: 700; color: var(--text); }
+
+        .med-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .med-item:last-child { border-bottom: none; }
+        .med-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+        .med-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+        .med-dose { font-size: 11.5px; color: var(--text-mid); }
+
+        /* ── DATA ROWS (contrações, pressão, glicose) ── */
+        .data-stats { display: flex; gap: 8px; margin-bottom: 14px; }
+        .ds-box { flex: 1; background: var(--bg); border-radius: 12px; padding: 10px 8px; text-align: center; }
+        .ds-num { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
+        .ds-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 3px; }
+
+        .data-row {
+            background: var(--white); border-radius: 14px; padding: 12px 14px;
+            display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .dr-bar { width: 4px; border-radius: 99px; flex-shrink: 0; align-self: stretch; min-height: 28px; }
+        .dr-main { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1; }
+        .dr-main span { font-size: 11px; font-weight: 500; color: var(--text-mid); }
+        .dr-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+        .dr-status { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 99px; flex-shrink: 0; white-space: nowrap; margin-left: auto; }
+
+        .s-normal { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .s-pre    { background: rgba(245,166,35,0.15);  color: #B87A00; }
+        .s-high   { background: rgba(225,91,91,0.15);   color: var(--red); }
+        .s-low    { background: rgba(141,170,145,0.12); color: var(--primary-dk); }
+        .c-normal { background: var(--primary); }
+        .c-pre    { background: var(--yellow); }
+        .c-high   { background: var(--red); }
+        .c-low    { background: var(--primary-light); }
+
+        .empty-mini { text-align: center; padding: 20px; color: var(--text-inactive); font-size: 12.5px; font-weight: 500; }
+
+        /* ── ALERT CARD ── */
+        .alert-card {
+            background: rgba(229,152,125,0.12); border-radius: 14px;
+            padding: 14px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 10px;
+        }
+        .alert-card svg { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+        .alert-text { font-size: 12.5px; font-weight: 600; color: var(--accent); line-height: 1.5; }
+
+        /* ── NOTE INPUT ── */
+        .note-textarea {
+            width: 100%; min-height: 90px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 12px 14px; font-size: 13.5px; font-weight: 500;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            outline: none; resize: none; transition: border-color 0.2s;
+            margin-bottom: 10px;
+        }
+        .note-textarea:focus { border-color: var(--primary); }
+        .note-save-btn {
+            height: 44px; padding: 0 20px; border-radius: 12px;
+            background: var(--primary); color: white;
+            font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; transition: background 0.15s;
+        }
+        .note-save-btn:active { background: var(--primary-dk); }
+
+        /* ── BOTTOM NAV ── */
+        nav {
+            position: absolute; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+            background: var(--white); border-top: 1px solid rgba(0,0,0,0.07);
+            display: flex; align-items: flex-start; padding-top: 10px; z-index: 200;
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; border: none; background: transparent; padding: 0;
+            text-decoration: none; transition: transform 0.15s;
+        }
+        .nav-item:active { transform: scale(0.88); }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-inactive); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active svg { stroke: var(--primary); }
+        .nav-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); }
+        .nav-item.active .nav-label { color: var(--primary); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .data-row { animation: fadeUp 0.25s ease both; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="dashboard_medico.html" class="header-back" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <div class="header-center">
+            <p class="header-name">Maria da Silva</p>
+            <p class="header-sub">Semana 24 · DPP: 20 Jun · Prontuário 2024-00847</p>
+        </div>
+        <span class="risk-chip risk-low">Baixo risco</span>
+    </header>
+
+    <!-- TABS -->
+    <div class="tabs-wrap">
+        <div class="tab-pill-container" role="tablist">
+            <button class="tab-btn active" onclick="switchTab('geral')"    id="tab-geral">Geral</button>
+            <button class="tab-btn"        onclick="switchTab('contrac')"  id="tab-contrac">Contrações</button>
+            <button class="tab-btn"        onclick="switchTab('pressao')"  id="tab-pressao">Pressão</button>
+            <button class="tab-btn"        onclick="switchTab('glicose')"  id="tab-glicose">Glicose</button>
+        </div>
+    </div>
+
+    <main class="main-scroll">
+
+        <!-- ══ TAB: GERAL ══ -->
+        <div class="tab-panel active" id="panel-geral">
+
+            <div class="patient-header-card">
+                <div class="ph-initials">MS</div>
+                <div class="ph-info">
+                    <p class="ph-name">Maria da Silva</p>
+                    <p class="ph-meta">28 anos · Tipo sanguíneo A+</p>
+                    <div class="ph-chips">
+                        <span class="ph-chip">Sem. 24 / 42</span>
+                        <span class="ph-chip">DPP: 20 Jun</span>
+                        <span class="ph-chip accent">1ª gestação</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas automáticos -->
+            <div id="alertsArea"></div>
+
+            <div class="info-card">
+                <p class="ic-title">Dados clínicos</p>
+                <div class="ic-row"><span class="ic-key">Altura</span><span class="ic-val">1,65 m</span></div>
+                <div class="ic-row"><span class="ic-key">Peso pré-gestacional</span><span class="ic-val">62 kg</span></div>
+                <div class="ic-row"><span class="ic-key">IMC pré-gestacional</span><span class="ic-val">22,8 (Normal)</span></div>
+                <div class="ic-row"><span class="ic-key">Ganho de peso até agora</span><span class="ic-val">+6,5 kg</span></div>
+                <div class="ic-row"><span class="ic-key">Alergias</span><span class="ic-val">Nenhuma conhecida</span></div>
+                <div class="ic-row"><span class="ic-key">Comorbidades</span><span class="ic-val">Nenhuma</span></div>
+            </div>
+
+            <div class="info-card">
+                <p class="ic-title">Medicamentos em uso</p>
+                <div class="med-item">
+                    <div class="med-dot"></div>
+                    <span class="med-name">Ácido Fólico</span>
+                    <span class="med-dose">400 mcg · 1x/dia</span>
+                </div>
+                <div class="med-item">
+                    <div class="med-dot"></div>
+                    <span class="med-name">Sulfato Ferroso</span>
+                    <span class="med-dose">40 mg · 1x/dia</span>
+                </div>
+                <div class="med-item">
+                    <div class="med-dot"></div>
+                    <span class="med-name">Vitamina D3</span>
+                    <span class="med-dose">1000 UI · 1x/dia</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <p class="ic-title">Próximos exames</p>
+                <div class="ic-row"><span class="ic-key">Hemograma</span><span class="ic-val">15 Mar</span></div>
+                <div class="ic-row"><span class="ic-key">Glicemia de jejum</span><span class="ic-val">Aguardando resultado</span></div>
+                <div class="ic-row"><span class="ic-key">Ultrassom 3º trimestre</span><span class="ic-val">A agendar</span></div>
+            </div>
+
+            <div class="info-card">
+                <p class="ic-title">Notas clínicas</p>
+                <textarea class="note-textarea" id="clinicalNote" placeholder="Adicione uma nota sobre esta paciente..."></textarea>
+                <button class="note-save-btn" onclick="saveNote()">Salvar nota</button>
+            </div>
+
+        </div>
+
+        <!-- ══ TAB: CONTRAÇÕES ══ -->
+        <div class="tab-panel" id="panel-contrac">
+
+            <div class="data-stats" id="contracStats">
+                <div class="ds-box"><p class="ds-num" id="cCount">0</p><p class="ds-label">Hoje</p></div>
+                <div class="ds-box"><p class="ds-num" id="cAvgDur">—</p><p class="ds-label">Duração média</p></div>
+                <div class="ds-box"><p class="ds-num" id="cAvgInt">—</p><p class="ds-label">Intervalo médio</p></div>
+            </div>
+
+            <div id="contracAlert" style="display:none;" class="alert-card">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p class="alert-text">Contrações frequentes registradas. Intervalo médio abaixo de 10 minutos. Avaliar necessidade de contato.</p>
+            </div>
+
+            <div id="contracList"></div>
+        </div>
+
+        <!-- ══ TAB: PRESSÃO ══ -->
+        <div class="tab-panel" id="panel-pressao">
+
+            <div class="data-stats">
+                <div class="ds-box"><p class="ds-num" id="pCount">0</p><p class="ds-label">Medições</p></div>
+                <div class="ds-box"><p class="ds-num" id="pAvgSys">—</p><p class="ds-label">Média sistólica</p></div>
+                <div class="ds-box"><p class="ds-num" id="pAvgDia">—</p><p class="ds-label">Média diastólica</p></div>
+                <div class="ds-box"><p class="ds-num" id="pMax">—</p><p class="ds-label">Maior</p></div>
+            </div>
+
+            <div id="pressaoAlert" style="display:none;" class="alert-card">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p class="alert-text" id="pressaoAlertText"></p>
+            </div>
+
+            <div id="pressaoList"></div>
+        </div>
+
+        <!-- ══ TAB: GLICOSE ══ -->
+        <div class="tab-panel" id="panel-glicose">
+
+            <div class="data-stats">
+                <div class="ds-box"><p class="ds-num" id="gCount">0</p><p class="ds-label">Medições</p></div>
+                <div class="ds-box"><p class="ds-num" id="gAvg">—</p><p class="ds-label">Média</p></div>
+                <div class="ds-box"><p class="ds-num" id="gMin">—</p><p class="ds-label">Menor</p></div>
+                <div class="ds-box"><p class="ds-num" id="gMax">—</p><p class="ds-label">Maior</p></div>
+            </div>
+
+            <div id="glicoseAlert" style="display:none;" class="alert-card">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p class="alert-text">Há registros de glicose elevada. Considerar avaliação para diabetes gestacional.</p>
+            </div>
+
+            <div id="glicoseList"></div>
+        </div>
+
+    </main>
+
+    <nav>
+        <a href="dashboard_medico.html" class="nav-item" aria-label="Início">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="nav-label">Início</span>
+        </a>
+        <button class="nav-item active" aria-label="Paciente">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="nav-label">Paciente</span>
+        </button>
+        <button class="nav-item" aria-label="Chat">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="nav-label">Chat</span>
+        </button>
+    </nav>
+
+    <script>
+        /* ── TAB SWITCHING ── */
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+            if (tab === 'contrac') loadContracoes();
+            if (tab === 'pressao') loadPressao();
+            if (tab === 'glicose') loadGlicose();
+        }
+
+        /* ── HELPERS ── */
+        function fmtDateTime(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' · ' +
+                   d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+        function fmtDur(sec) { return sec < 60 ? sec + 's' : Math.floor(sec/60) + 'min ' + (sec%60) + 's'; }
+        function fmtInt(sec) { if (!sec) return '—'; const m = Math.floor(sec/60); return m > 0 ? m + 'min' : sec + 's'; }
+
+        /* ── ALERTS on GERAL tab ── */
+        function loadAlerts() {
+            const area = document.getElementById('alertsArea');
+            area.innerHTML = '';
+            const pressao = JSON.parse(localStorage.getItem('gv_pressao') || '[]');
+            const highPressao = pressao.filter(r => r.sys >= 140 || r.dia >= 90);
+            if (highPressao.length > 0) {
+                area.innerHTML += `<div class="alert-card"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="alert-text">${highPressao.length} registro(s) de pressão elevada (grau 2). Avaliação recomendada.</p></div>`;
+            }
+            const glicose = JSON.parse(localStorage.getItem('gv_glicose') || '[]');
+            const highGlicose = glicose.filter(r => {
+                const isFasting = r.moment.includes('Jejum');
+                return isFasting ? r.value >= 126 : r.value >= 200;
+            });
+            if (highGlicose.length > 0) {
+                area.innerHTML += `<div class="alert-card"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="alert-text">${highGlicose.length} registro(s) de glicose elevada. Avaliar diabetes gestacional.</p></div>`;
+            }
+        }
+
+        /* ── CONTRAÇÕES ── */
+        function loadContracoes() {
+            const all = JSON.parse(localStorage.getItem('gv_contracoes') || '[]');
+            const today = new Date().toDateString();
+            const list = all.filter(c => new Date(c.startTime).toDateString() === today);
+
+            document.getElementById('cCount').textContent = list.length;
+            if (list.length > 0) {
+                const avgDur = Math.round(list.reduce((a,c) => a + c.duration, 0) / list.length);
+                document.getElementById('cAvgDur').textContent = fmtDur(avgDur);
+                const withInt = list.filter(c => c.interval !== null);
+                if (withInt.length > 0) {
+                    const avgInt = Math.round(withInt.reduce((a,c) => a + c.interval, 0) / withInt.length);
+                    document.getElementById('cAvgInt').textContent = fmtInt(avgInt);
+                    document.getElementById('contracAlert').style.display = (avgInt < 600 && list.length >= 3) ? 'flex' : 'none';
+                }
+            } else {
+                document.getElementById('cAvgDur').textContent = '—';
+                document.getElementById('cAvgInt').textContent = '—';
+            }
+
+            const container = document.getElementById('contracList');
+            container.innerHTML = '';
+            if (list.length === 0) {
+                container.innerHTML = '<div class="empty-mini">Nenhuma contração registrada hoje.</div>'; return;
+            }
+            [...list].reverse().forEach((c, i) => {
+                const idx = list.length - i;
+                const row = document.createElement('div');
+                row.className = 'data-row';
+                row.innerHTML = `
+                    <div class="dr-bar c-normal"></div>
+                    <div style="flex:1;">
+                        <p class="dr-main">${fmtDur(c.duration)} <span>duração</span></p>
+                        <p class="dr-sub">${fmtDateTime(c.startTime)} · Intervalo: ${fmtInt(c.interval)}</p>
+                    </div>
+                    <span style="font-size:11px;color:var(--text-inactive);font-weight:600;">#${idx}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        /* ── PRESSÃO ── */
+        function classifyPressao(sys, dia) {
+            if (sys < 90 || dia < 60) return { label: 'Hipotensão', s: 's-low',    c: 'c-low' };
+            if (sys < 120 && dia < 80) return { label: 'Normal',     s: 's-normal', c: 'c-normal' };
+            if (sys < 130 && dia < 80) return { label: 'Elevada',    s: 's-pre',    c: 'c-pre' };
+            if (sys < 140 || dia < 90) return { label: 'Grau 1',     s: 's-pre',    c: 'c-pre' };
+            return                            { label: 'Grau 2',     s: 's-high',   c: 'c-high' };
+        }
+
+        function loadPressao() {
+            const list = JSON.parse(localStorage.getItem('gv_pressao') || '[]');
+            document.getElementById('pCount').textContent = list.length;
+            if (list.length > 0) {
+                const avgSys = Math.round(list.reduce((a,r) => a + r.sys, 0) / list.length);
+                const avgDia = Math.round(list.reduce((a,r) => a + r.dia, 0) / list.length);
+                const maxSys = Math.max(...list.map(r => r.sys));
+                const maxDia = list.find(r => r.sys === maxSys)?.dia || 0;
+                document.getElementById('pAvgSys').textContent = avgSys;
+                document.getElementById('pAvgDia').textContent = avgDia;
+                document.getElementById('pMax').textContent = maxSys + '/' + maxDia;
+
+                const highList = list.filter(r => r.sys >= 140 || r.dia >= 90);
+                const alertEl = document.getElementById('pressaoAlert');
+                if (highList.length > 0) {
+                    alertEl.style.display = 'flex';
+                    document.getElementById('pressaoAlertText').textContent =
+                        `${highList.length} registro(s) de hipertensão grau 2 (≥140/90 mmHg). Avaliação médica recomendada.`;
+                } else { alertEl.style.display = 'none'; }
+            }
+
+            const container = document.getElementById('pressaoList');
+            container.innerHTML = '';
+            if (list.length === 0) { container.innerHTML = '<div class="empty-mini">Nenhuma medição de pressão registrada.</div>'; return; }
+            [...list].reverse().forEach(r => {
+                const c = classifyPressao(r.sys, r.dia);
+                const row = document.createElement('div');
+                row.className = 'data-row';
+                row.innerHTML = `
+                    <div class="dr-bar ${c.c}"></div>
+                    <div style="flex:1;">
+                        <p class="dr-main">${r.sys}/${r.dia} <span>mmHg${r.pulse ? ' · ' + r.pulse + ' bpm' : ''}</span></p>
+                        <p class="dr-sub">${fmtDateTime(r.datetime)} · ${r.moment}</p>
+                    </div>
+                    <span class="dr-status ${c.s}">${c.label}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        /* ── GLICOSE ── */
+        function classifyGlicose(value, moment) {
+            const isFasting = moment.includes('Jejum');
+            if (value < 70)  return { label: 'Hipoglicemia', s: 's-low',    c: 'c-low' };
+            if (isFasting) {
+                if (value <= 95)  return { label: 'Normal',  s: 's-normal', c: 'c-normal' };
+                if (value <= 125) return { label: 'Atenção', s: 's-pre',    c: 'c-pre' };
+                return                   { label: 'Elevada', s: 's-high',   c: 'c-high' };
+            } else {
+                if (value < 140)  return { label: 'Normal',  s: 's-normal', c: 'c-normal' };
+                if (value < 200)  return { label: 'Atenção', s: 's-pre',    c: 'c-pre' };
+                return                   { label: 'Elevada', s: 's-high',   c: 'c-high' };
+            }
+        }
+
+        function loadGlicose() {
+            const list = JSON.parse(localStorage.getItem('gv_glicose') || '[]');
+            document.getElementById('gCount').textContent = list.length;
+            if (list.length > 0) {
+                const vals = list.map(r => r.value);
+                document.getElementById('gAvg').textContent = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+                document.getElementById('gMin').textContent = Math.min(...vals);
+                document.getElementById('gMax').textContent = Math.max(...vals);
+                const highList = list.filter(r => {
+                    const isFasting = r.moment.includes('Jejum');
+                    return isFasting ? r.value >= 126 : r.value >= 200;
+                });
+                document.getElementById('glicoseAlert').style.display = highList.length > 0 ? 'flex' : 'none';
+            }
+
+            const container = document.getElementById('glicoseList');
+            container.innerHTML = '';
+            if (list.length === 0) { container.innerHTML = '<div class="empty-mini">Nenhuma medição de glicose registrada.</div>'; return; }
+            [...list].reverse().forEach(r => {
+                const c = classifyGlicose(r.value, r.moment);
+                const row = document.createElement('div');
+                row.className = 'data-row';
+                row.innerHTML = `
+                    <div class="dr-bar ${c.c}"></div>
+                    <div style="flex:1;">
+                        <p class="dr-main">${r.value} <span>mg/dL</span></p>
+                        <p class="dr-sub">${fmtDateTime(r.datetime)} · ${r.moment}${r.note ? ' · ' + r.note : ''}</p>
+                    </div>
+                    <span class="dr-status ${c.s}">${c.label}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        /* ── NOTES ── */
+        function saveNote() {
+            const note = document.getElementById('clinicalNote').value.trim();
+            if (!note) return;
+            localStorage.setItem('gv_nota_maria', note);
+            alert('Nota salva!');
+        }
+
+        /* ── INIT ── */
+        const savedNote = localStorage.getItem('gv_nota_maria');
+        if (savedNote) document.getElementById('clinicalNote').value = savedNote;
+        loadAlerts();
+    </script>
+</body>
+</html>

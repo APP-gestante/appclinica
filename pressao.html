@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Mapa da Pressão</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4;
+            --primary: #8DAA91;
+            --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63;
+            --accent: #E5987D;
+            --text: #2D312E;
+            --text-mid: #6B7471;
+            --text-inactive: #A0AAB2;
+            --white: #ffffff;
+            --radius: 20px;
+            --header-h: 70px;
+            --red: #E15B5B;
+            --yellow: #F5A623;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; height: 100dvh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        header {
+            position: absolute; top: 0; left: 0; right: 0;
+            height: var(--header-h); z-index: 100; background: var(--bg);
+            display: flex; align-items: flex-end;
+            padding: 0 20px 14px;
+            padding-top: max(env(safe-area-inset-top, 0px), 36px);
+            justify-content: space-between;
+        }
+        .header-back {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(141,170,145,0.12); border: none; cursor: pointer;
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .header-back:active { transform: scale(0.9); }
+        .header-back svg { width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+
+        .add-btn {
+            height: 36px; padding: 0 16px; border-radius: 99px;
+            background: var(--accent); color: white;
+            font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(229,152,125,0.4);
+            transition: transform 0.15s;
+        }
+        .add-btn:active { transform: scale(0.95); }
+
+        .scroll-area {
+            position: absolute; top: var(--header-h); left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            padding-bottom: max(env(safe-area-inset-bottom, 16px), 24px);
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* ── STATS ── */
+        .stats-row { display: flex; gap: 10px; padding: 20px 20px 0; }
+        .stat-box {
+            flex: 1; background: var(--white); border-radius: 16px;
+            padding: 12px 8px; text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .stat-num { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; line-height: 1; }
+        .stat-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 4px; line-height: 1.3; }
+
+        /* ── SECTION ── */
+        .section-wrap { padding: 24px 20px 0; }
+        .section-title { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; margin-bottom: 12px; }
+
+        /* ── PRESSURE TABLE ── */
+        .pressure-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .pressure-row {
+            background: var(--white); border-radius: 16px;
+            padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            animation: fadeUp 0.3s ease both;
+        }
+        .pr-indicator {
+            width: 6px; border-radius: 99px; flex-shrink: 0; align-self: stretch;
+        }
+        .pr-info { flex: 1; }
+        .pr-values { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; line-height: 1; }
+        .pr-values span { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+        .pr-meta { font-size: 11.5px; color: var(--text-mid); margin-top: 4px; }
+        .pr-status {
+            font-size: 10px; font-weight: 700; padding: 4px 10px;
+            border-radius: 99px; flex-shrink: 0; white-space: nowrap;
+        }
+        .status-normal   { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .status-elevated { background: rgba(245,166,35,0.15);  color: #B87A00; }
+        .status-high1    { background: rgba(229,152,125,0.2);  color: var(--accent); }
+        .status-high2    { background: rgba(225,91,91,0.15);   color: var(--red); }
+        .status-low      { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+
+        .color-normal  { background: var(--primary); }
+        .color-elevated{ background: var(--yellow); }
+        .color-high1   { background: var(--accent); }
+        .color-high2   { background: var(--red); }
+        .color-low     { background: var(--primary-light); }
+
+        .empty-state { text-align: center; padding: 32px 20px; color: var(--text-inactive); font-size: 13px; font-weight: 500; }
+        .empty-state p:first-child { font-size: 32px; margin-bottom: 8px; }
+
+        /* ── LEGEND ── */
+        .legend-wrap { background: var(--white); border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .legend-title { font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+        .legend-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-text { font-size: 12px; font-weight: 500; color: var(--text); }
+        .legend-val { font-size: 11px; color: var(--text-mid); margin-left: auto; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            z-index: 400; display: flex; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-sheet {
+            width: 100%; background: var(--white); border-radius: 24px 24px 0 0;
+            padding: 12px 20px max(env(safe-area-inset-bottom, 24px), 28px);
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(0,0,0,0.12); margin: 0 auto 20px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-label { font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; display: block; }
+        .input-row { display: flex; gap: 10px; }
+        .input-field {
+            flex: 1; height: 50px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 0 14px; font-size: 20px; font-weight: 700;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            outline: none; text-align: center;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        .input-field.half { font-size: 15px; font-weight: 600; text-align: left; }
+        .input-sep { display: flex; align-items: center; font-size: 24px; font-weight: 800; color: var(--text-inactive); padding: 0 4px; }
+
+        .input-select {
+            width: 100%; height: 50px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 0 14px; font-size: 14px; font-weight: 600;
+            color: var(--text); font-family: 'Inter', sans-serif; outline: none;
+            -webkit-appearance: none; appearance: none;
+            transition: border-color 0.2s;
+        }
+        .input-select:focus { border-color: var(--primary); }
+
+        .modal-cta {
+            width: 100%; padding: 16px; border-radius: 14px;
+            background: var(--primary); color: white;
+            font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; margin-top: 4px;
+            transition: background 0.15s;
+        }
+        .modal-cta:active { background: var(--primary-dk); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="home.html" class="header-back" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="header-title">Mapa da Pressão</h1>
+        <button class="add-btn" onclick="openModal()">+ Registrar</button>
+    </header>
+
+    <div class="scroll-area">
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <p class="stat-num" id="statCount">0</p>
+                <p class="stat-label">Medições</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statAvgSys">—</p>
+                <p class="stat-label">Média sistólica</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statAvgDia">—</p>
+                <p class="stat-label">Média diastólica</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-num" id="statMax">—</p>
+                <p class="stat-label">Maior registro</p>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <h2 class="section-title">Histórico</h2>
+            <div class="pressure-list" id="pressureList"></div>
+        </div>
+
+        <div class="section-wrap" style="padding-bottom: 24px;">
+            <h2 class="section-title" style="margin-bottom:12px;">Classificação</h2>
+            <div class="legend-wrap">
+                <p class="legend-title">Referência (adultos)</p>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--primary-light);"></div>
+                    <span class="legend-text">Hipotensão</span>
+                    <span class="legend-val">&lt; 90/60 mmHg</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--primary);"></div>
+                    <span class="legend-text">Normal</span>
+                    <span class="legend-val">&lt; 120/80 mmHg</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--yellow);"></div>
+                    <span class="legend-text">Elevada</span>
+                    <span class="legend-val">120–129 / &lt;80 mmHg</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--accent);"></div>
+                    <span class="legend-text">Hipertensão grau 1</span>
+                    <span class="legend-val">130–139 / 80–89 mmHg</span>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-dot" style="background:var(--red);"></div>
+                    <span class="legend-text">Hipertensão grau 2</span>
+                    <span class="legend-val">≥ 140 / ≥ 90 mmHg</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal" onclick="handleOverlay(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h2 class="modal-title">Registrar Pressão</h2>
+
+            <div class="input-group">
+                <label class="input-label">Pressão (mmHg)</label>
+                <div class="input-row">
+                    <input class="input-field" type="number" id="inputSys" placeholder="120" min="50" max="250" inputmode="numeric"/>
+                    <span class="input-sep">/</span>
+                    <input class="input-field" type="number" id="inputDia" placeholder="80" min="30" max="150" inputmode="numeric"/>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Pulso (bpm) — opcional</label>
+                <input class="input-field half" type="number" id="inputPulse" placeholder="72" min="30" max="220" inputmode="numeric" style="width:100%; text-align:left;"/>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Momento</label>
+                <select class="input-select" id="inputMoment">
+                    <option value="Manhã">Manhã</option>
+                    <option value="Após acordar">Após acordar</option>
+                    <option value="Antes do almoço">Antes do almoço</option>
+                    <option value="Após o almoço">Após o almoço</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                    <option value="Antes de dormir">Antes de dormir</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+
+            <button class="modal-cta" onclick="saveReading()">Salvar</button>
+        </div>
+    </div>
+
+    <script>
+        const storageKey = 'gv_pressao';
+
+        function load() { return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
+        function save(data) { localStorage.setItem(storageKey, JSON.stringify(data)); }
+
+        function classify(sys, dia) {
+            if (sys < 90 || dia < 60) return { label: 'Hipotensão', cls: 'status-low', bar: 'color-low' };
+            if (sys < 120 && dia < 80) return { label: 'Normal', cls: 'status-normal', bar: 'color-normal' };
+            if (sys < 130 && dia < 80) return { label: 'Elevada', cls: 'status-elevated', bar: 'color-elevated' };
+            if (sys < 140 || dia < 90) return { label: 'Grau 1', cls: 'status-high1', bar: 'color-high1' };
+            return { label: 'Grau 2', cls: 'status-high2', bar: 'color-high2' };
+        }
+
+        function fmtDateTime(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' · ' +
+                   d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function updateStats() {
+            const list = load();
+            document.getElementById('statCount').textContent = list.length;
+            if (list.length === 0) {
+                ['statAvgSys','statAvgDia','statMax'].forEach(id => document.getElementById(id).textContent = '—');
+                return;
+            }
+            const avgSys = Math.round(list.reduce((a,c) => a + c.sys, 0) / list.length);
+            const avgDia = Math.round(list.reduce((a,c) => a + c.dia, 0) / list.length);
+            const maxSys = Math.max(...list.map(c => c.sys));
+            const maxDia = list.find(c => c.sys === maxSys)?.dia || 0;
+            document.getElementById('statAvgSys').textContent = avgSys;
+            document.getElementById('statAvgDia').textContent = avgDia;
+            document.getElementById('statMax').textContent = maxSys + '/' + maxDia;
+        }
+
+        function renderList() {
+            const list = load();
+            const container = document.getElementById('pressureList');
+            container.innerHTML = '';
+            if (list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>💓</p><p>Nenhuma medição registrada ainda.<br>Toque em "+ Registrar" para começar.</p></div>';
+                return;
+            }
+            [...list].reverse().forEach(r => {
+                const c = classify(r.sys, r.dia);
+                const row = document.createElement('div');
+                row.className = 'pressure-row';
+                row.innerHTML = `
+                    <div class="pr-indicator ${c.bar}"></div>
+                    <div class="pr-info">
+                        <p class="pr-values">${r.sys}<span>/${r.dia} mmHg</span></p>
+                        <p class="pr-meta">${fmtDateTime(r.datetime)} · ${r.moment}${r.pulse ? ' · ' + r.pulse + ' bpm' : ''}</p>
+                    </div>
+                    <span class="pr-status ${c.cls}">${c.label}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function openModal() { document.getElementById('modal').classList.add('open'); }
+        function closeModal() { document.getElementById('modal').classList.remove('open'); }
+        function handleOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+
+        function saveReading() {
+            const sys = parseInt(document.getElementById('inputSys').value);
+            const dia = parseInt(document.getElementById('inputDia').value);
+            const pulse = document.getElementById('inputPulse').value;
+            const moment = document.getElementById('inputMoment').value;
+
+            if (!sys || !dia || sys < 50 || dia < 30) {
+                alert('Preencha os valores de pressão corretamente.');
+                return;
+            }
+
+            const list = load();
+            list.push({ id: Date.now(), sys, dia, pulse: pulse ? parseInt(pulse) : null, moment, datetime: new Date().toISOString() });
+            save(list);
+
+            document.getElementById('inputSys').value = '';
+            document.getElementById('inputDia').value = '';
+            document.getElementById('inputPulse').value = '';
+            closeModal();
+            updateStats();
+            renderList();
+        }
+
+        updateStats();
+        renderList();
+    </script>
+</body>
+</html>
