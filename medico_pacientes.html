@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Pacientes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4; --primary: #8DAA91; --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63; --accent: #E5987D; --dark-card: #301B28;
+            --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
+            --white: #ffffff; --radius: 20px;
+            --red: #E15B5B; --yellow: #F5A623;
+            --nav-h: 72px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; height: 100dvh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── SCROLL ── */
+        .scroll-area {
+            position: absolute; top: 0; left: 0; right: 0; bottom: var(--nav-h);
+            overflow-y: auto; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* ── HEADER ── */
+        .top-bar {
+            background: var(--white);
+            padding: max(env(safe-area-inset-top, 16px), 52px) 24px 16px;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+        }
+        .top-bar-row {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 16px;
+        }
+        .top-bar-left {}
+        .top-bar-label {
+            font-size: 12px; font-weight: 600; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;
+        }
+        .top-bar-title {
+            font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.5px;
+        }
+        .add-patient-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--accent); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 14px rgba(229,152,125,0.4);
+            transition: transform 0.15s;
+        }
+        .add-patient-btn:active { transform: scale(0.92); }
+        .add-patient-btn svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Search */
+        .search-box {
+            background: var(--bg); border-radius: 14px;
+            display: flex; align-items: center; padding: 0 14px; gap: 10px; height: 46px;
+        }
+        .search-box svg { width: 16px; height: 16px; stroke: var(--text-inactive); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+        .search-box input {
+            flex: 1; border: none; background: transparent;
+            font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); outline: none;
+        }
+        .search-box input::placeholder { color: var(--text-inactive); }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: flex; gap: 10px; padding: 20px 24px 0;
+        }
+        .stat-card {
+            flex: 1; background: var(--white); border-radius: 16px;
+            padding: 12px 8px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .stat-card:active { transform: scale(0.97); }
+        .stat-card.active-filter { border: 2px solid var(--primary); }
+        .stat-num { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+        .stat-num.t1 { color: var(--primary-dk); }
+        .stat-num.t2 { color: var(--primary); }
+        .stat-num.t3 { color: var(--accent); }
+        .stat-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 4px; line-height: 1.3; }
+
+        /* ── FILTER CHIPS ── */
+        .filter-row {
+            display: flex; gap: 8px; padding: 16px 24px 0;
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .filter-row::-webkit-scrollbar { display: none; }
+        .filter-chip {
+            height: 34px; padding: 0 14px; border-radius: 99px; border: none;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            white-space: nowrap; font-family: 'Inter', sans-serif;
+            background: var(--white); color: var(--text-mid);
+            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+        }
+        .filter-chip.active { background: var(--primary); color: var(--white); }
+        .filter-chip.danger.active { background: var(--red); }
+
+        /* ── SECTION ── */
+        .section-wrap { padding: 20px 24px 0; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .section-title { font-size: 15px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.6px; font-size: 11px; }
+        .section-count { font-size: 11px; font-weight: 600; color: var(--text-inactive); }
+
+        /* ── PATIENT CARDS ── */
+        .patients-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
+
+        .patient-card {
+            background: var(--white); border-radius: 18px;
+            padding: 16px; display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            cursor: pointer; transition: transform 0.15s;
+            animation: fadeUp 0.3s ease both;
+        }
+        .patient-card:active { transform: scale(0.99); }
+        .patient-card.hidden { display: none; }
+
+        .pc-top { display: flex; align-items: center; gap: 12px; }
+
+        .pc-avatar {
+            width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+            background: var(--primary-light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 800; color: var(--primary-dk);
+            border: 2px solid var(--primary-light);
+        }
+
+        .pc-info { flex: 1; min-width: 0; }
+        .pc-name { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.2px; }
+        .pc-meta { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+
+        .pc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+        .week-badge {
+            background: var(--primary-light); color: var(--primary-dk);
+            font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;
+        }
+        .risk-label { font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .risk-label.low  { color: #3CB371; }
+        .risk-label.med  { color: var(--yellow); }
+        .risk-label.high { color: var(--red); }
+        .risk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .risk-dot.low  { background: #3CB371; }
+        .risk-dot.med  { background: var(--yellow); }
+        .risk-dot.high { background: var(--red); }
+
+        /* Progress bar */
+        .pc-progress-wrap { display: flex; align-items: center; gap: 10px; }
+        .pc-progress-bar {
+            flex: 1; height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden;
+        }
+        .pc-progress-fill { height: 100%; border-radius: 99px; background: var(--primary); }
+        .pc-progress-label { font-size: 10.5px; font-weight: 600; color: var(--text-mid); white-space: nowrap; }
+
+        /* Tags row */
+        .pc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .pc-tag {
+            font-size: 10.5px; font-weight: 600; padding: 3px 10px;
+            border-radius: 99px; white-space: nowrap;
+        }
+        .tag-consult { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .tag-exam    { background: rgba(229,152,125,0.15); color: var(--accent); }
+        .tag-alert   { background: rgba(225,91,91,0.12);   color: var(--red); }
+        .tag-new     { background: rgba(48,27,40,0.08);    color: var(--dark-card); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center; padding: 48px 24px;
+            color: var(--text-inactive); font-size: 13px; font-weight: 500;
+        }
+        .empty-state p:first-child { font-size: 40px; margin-bottom: 12px; }
+
+        /* ── BOTTOM NAV ── */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: var(--nav-h); background: var(--white);
+            border-top: 1px solid rgba(0,0,0,0.07);
+            display: flex; align-items: flex-start; padding-top: 10px; z-index: 200;
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; border: none; background: transparent; padding: 0;
+            text-decoration: none; transition: transform 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .nav-item:active { transform: scale(0.88); }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-inactive); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item.active svg { stroke: var(--primary); }
+        .nav-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); }
+        .nav-item.active .nav-label { color: var(--primary); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .patient-card:nth-child(2) { animation-delay: 0.04s; }
+        .patient-card:nth-child(3) { animation-delay: 0.08s; }
+        .patient-card:nth-child(4) { animation-delay: 0.12s; }
+        .patient-card:nth-child(5) { animation-delay: 0.16s; }
+        .patient-card:nth-child(6) { animation-delay: 0.20s; }
+        .patient-card:nth-child(7) { animation-delay: 0.24s; }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-area">
+
+        <!-- HEADER -->
+        <div class="top-bar">
+            <div class="top-bar-row">
+                <div class="top-bar-left">
+                    <p class="top-bar-label">Dra. Ana Lima</p>
+                    <h1 class="top-bar-title">Minhas Pacientes</h1>
+                </div>
+                <button class="add-patient-btn" aria-label="Adicionar paciente" onclick="alert('Cadastrar nova paciente — em breve!')">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Buscar por nome..." oninput="filterPatients()" />
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card active-filter" id="stat-all" onclick="setFilter('all')">
+                <p class="stat-num">7</p>
+                <p class="stat-label">Total</p>
+            </div>
+            <div class="stat-card" id="stat-t1" onclick="setFilter('t1')">
+                <p class="stat-num t1">2</p>
+                <p class="stat-label">1º Trim.</p>
+            </div>
+            <div class="stat-card" id="stat-t2" onclick="setFilter('t2')">
+                <p class="stat-num t2">3</p>
+                <p class="stat-label">2º Trim.</p>
+            </div>
+            <div class="stat-card" id="stat-t3" onclick="setFilter('t3')">
+                <p class="stat-num t3">2</p>
+                <p class="stat-label">3º Trim.</p>
+            </div>
+        </div>
+
+        <!-- FILTER CHIPS -->
+        <div class="filter-row">
+            <button class="filter-chip active" id="chip-all"     onclick="setChip('all')">Todas</button>
+            <button class="filter-chip"        id="chip-risk"    onclick="setChip('risk')">Alto risco</button>
+            <button class="filter-chip danger" id="chip-alert"   onclick="setChip('alert')">Com alertas</button>
+            <button class="filter-chip"        id="chip-consult" onclick="setChip('consult')">Consulta hoje</button>
+            <button class="filter-chip"        id="chip-exam"    onclick="setChip('exam')">Exame pendente</button>
+        </div>
+
+        <!-- PATIENT LIST -->
+        <div class="section-wrap">
+            <div class="section-header">
+                <p class="section-title">Lista de pacientes</p>
+                <p class="section-count" id="countLabel">7 pacientes</p>
+            </div>
+
+            <div class="patients-list" id="patientsList">
+
+                <!-- MARIA DA SILVA -->
+                <div class="patient-card"
+                    data-name="maria da silva" data-trim="t2" data-risk="low" data-alert="false" data-consult="true" data-exam="true"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar">MS</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Maria da Silva</p>
+                            <p class="pc-meta">28 anos · A+ · Prontuário 2024-00847</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 24</span>
+                            <span class="risk-label low"><span class="risk-dot low"></span>Baixo risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:57%;"></div>
+                        </div>
+                        <span class="pc-progress-label">24 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-consult">Consulta hoje 10h</span>
+                        <span class="pc-tag tag-exam">Hemograma pendente</span>
+                    </div>
+                </div>
+
+                <!-- CARLA MENDES -->
+                <div class="patient-card"
+                    data-name="carla mendes" data-trim="t2" data-risk="low" data-alert="false" data-consult="true" data-exam="false"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar">CM</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Carla Mendes</p>
+                            <p class="pc-meta">31 anos · O+ · Prontuário 2024-00831</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 20</span>
+                            <span class="risk-label low"><span class="risk-dot low"></span>Baixo risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:48%;"></div>
+                        </div>
+                        <span class="pc-progress-label">20 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-consult">Consulta hoje 09h</span>
+                    </div>
+                </div>
+
+                <!-- FERNANDA COSTA -->
+                <div class="patient-card"
+                    data-name="fernanda costa" data-trim="t1" data-risk="med" data-alert="true" data-consult="true" data-exam="true"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar" style="background:rgba(245,166,35,0.15); color:#B87A00;">FC</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Fernanda Costa</p>
+                            <p class="pc-meta">25 anos · B+ · Prontuário 2025-00012</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 10</span>
+                            <span class="risk-label med"><span class="risk-dot med"></span>Atenção</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:24%; background:var(--yellow);"></div>
+                        </div>
+                        <span class="pc-progress-label">10 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-consult">Consulta hoje 10h45</span>
+                        <span class="pc-tag tag-alert">Glicemia elevada</span>
+                    </div>
+                </div>
+
+                <!-- JULIANA ROCHA -->
+                <div class="patient-card"
+                    data-name="juliana rocha" data-trim="t3" data-risk="low" data-alert="false" data-consult="false" data-exam="false"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar">JR</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Juliana Rocha</p>
+                            <p class="pc-meta">33 anos · A- · Prontuário 2024-00798</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 32</span>
+                            <span class="risk-label low"><span class="risk-dot low"></span>Baixo risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:76%;"></div>
+                        </div>
+                        <span class="pc-progress-label">32 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-consult" style="background:rgba(141,170,145,0.08); color:var(--text-mid);">Próx. consulta: 10 Mar</span>
+                    </div>
+                </div>
+
+                <!-- PATRÍCIA SOUZA -->
+                <div class="patient-card"
+                    data-name="patricia souza" data-trim="t3" data-risk="high" data-alert="true" data-consult="false" data-exam="false"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar" style="background:rgba(225,91,91,0.12); color:#B33A3A;">PS</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Patrícia Souza</p>
+                            <p class="pc-meta">29 anos · O- · Prontuário 2024-00756</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 36</span>
+                            <span class="risk-label high"><span class="risk-dot high"></span>Alto risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:86%; background:var(--red);"></div>
+                        </div>
+                        <span class="pc-progress-label">36 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-alert">Pressão elevada</span>
+                        <span class="pc-tag tag-consult" style="background:rgba(141,170,145,0.08); color:var(--text-mid);">Última: 20 Fev</span>
+                    </div>
+                </div>
+
+                <!-- BEATRIZ FERREIRA -->
+                <div class="patient-card"
+                    data-name="beatriz ferreira" data-trim="t2" data-risk="low" data-alert="false" data-consult="false" data-exam="false"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar" style="background:rgba(141,170,145,0.2); color:var(--primary-dk);">BF</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Beatriz Ferreira</p>
+                            <p class="pc-meta">27 anos · AB+ · Prontuário 2024-00891</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 18</span>
+                            <span class="risk-label low"><span class="risk-dot low"></span>Baixo risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:43%;"></div>
+                        </div>
+                        <span class="pc-progress-label">18 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-consult">Consulta hoje 14h</span>
+                    </div>
+                </div>
+
+                <!-- RENATA OLIVEIRA -->
+                <div class="patient-card"
+                    data-name="renata oliveira" data-trim="t1" data-risk="low" data-alert="false" data-consult="false" data-exam="false"
+                    onclick="window.location.href='paciente_detalhe.html'">
+                    <div class="pc-top">
+                        <div class="pc-avatar" style="background:rgba(229,152,125,0.15); color:#c06a4a;">RO</div>
+                        <div class="pc-info">
+                            <p class="pc-name">Renata Oliveira</p>
+                            <p class="pc-meta">23 anos · A+ · Prontuário 2025-00034</p>
+                        </div>
+                        <div class="pc-right">
+                            <span class="week-badge">Sem. 6</span>
+                            <span class="risk-label low"><span class="risk-dot low"></span>Baixo risco</span>
+                        </div>
+                    </div>
+                    <div class="pc-progress-wrap">
+                        <div class="pc-progress-bar">
+                            <div class="pc-progress-fill" style="width:14%;"></div>
+                        </div>
+                        <span class="pc-progress-label">6 / 42 sem</span>
+                    </div>
+                    <div class="pc-tags">
+                        <span class="pc-tag tag-new">1ª consulta hoje 15h</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <p>🔍</p>
+                <p>Nenhuma paciente encontrada<br>com esse filtro.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Navegação médica">
+        <a href="dashboard_medico.html" class="nav-item" aria-label="Início">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-label">Início</span>
+        </a>
+        <button class="nav-item active" aria-label="Pacientes">
+            <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span class="nav-label">Pacientes</span>
+        </button>
+        <button class="nav-item" aria-label="Agenda" onclick="alert('Agenda — em breve!')">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span class="nav-label">Agenda</span>
+        </button>
+        <button class="nav-item" aria-label="Chat" onclick="alert('Chat — em breve!')">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span class="nav-label">Chat</span>
+        </button>
+    </nav>
+
+    <script>
+        let activeChip = 'all';
+        let activeTrim = 'all';
+
+        const cards = () => document.querySelectorAll('.patient-card');
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            let visible = 0;
+
+            cards().forEach(card => {
+                const name    = card.dataset.name;
+                const trim    = card.dataset.trim;
+                const risk    = card.dataset.risk;
+                const alert   = card.dataset.alert === 'true';
+                const consult = card.dataset.consult === 'true';
+                const exam    = card.dataset.exam === 'true';
+
+                let show = true;
+
+                // Search
+                if (search && !name.includes(search)) show = false;
+
+                // Trim filter (stat cards)
+                if (activeTrim !== 'all' && trim !== activeTrim) show = false;
+
+                // Chip filter
+                if (activeChip === 'risk'    && risk !== 'high') show = false;
+                if (activeChip === 'alert'   && !alert) show = false;
+                if (activeChip === 'consult' && !consult) show = false;
+                if (activeChip === 'exam'    && !exam) show = false;
+
+                card.classList.toggle('hidden', !show);
+                if (show) visible++;
+            });
+
+            document.getElementById('countLabel').textContent = visible + ' paciente' + (visible !== 1 ? 's' : '');
+            document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+        }
+
+        function filterPatients() { applyFilters(); }
+
+        function setChip(chip) {
+            activeChip = chip;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            document.getElementById('chip-' + chip).classList.add('active');
+            applyFilters();
+        }
+
+        function setFilter(trim) {
+            activeTrim = trim;
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
+            document.getElementById('stat-' + trim).classList.add('active-filter');
+            applyFilters();
+        }
+    </script>
+</body>
+</html>
