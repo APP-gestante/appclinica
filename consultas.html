@@ -324,6 +324,92 @@
             color: var(--red);
         }
 
+        /* ===== APPT ACTION BUTTONS ===== */
+        .appt-actions {
+            display: flex; gap: 10px; margin-top: 14px;
+        }
+        .appt-btn-confirm {
+            flex: 1; padding: 14px; border-radius: 14px;
+            background: rgba(255,255,255,0.25); color: white;
+            font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: 1.5px solid rgba(255,255,255,0.5); cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .appt-btn-confirm:active { transform: scale(0.96); }
+        .appt-btn-reschedule {
+            flex: 1; padding: 14px; border-radius: 14px;
+            background: transparent; color: white;
+            font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: 1.5px solid rgba(255,255,255,0.4); cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .appt-btn-reschedule:active { transform: scale(0.96); }
+        .appt-status-badge {
+            margin-top: 14px; padding: 12px 16px; border-radius: 14px;
+            font-size: 13px; font-weight: 700; text-align: center;
+        }
+        .appt-status-confirmed {
+            background: rgba(255,255,255,0.2); color: white;
+            border: 1.5px solid rgba(255,255,255,0.35);
+        }
+        .appt-status-rescheduling {
+            background: rgba(229,152,125,0.25); color: white;
+            border: 1.5px solid rgba(229,152,125,0.4);
+        }
+
+        /* ===== HISTORY DETAIL LINK ===== */
+        .history-detail-link {
+            font-size: 12px; font-weight: 600; color: var(--primary);
+            text-decoration: none; display: inline-block; margin-top: 6px;
+        }
+        .history-detail-link:active { opacity: 0.7; }
+
+        /* ===== RESCHEDULE MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            z-index: 400; display: flex; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-sheet {
+            width: 100%; background: var(--white); border-radius: 24px 24px 0 0;
+            padding: 12px 20px max(env(safe-area-inset-bottom, 24px), 28px);
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(0,0,0,0.12); margin: 0 auto 20px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+        .modal-subtitle { font-size: 13px; color: var(--text-inactive); margin-bottom: 16px; }
+        .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .chip {
+            padding: 9px 14px; border-radius: 99px; font-size: 13px; font-weight: 600;
+            font-family: 'Inter', sans-serif; border: 1.5px solid var(--primary-light);
+            background: var(--bg); color: var(--text); cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .chip.selected { background: var(--primary); border-color: var(--primary); color: white; }
+        .obs-input {
+            width: 100%; height: 80px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 12px 14px; font-size: 14px; font-family: 'Inter', sans-serif;
+            color: var(--text); resize: none; outline: none; margin-bottom: 14px;
+            transition: border-color 0.2s;
+        }
+        .obs-input:focus { border-color: var(--primary); }
+        .modal-cta {
+            width: 100%; padding: 16px; border-radius: 14px;
+            background: var(--accent); color: white;
+            font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; transition: background 0.15s;
+        }
+        .modal-cta:active { background: #de886a; }
+
+        /* Detail modal */
+        .detail-field { margin-bottom: 14px; }
+        .detail-field-label { font-size: 11px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+        .detail-field-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
         /* ===== MAIN BUTTON ===== */
         .main-btn {
             display: flex;
@@ -437,6 +523,9 @@
                     <span>Clínica Gerar Vida</span>
                 </div>
             </div>
+
+            <!-- APPT ACTIONS (rendered by JS) -->
+            <div id="apptActions"></div>
         </div>
 
         <h2 class="section-title">Histórico recente</h2>
@@ -453,6 +542,7 @@
                     <h4 class="history-type">Ultrassom Morfológico</h4>
                     <p class="history-doc">Dr. Carlos Mendes</p>
                     <span class="history-status status-done">Realizada</span>
+                    <a href="#" class="history-detail-link" onclick="openDetailModal('Ultrassom Morfológico','15 de Fevereiro de 2025','Dr. Carlos Mendes','Clínica Gerar Vida — Sala 3','Bebê em boa posição. Peso estimado 560g. Todos os órgãos dentro da normalidade.'); return false;">Ver detalhes</a>
                 </div>
             </div>
 
@@ -465,6 +555,7 @@
                     <h4 class="history-type">Exames de Sangue e Urina</h4>
                     <p class="history-doc">Laboratório Central</p>
                     <span class="history-status status-done">Resultados Prontos</span>
+                    <a href="#" class="history-detail-link" onclick="openDetailModal('Exames de Sangue e Urina','28 de Janeiro de 2025','Laboratório Central','Laboratório Central — Andar 1','Hemograma completo, glicemia de jejum e urina tipo I realizados. Resultados disponíveis no app em Exames.'); return false;">Ver detalhes</a>
                 </div>
             </div>
 
@@ -477,6 +568,7 @@
                     <h4 class="history-type" style="color:#666;">Consulta c/ Nutricionista</h4>
                     <p class="history-doc">Dra. Beatriz Santos</p>
                     <span class="history-status status-missed">Cancelada por você</span>
+                    <a href="#" class="history-detail-link" onclick="openDetailModal('Consulta c/ Nutricionista','10 de Janeiro de 2025','Dra. Beatriz Santos','Clínica Gerar Vida — Sala 5','Consulta cancelada pela paciente. Reagendamento pendente.'); return false;">Ver detalhes</a>
                 </div>
             </div>
 
@@ -493,6 +585,100 @@
         </div>
 
     </div>
+
+    <!-- RESCHEDULE MODAL -->
+    <div class="modal-overlay" id="rescheduleModal" onclick="handleOverlay(event,'rescheduleModal')">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h2 class="modal-title">Solicitar remarcação</h2>
+            <p class="modal-subtitle">Escolha o motivo:</p>
+            <div class="chip-group" id="chipGroup">
+                <button class="chip" onclick="selectChip(this)">Conflito de agenda</button>
+                <button class="chip" onclick="selectChip(this)">Questão de saúde</button>
+                <button class="chip" onclick="selectChip(this)">Viagem</button>
+                <button class="chip" onclick="selectChip(this)">Outro</button>
+            </div>
+            <label style="font-size:12px; font-weight:600; color:var(--text-inactive); display:block; margin-bottom:6px;">Observação (opcional)</label>
+            <textarea class="obs-input" id="obsInput" placeholder="Ex: tenho compromisso no mesmo horário..." maxlength="120"></textarea>
+            <button class="modal-cta" onclick="submitReschedule()">Enviar solicitação</button>
+        </div>
+    </div>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal-overlay" id="detailModal" onclick="handleOverlay(event,'detailModal')">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h2 class="modal-title" id="detailTitle">Detalhes da consulta</h2>
+            <div class="detail-field">
+                <p class="detail-field-label">Data</p>
+                <p class="detail-field-value" id="detailDate">—</p>
+            </div>
+            <div class="detail-field">
+                <p class="detail-field-label">Profissional</p>
+                <p class="detail-field-value" id="detailDoctor">—</p>
+            </div>
+            <div class="detail-field">
+                <p class="detail-field-label">Local</p>
+                <p class="detail-field-value" id="detailLocation">—</p>
+            </div>
+            <div class="detail-field">
+                <p class="detail-field-label">Observações</p>
+                <p class="detail-field-value" id="detailNotes" style="font-weight:500; color:var(--text-inactive); line-height:1.5;">—</p>
+            </div>
+            <button class="modal-cta" style="background:var(--primary);" onclick="closeModal('detailModal')">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const STATUS_KEY = 'gv_consulta_proxima_status';
+
+        function renderApptActions() {
+            const status = localStorage.getItem(STATUS_KEY);
+            const el = document.getElementById('apptActions');
+            if (status === 'confirmada') {
+                el.innerHTML = '<div class="appt-status-badge appt-status-confirmed">✓ Presença confirmada</div>';
+            } else if (status === 'remarcacao') {
+                el.innerHTML = '<div class="appt-status-badge appt-status-rescheduling">⏳ Remarcação solicitada</div>';
+            } else {
+                el.innerHTML = `
+                    <div class="appt-actions">
+                        <button class="appt-btn-confirm" onclick="confirmPresence()">Confirmar presença</button>
+                        <button class="appt-btn-reschedule" onclick="openModal('rescheduleModal')">Solicitar remarcação</button>
+                    </div>`;
+            }
+        }
+
+        function confirmPresence() {
+            localStorage.setItem(STATUS_KEY, 'confirmada');
+            renderApptActions();
+        }
+
+        function submitReschedule() {
+            localStorage.setItem(STATUS_KEY, 'remarcacao');
+            closeModal('rescheduleModal');
+            renderApptActions();
+        }
+
+        function selectChip(el) {
+            document.querySelectorAll('#chipGroup .chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        function handleOverlay(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+        function openDetailModal(title, date, doctor, location, notes) {
+            document.getElementById('detailTitle').textContent = title;
+            document.getElementById('detailDate').textContent = date;
+            document.getElementById('detailDoctor').textContent = doctor;
+            document.getElementById('detailLocation').textContent = location;
+            document.getElementById('detailNotes').textContent = notes;
+            openModal('detailModal');
+        }
+
+        renderApptActions();
+    </script>
 
 </body>
 

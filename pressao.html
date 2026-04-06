@@ -205,6 +205,23 @@
         </div>
 
         <div class="section-wrap">
+            <h2 class="section-title">Evolução da pressão</h2>
+            <div style="background:var(--white); border-radius:16px; box-shadow:0 2px 16px rgba(0,0,0,0.06); overflow:hidden;">
+                <canvas id="pressureChart" style="width:100%; height:180px; display:block;"></canvas>
+            </div>
+            <div style="display:flex; gap:16px; padding:10px 4px 0; align-items:center;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="width:20px; height:3px; border-radius:99px; background:#8DAA91;"></div>
+                    <span style="font-size:11px; font-weight:600; color:var(--text-mid);">Sistólica</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="width:20px; height:3px; border-radius:99px; background:#E5987D;"></div>
+                    <span style="font-size:11px; font-weight:600; color:var(--text-mid);">Diastólica</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrap">
             <h2 class="section-title">Histórico</h2>
             <div class="pressure-list" id="pressureList"></div>
         </div>
@@ -366,7 +383,115 @@
             closeModal();
             updateStats();
             renderList();
+            drawChart();
         }
+
+        function drawChart() {
+            const canvas = document.getElementById('pressureChart');
+            if (!canvas) return;
+            const dpr = window.devicePixelRatio || 1;
+            const W = canvas.offsetWidth || 320;
+            const H = 180;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            let list = load();
+            const mockData = [
+                { datetime: new Date(Date.now() - 7*24*60*60*1000).toISOString(), sys: 118, dia: 76 },
+                { datetime: new Date(Date.now() - 5*24*60*60*1000).toISOString(), sys: 122, dia: 78 },
+                { datetime: new Date(Date.now() - 3*24*60*60*1000).toISOString(), sys: 135, dia: 88 },
+                { datetime: new Date(Date.now() - 1*24*60*60*1000).toISOString(), sys: 128, dia: 82 },
+                { datetime: new Date().toISOString(), sys: 120, dia: 78 }
+            ];
+            const data = list.length >= 2 ? list : mockData;
+
+            const pad = { top: 18, right: 20, bottom: 32, left: 36 };
+            const cW = W - pad.left - pad.right;
+            const cH = H - pad.top - pad.bottom;
+
+            const allVals = data.flatMap(d => [d.sys, d.dia]);
+            const minV = Math.max(0, Math.min(...allVals) - 10);
+            const maxV = Math.max(...allVals) + 15;
+
+            const xScale = i => pad.left + (i / (data.length - 1)) * cW;
+            const yScale = v => pad.top + cH - ((v - minV) / (maxV - minV)) * cH;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, W, H);
+
+            // Grid
+            ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad.top + (cH / 4) * i;
+                ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+            }
+
+            // Hypertension limit 140
+            const limitY = yScale(140);
+            if (limitY > pad.top && limitY < pad.top + cH) {
+                ctx.save();
+                ctx.setLineDash([5, 4]);
+                ctx.strokeStyle = '#E15B5B';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(pad.left, limitY); ctx.lineTo(W - pad.right, limitY); ctx.stroke();
+                ctx.restore();
+                ctx.fillStyle = '#E15B5B';
+                ctx.font = '600 9px Inter, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText('limite hipertensão', W - pad.right - 2, limitY - 4);
+            }
+
+            // Draw line helper
+            function drawLine(key, color) {
+                ctx.save();
+                ctx.beginPath();
+                data.forEach((d, i) => {
+                    const x = xScale(i), y = yScale(d[key]);
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                ctx.restore();
+                data.forEach((d, i) => {
+                    ctx.beginPath();
+                    ctx.arc(xScale(i), yScale(d[key]), 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                });
+            }
+
+            drawLine('dia', '#E5987D');
+            drawLine('sys', '#8DAA91');
+
+            // X labels
+            ctx.fillStyle = '#A0AAB2';
+            ctx.font = '500 9px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            data.forEach((d, i) => {
+                const dt = new Date(d.datetime);
+                ctx.fillText(dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), xScale(i), H - 8);
+            });
+
+            // Y labels
+            ctx.textAlign = 'right';
+            [Math.round(minV), Math.round((minV + maxV) / 2), Math.round(maxV)].forEach(v => {
+                const y = yScale(v);
+                if (y > pad.top && y < pad.top + cH) ctx.fillText(v, pad.left - 4, y + 4);
+            });
+        }
+
+        requestAnimationFrame(drawChart);
+        window.addEventListener('resize', drawChart);
 
         updateStats();
         renderList();

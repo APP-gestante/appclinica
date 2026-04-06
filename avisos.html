@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Avisos da Clínica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4; --primary: #8DAA91; --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63; --accent: #E5987D;
+            --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
+            --white: #ffffff; --radius: 20px; --header-h: 70px;
+            --nav-h: 72px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; height: 100dvh;
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            overflow: hidden;
+        }
+
+        header {
+            position: absolute; top: 0; left: 0; right: 0;
+            height: var(--header-h); z-index: 100; background: var(--bg);
+            display: flex; align-items: flex-end;
+            padding: 0 20px 14px;
+            padding-top: max(env(safe-area-inset-top, 0px), 36px);
+            justify-content: space-between;
+        }
+        .header-back {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(141,170,145,0.12); border: none; cursor: pointer;
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .header-back:active { transform: scale(0.9); }
+        .header-back svg { width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+        .header-right { width: 38px; } /* spacer */
+
+        .scroll-area {
+            position: absolute; top: var(--header-h); left: 0; right: 0;
+            bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+            overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex; gap: 8px; padding: 16px 20px 0;
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-chip {
+            padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+            font-family: 'Inter', sans-serif; border: 1.5px solid var(--primary-light);
+            background: var(--white); color: var(--text-mid); cursor: pointer;
+            white-space: nowrap; transition: background 0.15s, color 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+        .filter-chip.active { background: var(--primary); border-color: var(--primary); color: var(--white); }
+
+        /* Notices list */
+        .notices-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+
+        .notice-card {
+            background: var(--white); border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            overflow: hidden; cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .notice-card:active { box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+
+        .notice-header {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 16px 16px 14px;
+        }
+        .notice-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .notice-meta { flex: 1; min-width: 0; }
+        .notice-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; gap: 8px; }
+        .notice-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.2; }
+        .notice-badges { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .badge-new {
+            font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+            background: rgba(94,126,99,0.15); color: var(--primary-dk); white-space: nowrap;
+        }
+        .notice-desc { font-size: 12.5px; color: var(--text-mid); line-height: 1.4; }
+        .notice-time { font-size: 11px; color: var(--text-inactive); margin-top: 6px; font-weight: 500; }
+
+        /* Accordion body */
+        .notice-body {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s;
+            padding: 0 16px; border-top: 1px solid transparent;
+        }
+        .notice-card.expanded .notice-body {
+            max-height: 300px; padding: 14px 16px 16px;
+            border-top-color: rgba(0,0,0,0.04);
+        }
+        .notice-body-text { font-size: 13.5px; color: var(--text-mid); line-height: 1.6; }
+
+        /* Chevron */
+        .notice-chevron {
+            width: 20px; height: 20px; flex-shrink: 0; transition: transform 0.3s;
+        }
+        .notice-card.expanded .notice-chevron { transform: rotate(180deg); }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+            background: var(--white); border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex; align-items: flex-start; justify-content: space-around;
+            padding-top: 12px;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            z-index: 200;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-inactive); }
+        .nav-item.active { color: var(--primary); }
+        .nav-item svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item-text { font-size: 10px; font-weight: 600; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .notice-card { animation: fadeUp 0.3s ease both; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="home.html" class="header-back" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="header-title">Avisos da Clínica</h1>
+        <div class="header-right"></div>
+    </header>
+
+    <div class="scroll-area">
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-chip active" onclick="filterNotices('Todos', this)">Todos</button>
+            <button class="filter-chip" onclick="filterNotices('Agenda', this)">📅 Agenda</button>
+            <button class="filter-chip" onclick="filterNotices('Saúde', this)">💉 Saúde</button>
+            <button class="filter-chip" onclick="filterNotices('Clínica', this)">🏥 Clínica</button>
+            <button class="filter-chip" onclick="filterNotices('Geral', this)">📢 Geral</button>
+        </div>
+
+        <div class="notices-list" id="noticesList"></div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="nav-item-text">Home</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="nav-item-text">Perfil</span>
+        </a>
+    </nav>
+
+    <script>
+        const notices = [
+            {
+                id: 1,
+                category: 'Agenda',
+                icon: '📅',
+                iconBg: 'rgba(229,152,125,0.15)',
+                title: 'Recesso de Carnaval',
+                desc: 'Clínica fechada dias 3 e 4 de março.',
+                time: 'há 1 dia',
+                isNew: true,
+                fullText: 'Informamos que a Clínica Gerar Vida estará fechada nos dias 3 e 4 de março de 2026 em virtude do feriado de Carnaval. Consultas agendadas para estes dias serão contatadas para remarcação. Em caso de urgência, ligue para nosso plantão: (11) 9 0000-0000.'
+            },
+            {
+                id: 2,
+                category: 'Saúde',
+                icon: '💉',
+                iconBg: 'rgba(141,170,145,0.15)',
+                title: 'Campanha de Vacinação',
+                desc: 'Vacina da gripe disponível na recepção.',
+                time: 'há 3 dias',
+                isNew: true,
+                fullText: 'A Clínica Gerar Vida está participando da Campanha Nacional de Vacinação contra a Gripe 2026. A vacina está disponível na recepção durante o horário de atendimento, sem agendamento prévio. Gestantes têm prioridade. Procure nossa enfermeira na chegada.'
+            },
+            {
+                id: 3,
+                category: 'Clínica',
+                icon: '🏥',
+                iconBg: 'rgba(197,213,200,0.4)',
+                title: 'Novo horário de atendimento',
+                desc: 'Sábados das 8h às 12h a partir de abril.',
+                time: 'há 1 semana',
+                isNew: false,
+                fullText: 'A partir de abril de 2026, a Clínica Gerar Vida amplia seu horário de atendimento aos sábados, das 8h às 12h. O agendamento para sábados já está disponível pelo app. Este horário contempla consultas de pré-natal e urgências obstétricas leves.'
+            },
+            {
+                id: 4,
+                category: 'Geral',
+                icon: '📢',
+                iconBg: 'rgba(141,170,145,0.12)',
+                title: 'Resultado de exames online',
+                desc: 'Exames ficam disponíveis em 48h no app.',
+                time: 'há 2 semanas',
+                isNew: false,
+                fullText: 'A partir de agora, todos os resultados de exames realizados em nossa clínica ficam disponíveis na seção "Exames" do app Gerar Vida em até 48 horas úteis após a coleta. Você receberá uma notificação assim que o resultado for liberado pela equipe médica.'
+            },
+            {
+                id: 5,
+                category: 'Geral',
+                icon: '📢',
+                iconBg: 'rgba(141,170,145,0.12)',
+                title: 'Bem-vinda ao Gerar Vida',
+                desc: 'Mensagem de boas-vindas da Dra. Ana Lima.',
+                time: 'há 1 mês',
+                isNew: false,
+                fullText: 'Olá, Maria! Sou a Dra. Ana Lima e estou muito feliz em acompanhar a sua gestação. O Gerar Vida foi criado para que você tenha todas as informações sobre sua saúde e do bebê na palma da mão. Qualquer dúvida, estou disponível pelo chat do app. Boa gestação! 💚'
+            }
+        ];
+
+        let currentFilter = 'Todos';
+
+        function renderNotices(filter) {
+            const list = document.getElementById('noticesList');
+            const filtered = filter === 'Todos' ? notices : notices.filter(n => n.category === filter);
+            list.innerHTML = '';
+            filtered.forEach((n, idx) => {
+                const card = document.createElement('div');
+                card.className = 'notice-card';
+                card.style.animationDelay = (idx * 0.06) + 's';
+                card.dataset.id = n.id;
+                card.innerHTML = `
+                    <div class="notice-header" onclick="toggleNotice(${n.id})">
+                        <div class="notice-icon" style="background:${n.iconBg};">${n.icon}</div>
+                        <div class="notice-meta">
+                            <div class="notice-top">
+                                <p class="notice-title">${n.title}</p>
+                                <div class="notice-badges">
+                                    ${n.isNew ? '<span class="badge-new">Novo</span>' : ''}
+                                    <svg class="notice-chevron" viewBox="0 0 24 24" stroke="var(--text-inactive)" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                            </div>
+                            <p class="notice-desc">${n.desc}</p>
+                            <p class="notice-time">${n.time}</p>
+                        </div>
+                    </div>
+                    <div class="notice-body">
+                        <p class="notice-body-text">${n.fullText}</p>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleNotice(id) {
+            const card = document.querySelector(`.notice-card[data-id="${id}"]`);
+            if (!card) return;
+            const isExpanded = card.classList.contains('expanded');
+            document.querySelectorAll('.notice-card.expanded').forEach(c => c.classList.remove('expanded'));
+            if (!isExpanded) card.classList.add('expanded');
+        }
+
+        function filterNotices(category, btn) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            renderNotices(category);
+        }
+
+        renderNotices('Todos');
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gerar Vida – Meu Prontuário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #F4F6F4; --primary: #8DAA91; --primary-light: #C5D5C8;
+            --primary-dk: #5E7E63; --accent: #E5987D; --dark-card: #301B28;
+            --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
+            --white: #ffffff; --radius: 20px; --header-h: 70px;
+            --red: #E15B5B; --yellow: #F5A623;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; height: 100dvh;
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            overflow: hidden;
+        }
+
+        header {
+            position: absolute; top: 0; left: 0; right: 0;
+            height: var(--header-h); z-index: 100; background: var(--bg);
+            display: flex; align-items: flex-end;
+            padding: 0 20px 14px;
+            padding-top: max(env(safe-area-inset-top, 0px), 36px);
+            justify-content: space-between;
+        }
+        .header-back {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(141,170,145,0.12); border: none; cursor: pointer;
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .header-back:active { transform: scale(0.9); }
+        .header-back svg { width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+        .header-right { width: 38px; }
+
+        .scroll-area {
+            position: absolute; top: var(--header-h); left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: max(env(safe-area-inset-bottom, 24px), 80px);
+        }
+        .scroll-area::-webkit-scrollbar { display: none; }
+
+        /* Summary card */
+        .summary-card {
+            margin: 20px 20px 0; background: var(--dark-card); border-radius: 20px;
+            padding: 22px; color: var(--white);
+            box-shadow: 0 8px 24px rgba(48,27,40,0.25);
+        }
+        .summary-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+        .summary-prontuario { font-size: 12px; opacity: 0.5; margin-bottom: 20px; font-weight: 500; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .summary-item {}
+        .summary-label { font-size: 10px; font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
+        .summary-value { font-size: 15px; font-weight: 700; }
+
+        /* Sections */
+        .section-wrap { padding: 24px 20px 0; }
+        .section-title { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; margin-bottom: 12px; }
+
+        /* Simple table-like list */
+        .data-card {
+            background: var(--white); border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05); overflow: hidden;
+        }
+        .data-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 13px 16px; gap: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .data-row:last-child { border-bottom: none; }
+        .data-row-label { font-size: 13px; font-weight: 600; color: var(--text-mid); }
+        .data-row-value { font-size: 14px; font-weight: 700; color: var(--text); text-align: right; }
+        .data-row-badge {
+            font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px;
+        }
+
+        /* Baby position */
+        .position-card {
+            background: var(--white); border-radius: 16px;
+            padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 14px;
+        }
+        .position-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: rgba(141,170,145,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .position-value { font-size: 20px; font-weight: 800; color: var(--text); }
+        .position-date { font-size: 12px; color: var(--text-inactive); margin-top: 2px; font-weight: 500; }
+
+        /* Intercorrências */
+        .intercorrencia-card {
+            background: var(--white); border-radius: 16px;
+            padding: 14px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 10px;
+        }
+        .interc-bar { width: 5px; border-radius: 99px; flex-shrink: 0; align-self: stretch; }
+        .interc-info { flex: 1; }
+        .interc-semana { font-size: 11px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .interc-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+        .interc-desc { font-size: 12px; color: var(--text-mid); margin-top: 3px; }
+        .interc-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; flex-shrink: 0; margin-top: 2px; }
+        .sev-atencao { background: rgba(245,166,35,0.15); color: #B87A00; }
+        .sev-baixo   { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        .bar-atencao { background: var(--yellow); }
+        .bar-baixo   { background: var(--primary); }
+
+        /* FAB */
+        .fab {
+            position: fixed; bottom: max(env(safe-area-inset-bottom, 24px), 28px); right: 24px;
+            width: 56px; height: 56px; border-radius: 50%; background: var(--accent);
+            border: none; cursor: pointer; color: white; font-size: 26px; font-weight: 300;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(229,152,125,0.45);
+            z-index: 300; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .fab:active { transform: scale(0.92); box-shadow: 0 4px 12px rgba(229,152,125,0.4); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            z-index: 400; display: flex; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-sheet {
+            width: 100%; background: var(--white); border-radius: 24px 24px 0 0;
+            padding: 12px 20px max(env(safe-area-inset-bottom, 24px), 28px);
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(0,0,0,0.12); margin: 0 auto 20px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
+        .input-label { font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; display: block; }
+        .input-field {
+            width: 100%; height: 56px; border-radius: 14px;
+            border: 1.5px solid var(--primary-light); background: var(--bg);
+            padding: 0 16px; font-size: 24px; font-weight: 800;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            outline: none; text-align: center; transition: border-color 0.2s;
+            margin-bottom: 6px;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        .input-hint { font-size: 11px; color: var(--text-inactive); margin-bottom: 16px; text-align: center; }
+        .modal-cta {
+            width: 100%; padding: 16px; border-radius: 14px; background: var(--accent);
+            color: white; font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif;
+            border: none; cursor: pointer; margin-top: 4px; transition: background 0.15s;
+        }
+        .modal-cta:active { background: #de886a; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="home.html" class="header-back" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <h1 class="header-title">Meu Prontuário</h1>
+        <div class="header-right"></div>
+    </header>
+
+    <div class="scroll-area">
+
+        <!-- SUMMARY CARD -->
+        <div class="summary-card">
+            <p class="summary-name">Maria da Silva</p>
+            <p class="summary-prontuario">Prontuário 2024-00847</p>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <p class="summary-label">DUM</p>
+                    <p class="summary-value">08/10/2025</p>
+                </div>
+                <div class="summary-item">
+                    <p class="summary-label">DPP</p>
+                    <p class="summary-value">15/07/2026</p>
+                </div>
+                <div class="summary-item">
+                    <p class="summary-label">Semana atual</p>
+                    <p class="summary-value">24ª semana</p>
+                </div>
+                <div class="summary-item">
+                    <p class="summary-label">Tipo sanguíneo</p>
+                    <p class="summary-value">A+</p>
+                </div>
+                <div class="summary-item" style="grid-column: 1/-1;">
+                    <p class="summary-label">Alergias conhecidas</p>
+                    <p class="summary-value" style="font-size:14px; opacity:0.7; font-weight:500;">Nenhuma registrada</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESO -->
+        <div class="section-wrap">
+            <h2 class="section-title">Evolução do Peso</h2>
+            <div class="data-card">
+                <div class="data-row">
+                    <span class="data-row-label">Semana 12</span>
+                    <span class="data-row-value">61,2 kg</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 16</span>
+                    <span class="data-row-value">62,5 kg</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 18</span>
+                    <span class="data-row-value">63,1 kg</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 20</span>
+                    <span class="data-row-value">64,4 kg</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 22</span>
+                    <span class="data-row-value">65,3 kg</span>
+                </div>
+                <div class="data-row" style="background:rgba(141,170,145,0.06);">
+                    <span class="data-row-label" style="color:var(--primary-dk); font-weight:700;">Semana 24 (atual)</span>
+                    <span class="data-row-value" style="color:var(--primary-dk);">66,0 kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALTURA UTERINA -->
+        <div class="section-wrap">
+            <h2 class="section-title">Altura Uterina</h2>
+            <div class="data-card">
+                <div class="data-row">
+                    <span class="data-row-label">Semana 16</span>
+                    <span class="data-row-value">16 cm</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 18</span>
+                    <span class="data-row-value">18 cm</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-row-label">Semana 20</span>
+                    <span class="data-row-value">20 cm</span>
+                </div>
+                <div class="data-row" style="background:rgba(141,170,145,0.06);">
+                    <span class="data-row-label" style="color:var(--primary-dk); font-weight:700;">Semana 24 (atual)</span>
+                    <span class="data-row-value" style="color:var(--primary-dk);">24 cm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- POSIÇÃO DO BEBÊ -->
+        <div class="section-wrap">
+            <h2 class="section-title">Posição do Bebê</h2>
+            <div class="position-card">
+                <div class="position-icon">👶</div>
+                <div>
+                    <p class="position-value">Cefálico</p>
+                    <p class="position-date">Registrado por Dra. Ana Lima em 20/03/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERCORRÊNCIAS -->
+        <div class="section-wrap">
+            <h2 class="section-title">Intercorrências</h2>
+
+            <div class="intercorrencia-card">
+                <div class="interc-bar bar-atencao"></div>
+                <div class="interc-info">
+                    <p class="interc-semana">Semana 18</p>
+                    <p class="interc-title">Pressão elevada — 138/90 mmHg</p>
+                    <p class="interc-desc">Monitorada e reavaliada na semana seguinte. Pressão normalizada após repouso.</p>
+                </div>
+                <span class="interc-badge sev-atencao">Atenção</span>
+            </div>
+
+            <div class="intercorrencia-card">
+                <div class="interc-bar bar-baixo"></div>
+                <div class="interc-info">
+                    <p class="interc-semana">Semana 14</p>
+                    <p class="interc-title">Náuseas intensas e enjoo matinal</p>
+                    <p class="interc-desc">Prescrita vitamina B6 e orientações dietéticas. Sintomas melhoraram na semana 16.</p>
+                </div>
+                <span class="interc-badge sev-baixo">Leve</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="openModal()" aria-label="Registrar peso">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    </button>
+
+    <!-- MODAL REGISTRAR PESO -->
+    <div class="modal-overlay" id="modal" onclick="handleOverlay(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <h2 class="modal-title">Registrar peso</h2>
+            <label class="input-label">Peso atual (kg)</label>
+            <input class="input-field" type="number" id="weightInput" placeholder="66,0" min="30" max="200" step="0.1" inputmode="decimal" />
+            <p class="input-hint">Semana 24 da gestação</p>
+            <button class="modal-cta" onclick="saveWeight()">Salvar</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() { document.getElementById('modal').classList.add('open'); }
+        function closeModal() { document.getElementById('modal').classList.remove('open'); }
+        function handleOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+        function saveWeight() {
+            closeModal();
+            document.getElementById('weightInput').value = '';
+        }
+    </script>
+</body>
+</html>
