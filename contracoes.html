@@ -139,7 +139,8 @@
             100% { opacity: 0;   transform: scale(1.15); }
         }
 
-        .btn-icon { font-size: 36px; line-height: 1; pointer-events: none; }
+        .btn-icon { display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .btn-icon svg { width: 34px; height: 34px; stroke: rgba(255,255,255,0.9); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .btn-timer {
             font-size: 28px; font-weight: 800;
             color: var(--white); letter-spacing: -0.5px;
@@ -271,7 +272,9 @@
                 onmouseleave="endContraction(event)"
                 ontouchstart="startContraction(event)"
                 ontouchend="endContraction(event)">
-                <span class="btn-icon" id="btnIcon">🤰</span>
+                <span class="btn-icon" id="btnIcon">
+                    <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </span>
                 <span class="btn-timer" id="btnTimer"></span>
                 <span class="btn-label" id="btnLabel">Segure</span>
             </button>
@@ -401,7 +404,7 @@
 
             const btn = document.getElementById('contractionBtn');
             btn.classList.add('active');
-            document.getElementById('btnIcon').textContent = '⏱';
+            document.getElementById('btnIcon').innerHTML = '<svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(255,255,255,0.9);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
             document.getElementById('btnLabel').textContent = 'Solte ao terminar';
             document.getElementById('btnHint').textContent = 'Contração em andamento...';
             document.getElementById('lastSaved').classList.remove('show');
@@ -436,7 +439,7 @@
             const btn = document.getElementById('contractionBtn');
             btn.classList.remove('active');
             document.getElementById('btnTimer').textContent = '';
-            document.getElementById('btnIcon').textContent = '🤰';
+            document.getElementById('btnIcon').innerHTML = '<svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(255,255,255,0.9);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
             document.getElementById('btnLabel').textContent = 'Segure';
             document.getElementById('btnHint').textContent = 'Segure o botão durante a contração\ne solte quando terminar';
 
