@@ -82,8 +82,9 @@ O app foi pivotado de SUS/UBS para **atendimento privado em clínicas**. O model
 - Barra de progresso da gravidez (24/42 semanas = 57.14%)
 - Carrossel de 2 cards: card escuro com feto 3D (link para feto3d.html) + card nutricional (abacate)
 - Swipe touch + drag mouse + dots indicadores + setas arrow-btn
-- Atalhos Rápidos (10 botões em scroll horizontal): Exames, Chat, Meus Meds, Consultas, Nomes, Contrações, Pressão, Glicose, Avisos, Prontuário
-- Botão Avisos tem badge vermelho com número de não lidos (hardcoded "2" em demo)
+- Atalhos Rápidos (8 botões em scroll horizontal): Exames, Chat, Meus Meds, Consultas, Nomes, Contrações, Pressão, Glicose
+- Card de Prontuário (link para prontuario.html) logo abaixo da upcoming-card, mesmo estilo com ícone verde
+- Seção "Avisos da Clínica" abaixo de Dicas da Semana: mostra 2 avisos mais recentes com badge "Novo" + link "Ver todos" → avisos.html
 - Card de próxima consulta (link para consultas.html)
 - Seção Dicas da Semana (4 cards horizontais)
 - Seção Dicas de Especialistas (5 video-cards horizontais com modal bottom sheet por vídeo)
