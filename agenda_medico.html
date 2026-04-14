@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Agenda — Gerar Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #F4F6F4;
+    --primary: #8DAA91;
+    --primary-light: #C5D5C8;
+    --primary-dk: #5E7E63;
+    --accent: #E5987D;
+    --dark-card: #301B28;
+    --text: #2D312E;
+    --text-secondary: #8DAA91;
+    --text-mid: #6B7471;
+    --text-inactive: #A0AAB2;
+    --white: #ffffff;
+    --radius: 20px;
+    --header-h: 118px;
+    --tabs-h: 50px;
+    --nav-h: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    background: var(--white);
+    padding-top: env(safe-area-inset-top);
+    box-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px 0;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.header-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--primary-dk);
+}
+
+/* Date nav */
+.date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 20px 12px;
+}
+
+.date-nav-btn {
+    width: 32px; height: 32px;
+    border: none; background: var(--bg);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-mid);
+    transition: background .15s;
+}
+.date-nav-btn:hover { background: var(--primary-light); }
+.date-nav-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.date-nav-label { text-align: center; min-width: 160px; }
+.date-nav-label .dn-day { font-size: 15px; font-weight: 700; color: var(--text); }
+.date-nav-label .dn-sub { font-size: 11px; color: var(--text-mid); margin-top: 1px; }
+
+.today-btn {
+    border: none;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* ── TABS ── */
+.tabs-wrap {
+    background: var(--white);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tabs-wrap::-webkit-scrollbar { display: none; }
+
+.tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 8px 16px 10px;
+}
+
+.tab-pill {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: none;
+    background: var(--bg);
+    color: var(--text-mid);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+}
+.tab-pill.active { background: var(--primary); color: var(--white); }
+
+/* ── SCROLL AREA ── */
+.scroll-area {
+    padding-top: calc(var(--header-h) + var(--tabs-h) + env(safe-area-inset-top));
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin: 20px 0 10px;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 4px;
+}
+.stat-box {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+}
+.stat-val { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-lbl { font-size: 10px; color: var(--text-mid); margin-top: 4px; }
+
+/* ── TIMELINE (Dia) ── */
+.timeline { display: flex; flex-direction: column; }
+
+.appt-row { display: flex; align-items: stretch; gap: 12px; }
+
+.appt-time-col {
+    width: 52px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 16px;
+}
+.appt-time { font-size: 12px; font-weight: 700; color: var(--text-mid); white-space: nowrap; line-height: 1; }
+.appt-line { width: 2px; flex: 1; background: var(--primary-light); margin-top: 6px; min-height: 20px; }
+.appt-row:last-child .appt-line { display: none; }
+
+.appt-card {
+    flex: 1;
+    background: var(--white);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .1s;
+}
+.appt-card:active { transform: scale(.98); }
+.appt-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--primary-light);
+    border-radius: 4px 0 0 4px;
+}
+.appt-card.done::before      { background: var(--text-inactive); }
+.appt-card.current::before   { background: var(--accent); }
+.appt-card.confirmed::before { background: var(--primary); }
+.appt-card.pending::before   { background: var(--primary-light); }
+.appt-card.done { opacity: .65; }
+
+.appt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.appt-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.appt-detail { font-size: 12px; color: var(--text-mid); margin-top: 3px; }
+
+.appt-badge {
+    padding: 3px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+}
+.badge-done      { background: #F0F0F0; color: var(--text-inactive); }
+.badge-current   { background: #FFF0EB; color: var(--accent); }
+.badge-confirmed { background: #EAF2EB; color: var(--primary-dk); }
+.badge-pending   { background: #F5F7F5; color: var(--text-mid); }
+
+.appt-meta { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+.appt-chip {
+    background: var(--bg); border-radius: 8px; padding: 3px 8px;
+    font-size: 11px; color: var(--text-mid);
+    display: flex; align-items: center; gap: 4px;
+}
+.appt-chip svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── WEEK TAB ── */
+.week-strip {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+    background: var(--white); border-radius: 16px; padding: 12px; margin-bottom: 4px;
+}
+.week-day {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 6px 2px; border-radius: 10px; cursor: pointer; transition: background .15s;
+}
+.week-day.today { background: var(--primary); }
+.wd-name { font-size: 10px; font-weight: 600; color: var(--text-inactive); text-transform: uppercase; }
+.week-day.today .wd-name { color: rgba(255,255,255,.7); }
+.wd-num { font-size: 15px; font-weight: 700; color: var(--text); position: relative; }
+.week-day.today .wd-num { color: var(--white); }
+.week-day.has-appt .wd-num::after {
+    content: ''; display: block;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); margin: 2px auto 0;
+}
+.week-day.today .wd-num::after { background: var(--white); }
+
+.week-day-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin: 14px 0 8px; display: flex; align-items: center; gap: 8px;
+}
+.week-day-title span {
+    background: var(--primary); color: var(--white);
+    font-size: 10px; padding: 2px 7px; border-radius: 20px;
+}
+
+.mini-appt {
+    background: var(--white); border-radius: 12px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.mini-appt-time { font-size: 12px; font-weight: 700; color: var(--primary-dk); width: 44px; flex-shrink: 0; }
+.mini-appt-info { flex: 1; }
+.mini-appt-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.mini-appt-type { font-size: 11px; color: var(--text-mid); }
+.mini-appt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-done      { background: var(--text-inactive); }
+.dot-current   { background: var(--accent); }
+.dot-confirmed { background: var(--primary); }
+.dot-pending   { background: var(--primary-light); }
+
+/* ── PARTOS TAB ── */
+.urgency-label {
+    display: flex; align-items: center; gap: 8px;
+    margin: 16px 0 8px;
+}
+.urgency-dot { width: 8px; height: 8px; border-radius: 50%; }
+.urg-urgente   { background: #E85D5D; }
+.urg-breve     { background: var(--accent); }
+.urg-programado{ background: var(--primary); }
+.urg-dist      { background: var(--primary-light); }
+.urgency-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.urgency-title.urgente    { color: #E85D5D; }
+.urgency-title.breve      { color: var(--accent); }
+.urgency-title.programado { color: var(--primary-dk); }
+.urgency-title.dist       { color: var(--text-inactive); }
+
+.parto-card {
+    background: var(--white); border-radius: 14px; padding: 14px;
+    margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer; transition: transform .1s;
+}
+.parto-card:active { transform: scale(.98); }
+
+.parto-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: var(--primary-dk); flex-shrink: 0;
+}
+
+.parto-info { flex: 1; min-width: 0; }
+.parto-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parto-sub  { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+.parto-footer { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.parto-chip { background: var(--bg); border-radius: 7px; padding: 3px 8px; font-size: 10px; color: var(--text-mid); }
+
+.parto-right { text-align: right; flex-shrink: 0; }
+.parto-days { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+.parto-days-lbl { font-size: 10px; color: var(--text-mid); margin-top: 1px; }
+.parto-days.urgente   { color: #E85D5D; }
+.parto-days.breve     { color: var(--accent); }
+.parto-days.programado{ color: var(--primary-dk); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+    text-align: center; padding: 48px 24px; color: var(--text-inactive);
+}
+.empty-state svg { width: 48px; height: 48px; stroke: var(--primary-light); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+.empty-state p { font-size: 14px; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -1px 0 rgba(0,0,0,.06);
+    z-index: 50;
+}
+.nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px 4px; gap: 4px; border: none; background: transparent; cursor: pointer;
+    text-decoration: none; color: var(--text-inactive); transition: color .15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nav-label { font-size: 10px; font-weight: 600; }
+.nav-item.active { color: var(--primary-dk); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-top">
+        <div class="header-title">Agenda</div>
+        <div class="header-avatar">AL</div>
+    </div>
+    <div class="date-nav">
+        <button class="date-nav-btn" onclick="shiftDay(-1)" aria-label="Dia anterior">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="date-nav-label">
+            <div class="dn-day" id="dn-day">—</div>
+            <div class="dn-sub" id="dn-sub">—</div>
+        </div>
+        <button class="date-nav-btn" onclick="shiftDay(1)" aria-label="Próximo dia">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="today-btn" onclick="goToday()">Hoje</button>
+    </div>
+    <div class="tabs-wrap">
+        <div class="tabs" role="tablist">
+            <button class="tab-pill active" onclick="switchTab('dia',this)" role="tab">Dia</button>
+            <button class="tab-pill" onclick="switchTab('semana',this)" role="tab">Semana</button>
+            <button class="tab-pill" onclick="switchTab('partos',this)" role="tab">Partos Previstos</button>
+        </div>
+    </div>
+</header>
+
+<!-- SCROLL AREA -->
+<main class="scroll-area">
+
+    <!-- ABA DIA -->
+    <div id="pane-dia" class="tab-pane active">
+        <div class="stats-row" id="stats-dia"></div>
+        <p class="section-label">Consultas do dia</p>
+        <div class="timeline" id="timeline-dia"></div>
+    </div>
+
+    <!-- ABA SEMANA -->
+    <div id="pane-semana" class="tab-pane">
+        <div class="week-strip" id="week-strip"></div>
+        <div id="week-list"></div>
+    </div>
+
+    <!-- ABA PARTOS -->
+    <div id="pane-partos" class="tab-pane">
+        <p class="section-label" style="margin-top:8px">Ordenado por proximidade do parto</p>
+        <div id="partos-list"></div>
+    </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" aria-label="Navegação médica">
+    <a href="dashboard_medico.html" class="nav-item" aria-label="Início">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="nav-label">Início</span>
+    </a>
+    <a href="medico_pacientes.html" class="nav-item" aria-label="Pacientes">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label">Pacientes</span>
+    </a>
+    <a href="agenda_medico.html" class="nav-item active" aria-label="Agenda">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="nav-label">Agenda</span>
+    </a>
+    <button class="nav-item" aria-label="Chat">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="nav-label">Chat</span>
+    </button>
+</nav>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+let cursorDate = new Date();
+cursorDate.setHours(0,0,0,0);
+
+const DAYS_PT   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MONTHS_PT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+// Mock consultations by day offset (0=today, 1=tomorrow, -1=yesterday, 2=day after tomorrow)
+function apptsByOffset(offset) {
+    const MAP = {
+        0: [
+            { hour:'08:00', name:'Carla Mendes',   prontuario:'2024-00833', semana:32, tipo:'Consulta de rotina',  status:'done',      initials:'CM' },
+            { hour:'09:00', name:'Fernanda Costa', prontuario:'2024-00901', semana:28, tipo:'Retorno — pressão',   status:'done',      initials:'FC' },
+            { hour:'10:00', name:'Ana Beatriz',    prontuario:'2024-00855', semana:36, tipo:'Consulta de rotina',  status:'current',   initials:'AB' },
+            { hour:'11:00', name:'Maria da Silva', prontuario:'2024-01498', semana:24, tipo:'Consulta de rotina',  status:'confirmed', initials:'MS' },
+            { hour:'14:00', name:'Juliana Rocha',  prontuario:'2024-00977', semana:39, tipo:'Avaliação pré-parto', status:'confirmed', initials:'JR' },
+            { hour:'15:00', name:'Patrícia Alves', prontuario:'2024-01012', semana:20, tipo:'1ª Consulta',         status:'pending',   initials:'PA' },
+            { hour:'16:00', name:'Renata Souza',   prontuario:'2024-01055', semana:34, tipo:'Resultado exames',    status:'pending',   initials:'RS' },
+        ],
+        1: [
+            { hour:'08:30', name:'Camila Torres',  prontuario:'2024-01120', semana:16, tipo:'1ª Consulta',         status:'confirmed', initials:'CT' },
+            { hour:'09:30', name:'Luisa Martins',  prontuario:'2024-01143', semana:30, tipo:'Consulta de rotina',  status:'confirmed', initials:'LM' },
+            { hour:'11:00', name:'Beatriz Lima',   prontuario:'2024-01201', semana:38, tipo:'Avaliação pré-parto', status:'confirmed', initials:'BL' },
+            { hour:'15:00', name:'Daniela Pires',  prontuario:'2024-01250', semana:22, tipo:'Retorno — glicose',   status:'pending',   initials:'DP' },
+        ],
+        '-1': [
+            { hour:'09:00', name:'Carla Mendes',   prontuario:'2024-00833', semana:32, tipo:'Consulta de rotina',  status:'done', initials:'CM' },
+            { hour:'10:00', name:'Sofia Nunes',    prontuario:'2024-01300', semana:26, tipo:'Consulta de rotina',  status:'done', initials:'SN' },
+            { hour:'14:00', name:'Patrícia Alves', prontuario:'2024-01012', semana:20, tipo:'1ª Consulta',         status:'done', initials:'PA' },
+        ],
+        2: [
+            { hour:'09:00', name:'Juliana Rocha',  prontuario:'2024-00977', semana:39, tipo:'Revisão pré-parto',   status:'confirmed', initials:'JR' },
+            { hour:'10:30', name:'Maria da Silva', prontuario:'2024-01498', semana:24, tipo:'Consulta de rotina',  status:'pending',   initials:'MS' },
+        ],
+    };
+    return MAP[String(offset)] || [];
+}
+
+// Patients with DPP for Partos tab
+const PARTOS_DATA = [
+    { name:'Juliana Rocha',   initials:'JR', prontuario:'2024-00977', semana:39, dpp:'2026-04-22', tipo:'Normal',    obs:'BCF 142 bpm · Cefálico' },
+    { name:'Beatriz Lima',    initials:'BL', prontuario:'2024-01201', semana:38, dpp:'2026-04-28', tipo:'Normal',    obs:'BCF 138 bpm · Cefálico' },
+    { name:'Ana Beatriz',     initials:'AB', prontuario:'2024-00855', semana:36, dpp:'2026-05-04', tipo:'Cesárea',   obs:'Programada · Gemelar' },
+    { name:'Renata Souza',    initials:'RS', prontuario:'2024-01055', semana:34, dpp:'2026-05-20', tipo:'A definir', obs:'Aguarda resultado' },
+    { name:'Carla Mendes',    initials:'CM', prontuario:'2024-00833', semana:32, dpp:'2026-06-02', tipo:'A definir', obs:'Aguarda USG morfológico' },
+    { name:'Luisa Martins',   initials:'LM', prontuario:'2024-01143', semana:30, dpp:'2026-06-10', tipo:'Normal',    obs:'Baixo risco' },
+    { name:'Fernanda Costa',  initials:'FC', prontuario:'2024-00901', semana:28, dpp:'2026-06-25', tipo:'Cesárea',   obs:'Cesárea anterior' },
+    { name:'Maria da Silva',  initials:'MS', prontuario:'2024-01498', semana:24, dpp:'2026-07-15', tipo:'Normal',    obs:'Baixo risco' },
+    { name:'Daniela Pires',   initials:'DP', prontuario:'2024-01250', semana:22, dpp:'2026-07-28', tipo:'A definir', obs:'Controle glicêmico' },
+    { name:'Patrícia Alves',  initials:'PA', prontuario:'2024-01012', semana:20, dpp:'2026-08-18', tipo:'A definir', obs:'Em investigação' },
+    { name:'Camila Torres',   initials:'CT', prontuario:'2024-01120', semana:16, dpp:'2026-09-02', tipo:'A definir', obs:'1º trimestre concluído' },
+];
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function todayMidnight() { const d = new Date(); d.setHours(0,0,0,0); return d; }
+function dayOffset(d)    { return Math.round((d - todayMidnight()) / 86400000); }
+function isToday(d)      { return dayOffset(d) === 0; }
+function daysUntil(iso)  {
+    const t = todayMidnight();
+    const x = new Date(iso + 'T00:00:00');
+    return Math.round((x - t) / 86400000);
+}
+
+function fmtDate(d) {
+    return `${DAYS_PT[d.getDay()]}, ${d.getDate()} de ${MONTHS_PT[d.getMonth()].charAt(0).toUpperCase()+MONTHS_PT[d.getMonth()].slice(1)}`;
+}
+function fmtDpp(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function statusLabel(s) {
+    return { done:'Realizada', current:'Em curso', confirmed:'Confirmada', pending:'Pendente' }[s] || s;
+}
+function statusBadge(s) {
+    return { done:'badge-done', current:'badge-current', confirmed:'badge-confirmed', pending:'badge-pending' }[s] || '';
+}
+
+function urgencyClass(days) {
+    if (days <= 14) return 'urgente';
+    if (days <= 28) return 'breve';
+    if (days <= 56) return 'programado';
+    return 'dist';
+}
+
+// ── RENDER: DIA ───────────────────────────────────────────────────────────────
+
+function renderDia() {
+    const off   = dayOffset(cursorDate);
+    const appts = apptsByOffset(off);
+    const done  = appts.filter(a => a.status === 'done').length;
+    const pend  = appts.filter(a => a.status === 'pending' || a.status === 'current').length;
+
+    document.getElementById('stats-dia').innerHTML =
+        '<div class="stat-box"><div class="stat-val">' + appts.length + '</div><div class="stat-lbl">Total</div></div>' +
+        '<div class="stat-box"><div class="stat-val" style="color:var(--primary-dk)">' + done + '</div><div class="stat-lbl">Realizadas</div></div>' +
+        '<div class="stat-box"><div class="stat-val" style="color:var(--accent)">' + pend + '</div><div class="stat-lbl">Pendentes</div></div>';
+
+    const tl = document.getElementById('timeline-dia');
+    if (appts.length === 0) {
+        tl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Nenhuma consulta para este dia</p></div>';
+        return;
+    }
+
+    tl.innerHTML = appts.map(function(a) {
+        return '<div class="appt-row">' +
+            '<div class="appt-time-col"><div class="appt-time">' + a.hour + '</div><div class="appt-line"></div></div>' +
+            '<div class="appt-card ' + a.status + '">' +
+                '<div class="appt-top">' +
+                    '<div><div class="appt-name">' + a.name + '</div><div class="appt-detail">' + a.tipo + '</div></div>' +
+                    '<div class="appt-badge ' + statusBadge(a.status) + '">' + statusLabel(a.status) + '</div>' +
+                '</div>' +
+                '<div class="appt-meta">' +
+                    '<div class="appt-chip"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Sem. ' + a.semana + '</div>' +
+                    '<div class="appt-chip"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' + a.prontuario + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+// ── RENDER: SEMANA ────────────────────────────────────────────────────────────
+
+function renderSemana() {
+    const today = todayMidnight();
+    const dow   = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    const days = Array.from({length:7}, function(_,i) { var d = new Date(monday); d.setDate(monday.getDate()+i); return d; });
+
+    document.getElementById('week-strip').innerHTML = days.map(function(d) {
+        var off   = dayOffset(d);
+        var appts = apptsByOffset(off);
+        var isT   = isToday(d);
+        return '<div class="week-day' + (isT?' today':'') + (appts.length?' has-appt':'') + '">' +
+            '<span class="wd-name">' + DAYS_PT[d.getDay()] + '</span>' +
+            '<span class="wd-num">' + d.getDate() + '</span>' +
+        '</div>';
+    }).join('');
+
+    var list = document.getElementById('week-list');
+    list.innerHTML = '';
+    days.forEach(function(d) {
+        var off   = dayOffset(d);
+        var appts = apptsByOffset(off);
+        if (!appts.length) return;
+        var label = isToday(d) ? 'Hoje' : fmtDate(d);
+        var g = document.createElement('div');
+        g.innerHTML =
+            '<div class="week-day-title">' + label + ' <span>' + appts.length + '</span></div>' +
+            appts.map(function(a) {
+                return '<div class="mini-appt">' +
+                    '<div class="mini-appt-time">' + a.hour + '</div>' +
+                    '<div class="mini-appt-info"><div class="mini-appt-name">' + a.name + '</div><div class="mini-appt-type">' + a.tipo + ' · Sem. ' + a.semana + '</div></div>' +
+                    '<div class="mini-appt-dot dot-' + a.status + '"></div>' +
+                '</div>';
+            }).join('');
+        list.appendChild(g);
+    });
+
+    if (!list.children.length) {
+        list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Nenhuma consulta nesta semana</p></div>';
+    }
+}
+
+// ── RENDER: PARTOS ────────────────────────────────────────────────────────────
+
+function renderPartos() {
+    var sorted = PARTOS_DATA.slice().sort(function(a,b){ return daysUntil(a.dpp)-daysUntil(b.dpp); });
+    var groups = {};
+    sorted.forEach(function(p) {
+        var days = daysUntil(p.dpp);
+        var cls  = urgencyClass(days);
+        if (!groups[cls]) groups[cls] = [];
+        groups[cls].push(Object.assign({}, p, {days:days}));
+    });
+
+    var ORDER = ['urgente','breve','programado','dist'];
+    var LABELS = {
+        urgente:   {title:'Urgente',    sub:'menos de 2 semanas', dot:'urg-urgente'},
+        breve:     {title:'Em breve',   sub:'até 4 semanas',      dot:'urg-breve'},
+        programado:{title:'Programado', sub:'até 8 semanas',      dot:'urg-programado'},
+        dist:      {title:'Distante',   sub:'mais de 8 semanas',  dot:'urg-dist'},
+    };
+
+    var container = document.getElementById('partos-list');
+    container.innerHTML = '';
+
+    ORDER.forEach(function(cls) {
+        if (!groups[cls]) return;
+        var l = LABELS[cls];
+        var sec = document.createElement('div');
+        sec.innerHTML =
+            '<div class="urgency-label">' +
+                '<div class="urgency-dot ' + l.dot + '"></div>' +
+                '<div class="urgency-title ' + cls + '">' + l.title + '</div>' +
+                '<span style="font-size:11px;color:var(--text-mid)">' + l.sub + '</span>' +
+            '</div>' +
+            groups[cls].map(function(p) {
+                var daysClass = p.days <= 14 ? 'urgente' : p.days <= 28 ? 'breve' : p.days <= 56 ? 'programado' : '';
+                return '<div class="parto-card">' +
+                    '<div class="parto-avatar">' + p.initials + '</div>' +
+                    '<div class="parto-info">' +
+                        '<div class="parto-name">' + p.name + '</div>' +
+                        '<div class="parto-sub">Sem. ' + p.semana + ' · DPP ' + fmtDpp(p.dpp) + '</div>' +
+                        '<div class="parto-footer">' +
+                            '<div class="parto-chip">' + p.tipo + '</div>' +
+                            '<div class="parto-chip">' + p.obs + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="parto-right">' +
+                        '<div class="parto-days ' + daysClass + '">' + p.days + '</div>' +
+                        '<div class="parto-days-lbl">dias</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        container.appendChild(sec);
+    });
+}
+
+// ── DATE NAV ─────────────────────────────────────────────────────────────────
+
+function updateDateLabel() {
+    var label = isToday(cursorDate) ? 'Hoje' : fmtDate(cursorDate);
+    var sub   = cursorDate.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    document.getElementById('dn-day').textContent = label;
+    document.getElementById('dn-sub').textContent = sub;
+}
+
+function shiftDay(delta) {
+    cursorDate.setDate(cursorDate.getDate() + delta);
+    updateDateLabel();
+    if (document.getElementById('pane-dia').classList.contains('active')) renderDia();
+}
+
+function goToday() {
+    cursorDate = new Date(); cursorDate.setHours(0,0,0,0);
+    updateDateLabel();
+    if (document.getElementById('pane-dia').classList.contains('active')) renderDia();
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-pill').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('pane-' + name).classList.add('active');
+    if (name === 'semana') renderSemana();
+    if (name === 'partos') renderPartos();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+updateDateLabel();
+renderDia();
+</script>
+</body>
+</html>

@@ -41,6 +41,7 @@ Aplicativo mobile-first de acompanhamento pré-natal chamado **Gerar Vida**, vol
 - dashboard_medico.html — Dashboard do médico (agenda + lista de pacientes)
 - medico_pacientes.html — Lista de pacientes do médico com busca e filtros
 - paciente_detalhe.html — Detalhe clínico de paciente (para o médico)
+- agenda_medico.html — Agenda do médico: aba Dia (timeline), aba Semana (strip semanal), aba Partos Previstos (por DPP)
 - dashboard_secretaria.html — Dashboard da secretaria (agenda + gestão)
 - assets/ — Imagens PNG (avatar_agente, avatar_maria, feto_realista, feto3d, fetus_3d, gestante_composicao, gestante_fundo_verde, avocado, onboarding_*)
 
