@@ -220,14 +220,26 @@ NOTA: index.html era o dashboard antes do pivô para login. O dashboard real da 
 - Cards de pacientes com semana gestacional, indicador de risco e próxima consulta
 - Bottom nav: Início, Pacientes, Agenda, Chat
 
-### paciente_detalhe.html — Detalhe de Paciente (Médico) (NOVO)
+### paciente_detalhe.html — Detalhe de Paciente (Médico)
 
-- Perfil completo: nome, semana gestacional, prontuário
-- Monitoramento clínico: últimas leituras de pressão e glicose
-- Histórico de consultas
-- Exames pendentes e resultados
-- Notas clínicas
-- Header com botão voltar
+2 abas: **Cartão** e **Sinais Vitais**. Tab ativa ao abrir: Cartão.
+
+**Aba Cartão** — prontuário digital completo, todos os campos editáveis pela médica, salvos em localStorage (key: `gv_cartao_1498`):
+- **Seção 1 — Identificação:** Nome do bebê, acompanhante, hospital, classificação de risco (select com borda verde/vermelha), altura + peso inicial + IMC calculado (badge automático), nº de fetos, paridade, fatores de risco, DPP, previsão de cesárea
+- **Seção 2 — Dados Clínicos:** Alergias, medicamentos, doenças crônicas, cirurgias anteriores, histórico ginecológico, antecedentes familiares, profissão, vícios e hábitos, observações
+- **Seção 3 — Exames Especiais:** Tipo sanguíneo (badge colorido), NIPT, TOTG/Curva glicêmica (3 inputs com validação de limite + badge Normal/Alterado), Estreptococo do Grupo B (toggle 3 estados)
+- **Seção 4 — Consultas:** Botão "+ Nova Consulta" expande formulário colapsável (data, IG calculada, PA, peso, BCF, AU, toque, movimentação, apresentação, edema, observações, conduta, CID). Histórico de 3 consultas mock colapsáveis com badge de risco por PA. Salvo em `gv_consultas_1498`
+- **Seção 5 — Ultrassonografias:** Botão "+ Novo USG" expande formulário (tipo, data, IG calculada, apresentação, placenta, LA, BCF, peso fetal, percentil, obs). 3 USGs mock colapsáveis. Salvo em `gv_usg_1498`
+- **Seção 6 — Exames Laboratoriais:** Botão "+ Nova Coleta" expande formulário (data, Hb/Ht, plaquetas, glicemia jejum, TSH, ferritina, vitamina D, B12, EAS, urocultura, sorologias com toggles Reagente/Não reagente para 10 tipos). 2 coletas mock colapsáveis. Salvo em `gv_exames_1498`
+- **Seção 7 — Vacinas:** Botão "+ Registrar Vacina" expande formulário (vacina select, data, dose, status toggle 3 estados, reações). Lista de 4 vacinas mock com badges de status. Salvo em `gv_vacinas_1498`
+- **Seção 8 — Notas da Médica:** Fundo amarelado + borda coral esquerda. Ícone de cadeado + aviso "Conteúdo privado". Textarea com auto-save debounce 800ms + timestamp. Salvo em `gv_notas_medica_1498`
+- Cada seção tem botão "Salvar alterações" com feedback visual (borda verde 1.5s)
+
+**Aba Sinais Vitais** — 3 sub-seções colapsáveis (clique no header para expandir/colapsar):
+- **Contrações** (fechada por padrão): stats row 4 colunas, botão circular press-and-hold com timer e animações ring-idle/ring-active, lista de contrações do dia, botão Limpar sessão
+- **Pressão Arterial** (aberta): stats row 4 colunas, alerta de hipertensão, lista com badges, botão inline "Registrar Pressão" → modal bottom sheet
+- **Glicose** (aberta): stats row 4 colunas, alerta glicose elevada, lista com badges, botão inline "Registrar Glicose" → modal bottom sheet
+- loadContracoes(), loadPressao(), loadGlicose() chamadas ao abrir a aba Sinais Vitais
 
 ### dashboard_secretaria.html — Dashboard da Secretaria
 
@@ -340,3 +352,10 @@ Atualizar CLAUDE.md sempre que:
 - Novos assets forem adicionados
 - Bugs com workarounds importantes forem corrigidos
 - A paleta de cores ou design system for modificado
+
+# gstack
+
+Use the `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+
+Available gstack skills:
+`/office-hours`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/design-consultation`, `/design-shotgun`, `/design-html`, `/review`, `/ship`, `/land-and-deploy`, `/canary`, `/benchmark`, `/browse`, `/connect-chrome`, `/qa`, `/qa-only`, `/design-review`, `/setup-browser-cookies`, `/setup-deploy`, `/retro`, `/investigate`, `/document-release`, `/codex`, `/cso`, `/autoplan`, `/plan-devex-review`, `/devex-review`, `/careful`, `/freeze`, `/guard`, `/unfreeze`, `/gstack-upgrade`, `/learn`
