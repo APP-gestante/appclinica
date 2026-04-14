@@ -225,6 +225,33 @@
 
         .ia-use-btn { width: 100%; padding: 14px; border-radius: 14px; background: var(--primary); color: white; font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
         .ia-hint { text-align: center; font-size: 12px; color: var(--text-inactive); font-weight: 500; }
+
+        /* ── ACTION BUTTONS (PDF + Prontuário) ── */
+        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .action-btn { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 12px 10px; border-radius: 14px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity .15s; }
+        .action-btn:active { opacity: .8; }
+        .action-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ab-pdf   { background: rgba(94,126,99,0.1); color: var(--primary-dk); }
+        .ab-pront { background: rgba(229,152,125,0.12); color: #b0533c; }
+
+        /* ── PRONTUÁRIO MODAL ── */
+        .pront-sections { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; border: 1.5px solid var(--primary-light); border-radius: 14px; overflow: hidden; }
+        .pront-check-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background .1s; }
+        .pront-check-row:last-child { border-bottom: none; }
+        .pront-check-row:active { background: var(--bg); }
+        .pront-check-row input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+        .pront-check-label { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+        .pront-check-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: rgba(229,152,125,0.15); color: #b0533c; }
+
+        .pront-output { background: var(--bg); border-radius: 14px; padding: 14px; font-size: 12px; font-family: 'Courier New', monospace; color: var(--text); line-height: 1.7; white-space: pre-wrap; max-height: 50dvh; overflow-y: auto; margin-bottom: 14px; scrollbar-width: none; }
+        .pront-output::-webkit-scrollbar { display: none; }
+        .copy-btn { width: 100%; padding: 14px; border-radius: 14px; background: var(--accent); color: white; font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
+        .copy-btn:active { opacity: .85; }
+        .copy-btn svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* ── TOAST ── */
+        .toast { position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--dark-card); color: white; font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 99px; z-index: 900; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -268,6 +295,18 @@
             <span class="pc-chip">Feto: Cefálico</span>
             <span class="pc-chip accent">1ª gestação</span>
         </div>
+    </div>
+
+    <!-- Botões de exportação -->
+    <div class="action-row">
+        <button class="action-btn ab-pdf" onclick="emitirPDF()">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Emitir PDF
+        </button>
+        <button class="action-btn ab-pront" onclick="openProntuario()">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Gerar Prontuário
+        </button>
     </div>
 
     <div id="alertsArea"></div>
@@ -693,6 +732,41 @@
         <button class="modal-cancel" onclick="stopIARecording()">Cancelar</button>
     </div>
 </div>
+
+<!-- MODAL: Gerar Prontuário -->
+<div class="modal-overlay" id="modal-prontuario" onclick="if(event.target===this)closeProntuario()">
+    <div class="modal-sheet" id="pront-sheet">
+        <div id="pront-step-select">
+            <p class="modal-title">Gerar Prontuário</p>
+            <p style="font-size:13px;color:var(--text-mid);margin:-8px 0 16px;">Selecione as seções para exportar</p>
+            <div class="pront-sections">
+                <label class="pront-check-row"><input type="checkbox" id="pc-paciente" checked><span class="pront-check-label">Paciente</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-cartao" checked><span class="pront-check-label">Cartão de Gestante</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-evolucao" checked><span class="pront-check-label">Evolução Gestacional</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-usg" checked><span class="pront-check-label">Ultrassonografias</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-exames" checked><span class="pront-check-label">Exames Laboratoriais</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-notas" checked><span class="pront-check-label">Notas Médicas<span style="display:inline-block;width:6px;"></span><span class="pront-check-badge">Privado</span></span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-info" checked><span class="pront-check-label">Informações Relevantes</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-vacinas" checked><span class="pront-check-label">Vacinas</span></label>
+                <label class="pront-check-row"><input type="checkbox" id="pc-conclusao" checked><span class="pront-check-label">Conclusão da Gestação</span></label>
+            </div>
+            <button class="modal-save" onclick="gerarProntuario()">Gerar</button>
+            <button class="modal-cancel" onclick="closeProntuario()">Cancelar</button>
+        </div>
+        <div id="pront-step-output" style="display:none;">
+            <p class="modal-title">Prontuário gerado</p>
+            <div class="pront-output" id="pront-text"></div>
+            <button class="copy-btn" onclick="copiarProntuario()">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copiar texto
+            </button>
+            <button class="modal-cancel" onclick="voltarSelecao()">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <nav>
     <a href="dashboard_medico.html" class="nav-item">
@@ -1303,6 +1377,238 @@ function usarDadosIA() {
 
     document.getElementById('modal-ia-consulta').classList.remove('open');
     openModal('modal-consulta');
+}
+
+/* ─── TOAST ─── */
+function showToast(msg, duration) {
+    duration = duration || 2500;
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, duration);
+}
+
+/* ─── EMITIR PDF (mock) ─── */
+function emitirPDF() {
+    showToast('📄 Gerando PDF do cartão gestante...');
+    setTimeout(function(){ showToast('✓ PDF pronto — funcionalidade em breve', 3000); }, 2600);
+}
+
+/* ─── GERAR PRONTUÁRIO ─── */
+function openProntuario() {
+    document.getElementById('pront-step-select').style.display = 'block';
+    document.getElementById('pront-step-output').style.display = 'none';
+    document.getElementById('modal-prontuario').classList.add('open');
+}
+function closeProntuario() {
+    document.getElementById('modal-prontuario').classList.remove('open');
+}
+function voltarSelecao() {
+    document.getElementById('pront-step-select').style.display = 'block';
+    document.getElementById('pront-step-output').style.display = 'none';
+}
+
+function gerarProntuario() {
+    var cartao = JSON.parse(localStorage.getItem('gv_cartao_1498') || '{}');
+    var consultas = JSON.parse(localStorage.getItem('gv_consultas_1498') || '[]');
+    var usgs = JSON.parse(localStorage.getItem('gv_usg_1498') || '[]');
+    var exames = JSON.parse(localStorage.getItem('gv_exames_1498') || '[]');
+    var vacinas = JSON.parse(localStorage.getItem('gv_vacinas_1498') || '[]');
+    var notas = localStorage.getItem('gv_notas_medica_1498') || '';
+
+    var todayISO = new Date().toISOString().split('T')[0];
+    var todayFmt = fmtDate(todayISO);
+
+    // Calcular IG hoje
+    var diff = Math.round((DPP - new Date()) / 86400000);
+    var igDays = 280 - diff;
+    var igW = Math.floor(igDays / 7), igD = igDays % 7;
+    var igHoje = igW + ' semanas' + (igD > 0 ? ' e ' + igD + ' dia' + (igD > 1 ? 's' : '') : '');
+
+    // Última consulta
+    var allConsultas = consultas.concat(MOCK_CONSULTAS);
+    var allUSG = usgs.concat(MOCK_USG);
+    var allLab = exames.concat(MOCK_LAB);
+    var allVac = vacinas.concat(MOCK_VACINAS);
+    var ultimaConsulta = allConsultas.length > 0 ? fmtDate(allConsultas[0].data) : '—';
+
+    var lines = [];
+
+    lines.push('PRONTUÁRIO DA PACIENTE');
+    lines.push('======================');
+    lines.push('');
+    lines.push('Emitido em: ' + todayFmt);
+    lines.push('Clínica Gerar Vida · Dra. Ana Lima (Obstetra)');
+    lines.push('');
+
+    if (document.getElementById('pc-paciente').checked) {
+        lines.push('DADOS DA PACIENTE');
+        lines.push('-----------------');
+        lines.push('Nome: Maria da Silva');
+        lines.push('Prontuário: 2024-01498');
+        lines.push('Idade: 28 anos');
+        lines.push('Tipo Sanguíneo: ' + (document.getElementById('v-tipo-sang').textContent || 'A+'));
+        lines.push('Última consulta: ' + ultimaConsulta);
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-cartao').checked) {
+        lines.push('CARTÃO DE GESTANTE');
+        lines.push('------------------');
+        lines.push('DUM: 06/09/2025');
+        lines.push('DPP: 06/06/2026');
+        lines.push('Idade Gestacional Hoje: ' + igHoje);
+        lines.push('Paridade: ' + (cartao.paridade || 'G1P0'));
+        lines.push('Número de Fetos: ' + (cartao.fetos || '1'));
+        lines.push('Apresentação Fetal: Cefálico');
+        lines.push('Hospital previsto: ' + (cartao.hospital || 'Hospital São Luiz'));
+        lines.push('Acompanhante: ' + (cartao.acompanhante || 'Carlos Silva'));
+        lines.push('Nome do bebê: ' + (cartao.nomebebe || 'Aurora'));
+        if (cartao.altura && cartao.peso) {
+            var h = parseFloat(cartao.altura) / 100;
+            var w = parseFloat(cartao.peso);
+            var imc = (h && w) ? (w / (h * h)).toFixed(1) : '—';
+            lines.push('Altura / Peso inicial: ' + cartao.altura + ' cm / ' + cartao.peso + ' kg / IMC ' + imc);
+        } else {
+            lines.push('Altura / Peso inicial: 165 cm / 62 kg / IMC 22,8');
+        }
+        lines.push('Fatores de risco: ' + (cartao.fatores || 'Nenhum'));
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-info').checked) {
+        lines.push('INFORMAÇÕES RELEVANTES');
+        lines.push('----------------------');
+        lines.push('Alergias: ' + (cartao.alergias || document.getElementById('v-alergias').textContent || 'Dipirona'));
+        lines.push('Medicamentos em uso: ' + (cartao.meds || 'Ácido fólico 5mg/dia · Sulfato ferroso 40mg/dia'));
+        lines.push('Doenças crônicas: ' + (cartao.doencas || 'Nenhuma'));
+        lines.push('Cirurgias anteriores: ' + (cartao.cirurgias || 'Nenhuma'));
+        lines.push('Antecedentes familiares: ' + (cartao.antecedentes || 'Mãe: HAS · Pai: DM2'));
+        lines.push('Profissão: ' + (cartao.profissao || 'Professora'));
+        lines.push('Vícios e hábitos: ' + (cartao.vicios || 'Não fuma · Sem álcool'));
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-evolucao').checked) {
+        lines.push('EVOLUÇÃO GESTACIONAL (CONSULTAS)');
+        lines.push('--------------------------------');
+        if (allConsultas.length === 0) {
+            lines.push('Nenhuma consulta registrada.');
+        } else {
+            allConsultas.forEach(function(c) {
+                lines.push('• ' + fmtDate(c.data) + ' - ' + c.ig +
+                    (c.pa ? ' | PA: ' + c.pa : '') +
+                    (c.peso ? ' | Peso: ' + c.peso + 'kg' : '') +
+                    (c.bcf ? ' | BCF: ' + c.bcf + 'bpm' : '') +
+                    (c.au ? ' | AU: ' + c.au + 'cm' : '') +
+                    (c.apres ? ' | ' + c.apres : ''));
+                if (c.conduta) lines.push('  Conduta: ' + c.conduta);
+                if (c.obs) lines.push('  Obs: ' + c.obs);
+            });
+        }
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-usg').checked) {
+        lines.push('EXAMES ULTRASSONOGRÁFICOS');
+        lines.push('-------------------------');
+        if (allUSG.length === 0) {
+            lines.push('Nenhum USG registrado.');
+        } else {
+            allUSG.forEach(function(u) {
+                lines.push('• ' + fmtDate(u.data) + ' - ' + u.tipo + ' (' + u.ig + ')');
+                if (u.apres) lines.push('  Apresentação: ' + u.apres);
+                if (u.placenta) lines.push('  Placenta: ' + u.placenta);
+                if (u.la) lines.push('  Líquido Amniótico: ' + u.la);
+                if (u.bcf) lines.push('  BCF: ' + u.bcf + ' bpm');
+                if (u.peso) lines.push('  Peso fetal: ' + u.peso + ' g' + (u.percentil ? ' · P' + u.percentil : ''));
+                if (u.obs) lines.push('  Obs: ' + u.obs);
+            });
+        }
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-exames').checked) {
+        lines.push('EXAMES LABORATORIAIS');
+        lines.push('--------------------');
+        if (allLab.length === 0) {
+            lines.push('Nenhuma coleta registrada.');
+        } else {
+            allLab.forEach(function(l) {
+                lines.push('• Coleta de ' + fmtDate(l.data) + (l.ig ? ' (' + l.ig + ')' : '') + (l.interp ? ' — ' + l.interp : ''));
+                if (l.hb)   lines.push('  Hb/Ht: ' + l.hb);
+                if (l.plaq) lines.push('  Plaquetas: ' + l.plaq + 'k');
+                if (l.glic) lines.push('  Glicemia jejum: ' + l.glic + ' mg/dL');
+                if (l.tsh)  lines.push('  TSH: ' + l.tsh + ' µUI/mL');
+                if (l.ferr) lines.push('  Ferritina: ' + l.ferr + ' ng/mL');
+                if (l.vitd) lines.push('  Vitamina D: ' + l.vitd + ' ng/mL');
+                if (l.sor) {
+                    var sorStr = Object.entries(l.sor).map(function(e){ return e[0]+': '+e[1]; }).join(' · ');
+                    lines.push('  Sorologias: ' + sorStr);
+                }
+            });
+        }
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-vacinas').checked) {
+        lines.push('VACINAS');
+        lines.push('-------');
+        if (allVac.length === 0) {
+            lines.push('Nenhuma vacina registrada.');
+        } else {
+            allVac.forEach(function(v) {
+                lines.push('• ' + v.nome + ' — ' + (v.dose || '') + (v.data ? ' · ' + fmtDate(v.data) : '') + ' [' + (v.status || '—') + ']');
+            });
+        }
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-notas').checked && notas.trim()) {
+        lines.push('NOTAS MÉDICAS (PRIVADO)');
+        lines.push('-----------------------');
+        lines.push(notas.trim());
+        lines.push('');
+    }
+
+    if (document.getElementById('pc-conclusao').checked) {
+        lines.push('CONCLUSÃO DA GESTAÇÃO');
+        lines.push('---------------------');
+        lines.push('DPP: 06/06/2026');
+        lines.push('Idade Gestacional Atual: ' + igHoje);
+        lines.push('Tipo de parto previsto: ' + (cartao.cesarea ? 'Cesárea em ' + fmtDate(cartao.cesarea) : 'Parto normal (a definir)'));
+        lines.push('Classificação de risco: ' + (cartao.risco || 'Habitual'));
+        lines.push('');
+    }
+
+    lines.push('──────────────────────────────');
+    lines.push('Documento gerado por Gerar Vida');
+    lines.push('Dra. Ana Lima · CRM 12345 · ' + todayFmt);
+
+    var texto = lines.join('\n');
+    document.getElementById('pront-text').textContent = texto;
+    document.getElementById('pront-step-select').style.display = 'none';
+    document.getElementById('pront-step-output').style.display = 'block';
+    // Scroll to top
+    document.getElementById('pront-sheet').scrollTop = 0;
+}
+
+function copiarProntuario() {
+    var texto = document.getElementById('pront-text').textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(function(){
+            showToast('✓ Texto copiado para a área de transferência');
+        });
+    } else {
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('✓ Texto copiado!');
+    }
 }
 
 /* ─── INIT ─── */
