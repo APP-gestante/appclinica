@@ -14,137 +14,104 @@
             --text: #2D312E; --text-mid: #6B7471; --text-inactive: #A0AAB2;
             --white: #ffffff; --radius: 20px;
             --red: #E15B5B; --yellow: #F5A623;
-            --header-h: 70px; --tabs-h: 52px; --nav-h: 72px;
+            --header-h: 70px; --tabs-h: 50px; --nav-h: 72px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; height: 100dvh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        header {
-            position: absolute; top: 0; left: 0; right: 0; height: var(--header-h);
-            z-index: 100; background: var(--white);
-            display: flex; align-items: flex-end; padding: 0 20px 12px;
-            padding-top: max(env(safe-area-inset-top, 0px), 36px);
-            gap: 12px; box-shadow: 0 1px 0 rgba(0,0,0,0.07);
-        }
-        .header-back { width: 36px; height: 36px; border-radius: 11px; background: rgba(141,170,145,0.12); border: none; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s, transform 0.15s; }
-        .header-back:active { transform: scale(0.9); }
-        .header-back svg { width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-        .header-center { flex: 1; }
-        .header-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
-        .header-sub { font-size: 12px; color: var(--text-mid); margin-top: 1px; font-weight: 500; }
-        .risk-chip { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 99px; flex-shrink: 0; }
-        .risk-low { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
+        /* HEADER */
+        header { position: absolute; top: 0; left: 0; right: 0; height: var(--header-h); z-index: 100; background: var(--dark-card); display: flex; align-items: flex-end; padding: 0 20px 12px; padding-top: max(env(safe-area-inset-top,0px),36px); gap: 12px; }
+        .header-back { width: 36px; height: 36px; border-radius: 11px; background: rgba(255,255,255,0.1); border: none; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-back svg { width: 18px; height: 18px; stroke: rgba(255,255,255,0.8); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .header-info { flex: 1; }
+        .header-name { font-size: 17px; font-weight: 800; color: white; letter-spacing: -0.3px; }
+        .header-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; font-weight: 500; }
+        .risk-chip { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 99px; flex-shrink: 0; background: rgba(141,170,145,0.3); color: #b8d8bc; }
+        .risk-chip.high { background: rgba(225,91,91,0.3); color: #f4a5a5; }
 
-        .tabs-wrap { position: absolute; top: var(--header-h); left: 0; right: 0; z-index: 90; background: var(--white); padding: 8px 20px 10px; border-bottom: 1px solid rgba(0,0,0,0.06); }
-        .tab-pill-container { display: flex; background: var(--bg); border-radius: 99px; padding: 3px; gap: 2px; }
-        .tab-btn { flex: 1; padding: 8px 0; border: none; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s; background: transparent; color: var(--text-inactive); font-family: 'Inter', sans-serif; }
-        .tab-btn.active { background: var(--white); color: var(--text); box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+        /* TABS */
+        .tabs-wrap { position: absolute; top: var(--header-h); left: 0; right: 0; z-index: 90; background: var(--white); border-bottom: 1px solid rgba(0,0,0,0.07); height: var(--tabs-h); display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; padding: 0 16px; gap: 4px; scrollbar-width: none; }
+        .tabs-wrap::-webkit-scrollbar { display: none; }
+        .tab-btn { flex-shrink: 0; padding: 7px 16px; border: none; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s; background: transparent; color: var(--text-inactive); font-family: 'Inter', sans-serif; white-space: nowrap; }
+        .tab-btn.active { background: var(--primary); color: var(--white); }
 
+        /* SCROLL */
         .main-scroll { position: absolute; top: calc(var(--header-h) + var(--tabs-h)); bottom: var(--nav-h); left: 0; right: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 16px 16px 24px; }
         .main-scroll::-webkit-scrollbar { display: none; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* FORM SECTIONS */
-        .form-section { background: var(--white); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: border-color 0.3s; border: 1.5px solid transparent; }
-        .form-section.saved { border-color: var(--primary); }
-        .section-title { font-size: 11px; font-weight: 800; color: var(--primary-dk); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1.5px solid var(--primary-light); }
-        .section-subheader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        /* INFO CARD (read view) */
+        .info-card { background: var(--white); border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .ic-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1.5px solid var(--bg); }
+        .ic-title { font-size: 11px; font-weight: 800; color: var(--primary-dk); text-transform: uppercase; letter-spacing: 1px; }
+        .ic-edit-btn { display: flex; align-items: center; gap: 5px; background: rgba(141,170,145,0.12); border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--primary-dk); cursor: pointer; font-family: 'Inter', sans-serif; }
+        .ic-edit-btn svg { width: 13px; height: 13px; stroke: var(--primary-dk); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ic-row { display: flex; align-items: baseline; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.04); gap: 12px; }
+        .ic-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .ic-key { font-size: 12px; color: var(--text-inactive); font-weight: 600; flex-shrink: 0; }
+        .ic-val { font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
+        .ic-val.accent { color: var(--accent); }
+        .ic-val.green { color: var(--primary-dk); }
 
-        /* GRID */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .field-group:last-child { margin-bottom: 0; }
+        /* PATIENT SUMMARY CARD */
+        .patient-card { background: var(--dark-card); border-radius: 20px; padding: 18px; margin-bottom: 12px; }
+        .pc-row { display: flex; align-items: center; gap: 14px; }
+        .pc-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; color: white; flex-shrink: 0; }
+        .pc-name { font-size: 16px; font-weight: 800; color: white; }
+        .pc-meta { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+        .pc-chips { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .pc-chip { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 99px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }
+        .pc-chip.accent { background: rgba(229,152,125,0.25); color: #f4b9a5; }
 
-        /* INPUTS */
-        .field-label { font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.5px; }
-        .field-input { background: var(--white); border: 1.5px solid var(--primary-light); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text); width: 100%; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
-        .field-input:focus { border-color: var(--primary); }
-        .field-input[readonly] { background: var(--bg); color: var(--text-mid); cursor: default; }
-        .field-input.border-red { border-color: #E5987D !important; }
-        .field-input.border-green { border-color: var(--primary) !important; }
-        textarea.field-input { min-height: 80px; resize: none; }
-        select.field-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238DAA91' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
-        .input-with-unit { position: relative; }
-        .input-with-unit .field-input { padding-right: 44px; }
-        .input-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-inactive); font-weight: 600; pointer-events: none; }
+        /* ALERT */
+        .alert-card { background: rgba(229,152,125,0.12); border-radius: 14px; padding: 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; }
+        .alert-card svg { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+        .alert-text { font-size: 12.5px; font-weight: 600; color: var(--accent); line-height: 1.5; }
 
-        /* TOGGLES */
-        .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .toggle-btn { border: 1.5px solid var(--primary-light); border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--text-mid); background: transparent; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-        .toggle-btn.active-green { background: var(--primary); border-color: var(--primary); color: var(--white); }
-        .toggle-btn.active-gray  { background: var(--text-inactive); border-color: var(--text-inactive); color: var(--white); }
-        .toggle-btn.active-red   { background: #E15B5B; border-color: #E15B5B; color: var(--white); }
-
-        /* BADGES */
-        .badge { display: inline-block; border-radius: 99px; padding: 4px 12px; font-size: 12px; font-weight: 700; }
+        /* BADGE */
+        .badge { display: inline-block; border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
         .badge-green  { background: rgba(141,170,145,0.15); color: var(--primary-dk); }
         .badge-red    { background: rgba(229,152,125,0.15); color: #c0584a; }
         .badge-gray   { background: #F4F6F4; color: var(--text-inactive); }
         .badge-yellow { background: rgba(239,159,39,0.15); color: #8a5e00; }
 
-        /* BUTTONS */
-        .save-btn { width: 100%; padding: 14px; border-radius: 14px; background: var(--primary); color: white; font-size: 15px; font-weight: 700; border: none; margin-top: 16px; cursor: pointer; transition: background 0.2s; font-family: 'Inter', sans-serif; }
-        .save-btn:active { background: var(--primary-dk); }
+        /* ADD BUTTON */
+        .add-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .add-row-title { font-size: 13px; font-weight: 700; color: var(--text-mid); }
         .add-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: white; border: none; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.15s; }
         .add-btn:active { opacity: 0.8; }
-        .cancel-btn { width: 100%; padding: 10px; border-radius: 14px; background: transparent; color: var(--text-inactive); font-size: 14px; font-weight: 600; border: none; cursor: pointer; margin-top: 8px; font-family: 'Inter', sans-serif; }
-        .inline-add-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; border-radius: 12px; background: rgba(229,152,125,0.12); border: 1.5px dashed var(--accent); color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 14px; transition: background 0.15s; }
-        .inline-add-btn:active { background: rgba(229,152,125,0.2); }
-
-        /* COLLAPSIBLE FORM */
-        .collapsible-form { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; opacity: 0; }
-        .collapsible-form.open { max-height: 2400px; opacity: 1; }
-        .collapsible-inner { background: rgba(141,170,145,0.06); border-radius: 16px; padding: 16px; border: 1px dashed var(--primary-light); margin-top: 12px; }
 
         /* HISTORY CARDS */
-        .history-card { background: var(--bg); border-radius: 14px; margin-top: 10px; overflow: hidden; }
-        .history-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; cursor: pointer; user-select: none; gap: 8px; }
+        .history-card { background: var(--white); border-radius: 16px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .history-header { display: flex; align-items: center; padding: 14px 16px; cursor: pointer; user-select: none; gap: 10px; }
         .history-header-left { flex: 1; min-width: 0; }
-        .history-date { font-size: 13px; font-weight: 700; color: var(--text); }
-        .history-meta { font-size: 11.5px; color: var(--text-mid); margin-top: 2px; }
+        .history-date { font-size: 14px; font-weight: 700; color: var(--text); }
+        .history-meta { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
         .history-chevron { width: 18px; height: 18px; stroke: var(--text-inactive); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s; flex-shrink: 0; }
         .history-card.open .history-chevron { transform: rotate(180deg); }
-        .history-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; padding: 0 14px; }
-        .history-card.open .history-body { max-height: 600px; padding: 0 14px 14px; }
-        .history-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-        .history-field { font-size: 12px; }
-        .history-key { color: var(--text-inactive); font-weight: 600; margin-bottom: 2px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.4px; }
-        .history-val { color: var(--text); font-weight: 700; font-size: 13px; }
-        .history-full { grid-column: 1/-1; }
+        .history-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .history-card.open .history-body { max-height: 800px; }
+        .history-body-inner { padding: 0 16px 16px; border-top: 1px solid var(--bg); }
+        .hb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .hb-field { }
+        .hb-key { font-size: 10px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+        .hb-val { font-size: 13px; font-weight: 700; color: var(--text); }
+        .hb-full { grid-column: 1/-1; }
+        .hb-divider { grid-column: 1/-1; height: 1px; background: var(--bg); margin: 4px 0; }
 
-        /* VACCINE */
-        .vaccine-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .vaccine-row:last-child { border-bottom: none; }
-        .vaccine-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
-        .vaccine-info { font-size: 11px; color: var(--text-mid); }
+        /* EMPTY */
+        .empty-mini { text-align: center; padding: 32px 20px; color: var(--text-inactive); font-size: 13px; font-weight: 500; }
+        .empty-mini svg { display: block; margin: 0 auto 10px; opacity: 0.3; }
 
-        /* NOTES */
-        .notes-section { background: rgba(239,159,39,0.05); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; border-left: 3px solid var(--accent); }
-        .notes-private-label { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-        .notes-private-label span { font-size: 11px; color: var(--text-inactive); font-weight: 600; }
-        .notes-autosave { font-size: 11px; color: var(--text-inactive); margin-top: 8px; }
-
-        /* SINAIS VITAIS */
-        .sv-section { margin-bottom: 10px; }
-        .sv-header { background: var(--white); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); user-select: none; }
-        .sv-icon { width: 20px; height: 20px; flex-shrink: 0; }
-        .sv-title { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
-        .sv-chevron { width: 18px; height: 18px; stroke: var(--text-inactive); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s; flex-shrink: 0; }
-        .sv-section.open .sv-chevron { transform: rotate(180deg); }
-        .sv-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-        .sv-section.open .sv-body { max-height: 3000px; }
-        .sv-content { padding: 12px 0 4px; }
-
-        /* DATA ROWS */
-        .data-stats { display: flex; gap: 8px; margin-bottom: 14px; }
-        .ds-box { flex: 1; background: var(--bg); border-radius: 12px; padding: 10px 8px; text-align: center; }
-        .ds-num { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
-        .ds-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 3px; }
+        /* DATA ROWS (sinais vitais) */
+        .sv-stats { display: flex; gap: 8px; margin-bottom: 14px; }
+        .sv-box { flex: 1; background: var(--white); border-radius: 14px; padding: 12px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .sv-num { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
+        .sv-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); margin-top: 3px; }
         .data-row { background: var(--white); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .dr-bar { width: 4px; border-radius: 99px; flex-shrink: 0; align-self: stretch; min-height: 28px; }
-        .dr-main { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1; }
+        .dr-main { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1; }
         .dr-main span { font-size: 11px; font-weight: 500; color: var(--text-mid); }
         .dr-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
         .dr-status { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 99px; flex-shrink: 0; white-space: nowrap; margin-left: auto; }
@@ -156,33 +123,59 @@
         .c-pre    { background: var(--yellow); }
         .c-high   { background: var(--red); }
         .c-low    { background: var(--primary-light); }
-
-        /* ALERT */
-        .alert-card { background: rgba(229,152,125,0.12); border-radius: 14px; padding: 14px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 10px; }
-        .alert-card svg { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
-        .alert-text { font-size: 12.5px; font-weight: 600; color: var(--accent); line-height: 1.5; }
-        .empty-mini { text-align: center; padding: 20px; color: var(--text-inactive); font-size: 12.5px; font-weight: 500; }
-
-        /* CONTRACTION BUTTON */
-        .contrac-ring-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto 20px; }
-        .contrac-ring { position: absolute; border-radius: 50%; border: 2px solid var(--primary); opacity: 0; }
-        .contrac-ring:nth-child(1) { inset: -12px; animation: ring-idle 2.5s ease-out infinite; }
-        .contrac-ring:nth-child(2) { inset: -24px; animation: ring-idle 2.5s ease-out 0.5s infinite; }
-        @keyframes ring-idle { 0%{opacity:0.5;transform:scale(0.95)} 100%{opacity:0;transform:scale(1.08)} }
-        @keyframes ring-active { 0%{opacity:0.6;transform:scale(0.93)} 100%{opacity:0;transform:scale(1.15)} }
-        .contrac-btn { position: absolute; inset: 0; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-family: 'Inter', sans-serif; transition: background 0.2s; touch-action: none; user-select: none; }
-        .contrac-btn-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
-        .contrac-btn-timer { font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px; }
-        .contrac-hint { text-align: center; font-size: 12.5px; color: var(--text-mid); font-weight: 500; margin-bottom: 14px; }
-        .contrac-last { text-align: center; font-size: 12px; color: var(--primary-dk); font-weight: 600; margin-bottom: 16px; }
+        .sv-section-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 10px; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+        .sv-section-title::after { content: ''; flex: 1; height: 1px; background: var(--primary-light); }
 
         /* MODAL */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: flex-end; }
         .modal-overlay.open { display: flex; }
-        .modal-sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 24px 20px; padding-bottom: max(24px, env(safe-area-inset-bottom)); width: 100%; animation: slideUp 0.28s ease; }
+        .modal-sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 24px 20px; padding-bottom: max(24px, env(safe-area-inset-bottom)); width: 100%; animation: slideUp 0.28s ease; max-height: 85dvh; overflow-y: auto; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-title { font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+
+        /* FORM FIELDS (modal) */
+        .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .field-label { font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.5px; }
+        .field-input { background: var(--white); border: 1.5px solid var(--primary-light); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text); width: 100%; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+        .field-input:focus { border-color: var(--primary); }
+        textarea.field-input { min-height: 80px; resize: none; }
+        select.field-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238DAA91' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .input-with-unit { position: relative; }
+        .input-with-unit .field-input { padding-right: 44px; }
+        .input-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-inactive); font-weight: 600; pointer-events: none; }
         .modal-save { width: 100%; padding: 15px; border-radius: 14px; background: var(--primary); color: white; font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 16px; }
+        .modal-cancel { width: 100%; padding: 10px; border-radius: 14px; background: transparent; color: var(--text-inactive); font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 6px; }
+
+        /* TOGGLE BUTTONS */
+        .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .toggle-btn { border: 1.5px solid var(--primary-light); border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--text-mid); background: transparent; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+        .toggle-btn.active-green { background: var(--primary); border-color: var(--primary); color: white; }
+        .toggle-btn.active-gray  { background: var(--text-inactive); border-color: var(--text-inactive); color: white; }
+        .toggle-btn.active-red   { background: #E15B5B; border-color: #E15B5B; color: white; }
+
+        /* SOROLOGIA */
+        .sor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .sor-item { display: flex; flex-direction: column; gap: 6px; }
+        .sor-label { font-size: 12px; font-weight: 600; color: var(--text-mid); }
+
+        /* VACCINE ROW */
+        .vaccine-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--bg); }
+        .vaccine-row:last-child { border-bottom: none; }
+        .vaccine-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--text); }
+        .vaccine-info { font-size: 11.5px; color: var(--text-mid); margin-top: 2px; }
+
+        /* NOTES */
+        .notes-card { background: rgba(239,159,39,0.06); border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--accent); }
+        .notes-private { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 11px; color: var(--text-inactive); font-weight: 600; }
+        .notes-autosave { font-size: 11px; color: var(--text-inactive); margin-top: 8px; }
+
+        /* INLINE SAVE */
+        .inline-save-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; border-radius: 12px; background: var(--primary); color: white; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px; }
+
+        /* SINAIS VITAIS ADD BTN */
+        .sv-add-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 12px; border-radius: 12px; background: rgba(229,152,125,0.1); border: 1.5px dashed var(--accent); color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px; }
 
         /* NAV */
         nav { position: absolute; bottom: 0; left: 0; right: 0; height: var(--nav-h); background: var(--white); border-top: 1px solid rgba(0,0,0,0.07); display: flex; align-items: flex-start; padding-top: 10px; z-index: 200; }
@@ -193,727 +186,441 @@
         .nav-label { font-size: 9.5px; font-weight: 600; color: var(--text-inactive); }
         .nav-item.active .nav-label { color: var(--primary); }
 
-        .sub-label { font-size: 11px; color: var(--text-inactive); margin-bottom: 8px; }
-        .sorologia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .sorologia-item { display: flex; flex-direction: column; gap: 6px; }
-        .sorologia-label { font-size: 12px; font-weight: 600; color: var(--text-mid); }
-
         @media (max-width: 380px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="dashboard_medico.html" class="header-back" aria-label="Voltar">
+    <a href="dashboard_medico.html" class="header-back">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
-    <div class="header-center">
+    <div class="header-info">
         <p class="header-name">Maria da Silva</p>
-        <p class="header-sub">Semana 32 · DPP: 06 Jun 2026 · Prontuário 1498</p>
+        <p class="header-sub">Sem. 32 · DPP: 06 Jun 2026 · Prontuário 1498</p>
     </div>
-    <span class="risk-chip risk-low">Habitual</span>
+    <span class="risk-chip">Habitual</span>
 </header>
 
-<div class="tabs-wrap">
-    <div class="tab-pill-container" role="tablist">
-        <button class="tab-btn active" onclick="switchTab('cartao')" id="tab-cartao">Cartão</button>
-        <button class="tab-btn" onclick="switchTab('sinais_vitais')" id="tab-sinais_vitais">Sinais Vitais</button>
-    </div>
+<div class="tabs-wrap" role="tablist">
+    <button class="tab-btn active" onclick="switchTab('geral')"    id="tab-geral">Geral</button>
+    <button class="tab-btn"        onclick="switchTab('consultas')" id="tab-consultas">Consultas</button>
+    <button class="tab-btn"        onclick="switchTab('usg')"       id="tab-usg">USG</button>
+    <button class="tab-btn"        onclick="switchTab('exames')"    id="tab-exames">Exames</button>
+    <button class="tab-btn"        onclick="switchTab('vacinas')"   id="tab-vacinas">Vacinas</button>
+    <button class="tab-btn"        onclick="switchTab('sinais')"    id="tab-sinais">Sinais Vitais</button>
 </div>
 
 <main class="main-scroll">
 
-<!-- ABA CARTÃO -->
-<div class="tab-panel active" id="panel-cartao">
+<!-- ══ GERAL ══ -->
+<div class="tab-panel active" id="panel-geral">
 
-    <!-- SEÇÃO 1: IDENTIFICAÇÃO -->
-    <div class="form-section" id="sec-identificacao">
-        <p class="section-title">Identificação</p>
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="field-label">Nome do Bebê</label>
-                <input class="field-input" id="f-nomebebe" type="text" placeholder="Ex: Aurora, João..." value="Aurora">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Acompanhante</label>
-                <input class="field-input" id="f-acompanhante" type="text" placeholder="Ex: Carlos Silva (marido)" value="Carlos Silva">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Hospital de Preferência</label>
-                <input class="field-input" id="f-hospital" type="text" placeholder="Ex: Hospital São Luiz" value="Hospital São Luiz">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Classificação de Risco</label>
-                <select class="field-input" id="f-risco" onchange="onRiscoChange(this)">
-                    <option value="">(selecione)</option>
-                    <option value="Habitual" selected>Habitual</option>
-                    <option value="Alto risco">Alto risco</option>
-                </select>
+    <div class="patient-card">
+        <div class="pc-row">
+            <div class="pc-avatar">MS</div>
+            <div>
+                <p class="pc-name">Maria da Silva</p>
+                <p class="pc-meta">28 anos · A+ · G1P0</p>
             </div>
         </div>
-        <div class="grid-3" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">Altura (cm)</label>
-                <input class="field-input" id="f-altura" type="number" placeholder="165" value="165" oninput="calcIMC()">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Peso Inicial (kg)</label>
-                <input class="field-input" id="f-peso-ini" type="number" placeholder="62" value="62" oninput="calcIMC()">
-            </div>
-            <div class="field-group">
-                <label class="field-label">IMC</label>
-                <input class="field-input" id="f-imc" type="text" readonly>
-                <span id="imc-badge"></span>
-            </div>
+        <div class="pc-chips">
+            <span class="pc-chip">Sem. 32 / 42</span>
+            <span class="pc-chip">DPP: 06 Jun 2026</span>
+            <span class="pc-chip">Feto: Cefálico</span>
+            <span class="pc-chip accent">1ª gestação</span>
         </div>
-        <div class="grid-3" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">Nº de Fetos</label>
-                <input class="field-input" id="f-fetos" type="number" value="1">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Paridade</label>
-                <input class="field-input" id="f-paridade" type="text" placeholder="Ex: G1P0" value="G1P0">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Fatores de Risco</label>
-                <input class="field-input" id="f-fatores" type="text" placeholder="Ex: HAS, DM2..." value="Nenhum">
-            </div>
-        </div>
-        <div class="grid-2" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">DPP</label>
-                <input class="field-input" id="f-dpp" type="date" value="2026-06-06">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Previsão de Cesárea</label>
-                <input class="field-input" id="f-cesarea" type="date">
-            </div>
-        </div>
-        <button class="save-btn" onclick="saveSection('sec-identificacao','gv_cartao_1498',getIdentificacaoData)">Salvar alterações</button>
     </div>
 
-    <!-- SEÇÃO 2: DADOS CLÍNICOS -->
-    <div class="form-section" id="sec-clinicos">
-        <p class="section-title">Dados Clínicos</p>
-        <div class="field-group">
-            <label class="field-label">Alergias Conhecidas</label>
-            <textarea class="field-input" id="f-alergias">Dipirona</textarea>
+    <div id="alertsArea"></div>
+
+    <!-- Identificação -->
+    <div class="info-card">
+        <div class="ic-header">
+            <span class="ic-title">Identificação</span>
+            <button class="ic-edit-btn" onclick="openModal('modal-ident')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+            </button>
         </div>
-        <div class="field-group">
-            <label class="field-label">Medicamentos em Uso</label>
-            <textarea class="field-input" id="f-meds">Ácido fólico 5mg/dia · Sulfato ferroso 40mg/dia</textarea>
-        </div>
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="field-label">Doenças Crônicas</label>
-                <textarea class="field-input" id="f-doencas">Nenhuma</textarea>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Cirurgias Anteriores</label>
-                <textarea class="field-input" id="f-cirurgias">Nenhuma</textarea>
-            </div>
-        </div>
-        <div class="field-group" style="margin-top:12px;">
-            <label class="field-label">Histórico Ginecológico e Obstétrico</label>
-            <textarea class="field-input" id="f-historico" style="min-height:100px;">Menarca aos 13 anos. Ciclos regulares 28/5. Sem abortos.</textarea>
-        </div>
-        <div class="grid-2" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">Antecedentes Familiares</label>
-                <textarea class="field-input" id="f-antecedentes">Mãe: HAS. Pai: DM2</textarea>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Profissão</label>
-                <input class="field-input" id="f-profissao" type="text" value="Professora">
-            </div>
-        </div>
-        <div class="grid-2" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">Vícios e Hábitos</label>
-                <textarea class="field-input" id="f-vicios">Não fuma. Não ingere álcool.</textarea>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Observações</label>
-                <textarea class="field-input" id="f-obs-clinicos" placeholder="Notas sobre aderência..."></textarea>
-            </div>
-        </div>
-        <button class="save-btn" onclick="saveSection('sec-clinicos','gv_cartao_1498',getClinicosData)">Salvar alterações</button>
+        <div class="ic-row"><span class="ic-key">Nome do bebê</span><span class="ic-val green" id="v-nomebebe">Aurora</span></div>
+        <div class="ic-row"><span class="ic-key">Acompanhante</span><span class="ic-val" id="v-acompanhante">Carlos Silva</span></div>
+        <div class="ic-row"><span class="ic-key">Hospital</span><span class="ic-val" id="v-hospital">Hospital São Luiz</span></div>
+        <div class="ic-row"><span class="ic-key">Paridade</span><span class="ic-val" id="v-paridade">G1P0</span></div>
+        <div class="ic-row"><span class="ic-key">Nº de fetos</span><span class="ic-val" id="v-fetos">1</span></div>
+        <div class="ic-row"><span class="ic-key">Fatores de risco</span><span class="ic-val" id="v-fatores">Nenhum</span></div>
+        <div class="ic-row"><span class="ic-key">Altura / Peso inicial</span><span class="ic-val" id="v-antrop">165 cm · 62 kg · IMC 22,8</span></div>
+        <div class="ic-row"><span class="ic-key">DPP</span><span class="ic-val" id="v-dpp">06/06/2026</span></div>
     </div>
 
-    <!-- SEÇÃO 3: EXAMES ESPECIAIS -->
-    <div class="form-section" id="sec-especiais">
-        <p class="section-title">Exames Especiais</p>
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="field-label">Tipo Sanguíneo</label>
-                <select class="field-input" id="f-tipo-sang" onchange="onTipoSangChange(this)">
-                    <option value="">(selecione)</option>
-                    <option value="A+" selected>A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                </select>
-                <span id="tipo-sang-badge" class="badge badge-green">A+</span>
-            </div>
-            <div class="field-group">
-                <label class="field-label">NIPT</label>
-                <input class="field-input" id="f-nipt" type="text" value="Não realizado">
-            </div>
+    <!-- Dados Clínicos -->
+    <div class="info-card">
+        <div class="ic-header">
+            <span class="ic-title">Dados Clínicos</span>
+            <button class="ic-edit-btn" onclick="openModal('modal-clinico')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+            </button>
         </div>
-        <div class="field-group" style="margin-top:12px;">
-            <label class="field-label">TOTG / Curva Glicêmica</label>
-            <p class="sub-label">Referência: Jejum &lt;92 · 60' &lt;180 · 120' &lt;153 mg/dL</p>
-            <div class="grid-3">
-                <div class="input-with-unit">
-                    <input class="field-input" id="f-totg-jejum" type="number" placeholder="<92" value="88" oninput="checkTOTG()">
-                    <span class="input-unit">mg/dL</span>
-                </div>
-                <div class="input-with-unit">
-                    <input class="field-input" id="f-totg-60" type="number" placeholder="<180" value="165" oninput="checkTOTG()">
-                    <span class="input-unit">mg/dL</span>
-                </div>
-                <div class="input-with-unit">
-                    <input class="field-input" id="f-totg-120" type="number" placeholder="<153" value="138" oninput="checkTOTG()">
-                    <span class="input-unit">mg/dL</span>
-                </div>
-            </div>
-            <span id="totg-badge" class="badge badge-green" style="margin-top:6px;">Normal</span>
-        </div>
-        <div class="field-group" style="margin-top:12px;">
-            <label class="field-label">Estreptococo do Grupo B</label>
-            <div class="toggle-group" id="strep-group">
-                <button class="toggle-btn" onclick="selectToggle('strep-group',this,'active-red')">Positivo</button>
-                <button class="toggle-btn" onclick="selectToggle('strep-group',this,'active-green')">Negativo</button>
-                <button class="toggle-btn active-gray" onclick="selectToggle('strep-group',this,'active-gray')">Não testado</button>
-            </div>
-        </div>
-        <button class="save-btn" onclick="saveSection('sec-especiais','gv_cartao_1498',getEspeciaisData)">Salvar alterações</button>
+        <div class="ic-row"><span class="ic-key">Alergias</span><span class="ic-val accent" id="v-alergias">Dipirona</span></div>
+        <div class="ic-row"><span class="ic-key">Medicamentos</span><span class="ic-val" id="v-meds" style="max-width:65%;text-align:right;line-height:1.4;">Ácido fólico 5mg · Sulfato ferroso 40mg</span></div>
+        <div class="ic-row"><span class="ic-key">Doenças crônicas</span><span class="ic-val" id="v-doencas">Nenhuma</span></div>
+        <div class="ic-row"><span class="ic-key">Cirurgias</span><span class="ic-val" id="v-cirurgias">Nenhuma</span></div>
+        <div class="ic-row"><span class="ic-key">Antecedentes fam.</span><span class="ic-val" id="v-antecedentes">Mãe: HAS · Pai: DM2</span></div>
+        <div class="ic-row"><span class="ic-key">Profissão</span><span class="ic-val" id="v-profissao">Professora</span></div>
+        <div class="ic-row"><span class="ic-key">Vícios</span><span class="ic-val" id="v-vicios">Não fuma · Sem álcool</span></div>
     </div>
 
-    <!-- SEÇÃO 4: CONSULTAS -->
-    <div class="form-section" id="sec-consultas">
-        <div class="section-subheader">
-            <p class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Consultas</p>
-            <button class="add-btn" onclick="toggleForm('form-consulta')">+ Nova Consulta</button>
+    <!-- Exames Especiais -->
+    <div class="info-card">
+        <div class="ic-header">
+            <span class="ic-title">Exames Especiais</span>
+            <button class="ic-edit-btn" onclick="openModal('modal-especiais')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+            </button>
         </div>
-        <div style="height:1px;background:var(--primary-light);margin:12px 0;"></div>
-        <div class="collapsible-form" id="form-consulta">
-            <div class="collapsible-inner">
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label class="field-label">Data da Consulta</label>
-                        <input class="field-input" id="fc-data" type="date" value="2026-04-13" oninput="calcIGFromInput('fc-data','fc-ig')">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Idade Gestacional</label>
-                        <input class="field-input" id="fc-ig" type="text" readonly>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Pressão Arterial</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fc-pa" type="text" placeholder="Ex: 120/80" style="padding-right:52px;">
-                            <span class="input-unit">mmHg</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Peso da Gestante</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fc-peso" type="number" placeholder="68">
-                            <span class="input-unit">kg</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">BCF</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fc-bcf" type="number" placeholder="140">
-                            <span class="input-unit">bpm</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Altura Uterina</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fc-au" type="number" placeholder="28">
-                            <span class="input-unit">cm</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Toque Vaginal</label>
-                        <input class="field-input" id="fc-toque" type="text" placeholder="Ex: 2cm">
-                    </div>
-                </div>
-                <div class="grid-2" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Movimentação Fetal</label>
-                        <select class="field-input" id="fc-movim">
-                            <option value="">(selecione)</option>
-                            <option>✓ Presente</option><option>✗ Ausente</option>
-                            <option>✓ Presente/Presente</option><option>✓ Presente/Ausente</option>
-                            <option>✗ Ausente/Presente</option><option>✗ Ausente/Ausente</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Apresentação Fetal</label>
-                        <select class="field-input" id="fc-apres">
-                            <option value="">(selecione)</option>
-                            <option>Variável</option><option>Cefálico</option>
-                            <option>Pélvico</option><option>Transverso</option>
-                            <option>Cefálico/Cefálico</option><option>Pélvico/Pélvico</option>
-                            <option>Cefálico/Pélvico</option><option>Pélvico/Cefálico</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-2" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Edema</label>
-                        <select class="field-input" id="fc-edema">
-                            <option value="">(selecione)</option>
-                            <option>0 – Ausente</option><option>+/4+ – Leve</option>
-                            <option>2+/4+ – Moderado</option><option>3+/4+ – Importante</option>
-                            <option>4+/4+ – Severo</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Observações Gerais</label>
-                        <textarea class="field-input" id="fc-obs" placeholder="Anotações adicionais..."></textarea>
-                    </div>
-                </div>
-                <div class="field-group" style="margin-top:12px;">
-                    <label class="field-label">Conduta</label>
-                    <textarea class="field-input" id="fc-conduta" placeholder="Descreva a conduta clínica..."></textarea>
-                </div>
-                <div class="field-group" style="margin-top:12px;">
-                    <label class="field-label">CID</label>
-                    <input class="field-input" id="fc-cid" type="text" placeholder="Ex: Z34.1, O14.1...">
-                </div>
-                <button class="save-btn" onclick="saveConsulta()">Salvar Consulta</button>
-                <button class="cancel-btn" onclick="toggleForm('form-consulta')">Cancelar</button>
-            </div>
-        </div>
-        <div id="consultas-list"></div>
+        <div class="ic-row"><span class="ic-key">Tipo sanguíneo</span><span class="ic-val green" id="v-tipo-sang">A+</span></div>
+        <div class="ic-row"><span class="ic-key">NIPT</span><span class="ic-val" id="v-nipt">Não realizado</span></div>
+        <div class="ic-row"><span class="ic-key">TOTG (Jejum/60'/120')</span><span class="ic-val" id="v-totg">88 / 165 / 138 mg/dL <span class="badge badge-green">Normal</span></span></div>
+        <div class="ic-row"><span class="ic-key">Estreptococo B</span><span class="ic-val" id="v-strep"><span class="badge badge-gray">Não testado</span></span></div>
     </div>
 
-    <!-- SEÇÃO 5: USG -->
-    <div class="form-section" id="sec-usg">
-        <div class="section-subheader">
-            <p class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Ultrassonografias</p>
-            <button class="add-btn" onclick="toggleForm('form-usg')">+ Novo USG</button>
+    <!-- Notas da Médica -->
+    <div class="notes-card">
+        <p class="ic-title" style="margin-bottom:8px;">Notas da Médica</p>
+        <div class="notes-private">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Conteúdo privado — visível só para você
         </div>
-        <div style="height:1px;background:var(--primary-light);margin:12px 0;"></div>
-        <div class="collapsible-form" id="form-usg">
-            <div class="collapsible-inner">
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label class="field-label">Tipo de Exame</label>
-                        <select class="field-input" id="fu-tipo">
-                            <option>US Obstétrico</option>
-                            <option>US Obstétrico Transvaginal</option>
-                            <option>US Morfológico 1º Tri</option>
-                            <option>US Morfológico 2º Tri</option>
-                            <option>US com Doppler e PBF</option>
-                            <option>Ecocardiografia Fetal</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Data do Exame</label>
-                        <input class="field-input" id="fu-data" type="date" oninput="calcIGFromInput('fu-data','fu-ig')">
-                    </div>
-                </div>
-                <div class="field-group" style="margin-top:12px;">
-                    <label class="field-label">Idade Gestacional (calculada)</label>
-                    <input class="field-input" id="fu-ig" type="text" readonly>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Apresentação Fetal</label>
-                        <select class="field-input" id="fu-apres">
-                            <option value="">(selecione)</option>
-                            <option>Variável</option><option>Cefálico</option>
-                            <option>Pélvico</option><option>Transverso</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Placenta</label>
-                        <input class="field-input" id="fu-placenta" type="text" placeholder="Ex: Anterior...">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Líquido Amniótico</label>
-                        <input class="field-input" id="fu-la" type="text" placeholder="Ex: Normal...">
-                    </div>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">BCF</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fu-bcf" type="number" placeholder="142">
-                            <span class="input-unit">bpm</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Peso Fetal</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fu-peso-fetal" type="number" placeholder="1850">
-                            <span class="input-unit">g</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Percentil</label>
-                        <input class="field-input" id="fu-percentil" type="number" placeholder="52">
-                    </div>
-                </div>
-                <div class="field-group" style="margin-top:12px;">
-                    <label class="field-label">Observações</label>
-                    <textarea class="field-input" id="fu-obs" placeholder="Observações do exame..."></textarea>
-                </div>
-                <button class="save-btn" onclick="saveUSG()">Salvar USG</button>
-                <button class="cancel-btn" onclick="toggleForm('form-usg')">Cancelar</button>
-            </div>
-        </div>
-        <div id="usg-list"></div>
-    </div>
-
-    <!-- SEÇÃO 6: EXAMES LABORATORIAIS -->
-    <div class="form-section" id="sec-laboratoriais">
-        <div class="section-subheader">
-            <p class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Exames Laboratoriais</p>
-            <button class="add-btn" onclick="toggleForm('form-lab')">+ Nova Coleta</button>
-        </div>
-        <div style="height:1px;background:var(--primary-light);margin:12px 0;"></div>
-        <div class="collapsible-form" id="form-lab">
-            <div class="collapsible-inner">
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label class="field-label">Data da Coleta</label>
-                        <input class="field-input" id="fl-data" type="date">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Interpretação Clínica</label>
-                        <input class="field-input" id="fl-interp" type="text" placeholder="Ex: Normal, avaliar ferritina...">
-                    </div>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Hb/Ht</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-hb" type="text" placeholder="11.8/35" style="padding-right:46px;">
-                            <span class="input-unit">g/dL</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Plaquetas</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-plaq" type="number" placeholder="210" style="padding-right:54px;">
-                            <span class="input-unit" style="font-size:10px;">mil/mm³</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Glicemia Jejum</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-glicemia" type="number" placeholder="88" style="padding-right:46px;">
-                            <span class="input-unit">mg/dL</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">TSH</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-tsh" type="number" placeholder="1.8" style="padding-right:52px;">
-                            <span class="input-unit" style="font-size:10px;">µUI/mL</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Ferritina</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-ferr" type="number" placeholder="32" style="padding-right:46px;">
-                            <span class="input-unit">ng/mL</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Vitamina D</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-vitd" type="number" placeholder="38" style="padding-right:46px;">
-                            <span class="input-unit">ng/mL</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-3" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Vitamina B12</label>
-                        <div class="input-with-unit">
-                            <input class="field-input" id="fl-b12" type="number" placeholder="280" style="padding-right:46px;">
-                            <span class="input-unit">pg/mL</span>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">EAS (Urina)</label>
-                        <input class="field-input" id="fl-eas" type="text" placeholder="Ex: Normal, ITU...">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Urocultura</label>
-                        <input class="field-input" id="fl-uroc" type="text" placeholder="Ex: Negativa...">
-                    </div>
-                </div>
-                <div style="margin-top:16px;">
-                    <label class="field-label" style="display:block;margin-bottom:10px;">Sorologias</label>
-                    <div class="sorologia-grid" id="sorologia-grid"></div>
-                </div>
-                <button class="save-btn" onclick="saveLab()">Salvar Coleta</button>
-                <button class="cancel-btn" onclick="toggleForm('form-lab')">Cancelar</button>
-            </div>
-        </div>
-        <div id="lab-list"></div>
-    </div>
-
-    <!-- SEÇÃO 7: VACINAS -->
-    <div class="form-section" id="sec-vacinas">
-        <div class="section-subheader">
-            <p class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Vacinas</p>
-            <button class="add-btn" onclick="toggleForm('form-vacina')">+ Registrar Vacina</button>
-        </div>
-        <div style="height:1px;background:var(--primary-light);margin:12px 0;"></div>
-        <div class="collapsible-form" id="form-vacina">
-            <div class="collapsible-inner">
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label class="field-label">Vacina</label>
-                        <select class="field-input" id="fv-nome">
-                            <option>COVID-19</option><option selected>dTpa</option>
-                            <option>Gripe</option><option>Hepatite B</option>
-                            <option>Influenza</option><option>VSR</option><option>Personalizada</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Data de Aplicação</label>
-                        <input class="field-input" id="fv-data" type="date">
-                    </div>
-                </div>
-                <div class="grid-2" style="margin-top:12px;">
-                    <div class="field-group">
-                        <label class="field-label">Dose</label>
-                        <input class="field-input" id="fv-dose" type="text" placeholder="Ex: Dose única, 2ª dose...">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">Status</label>
-                        <div class="toggle-group" id="vacina-status-group">
-                            <button class="toggle-btn active-green" onclick="selectToggle('vacina-status-group',this,'active-green')">Aplicada</button>
-                            <button class="toggle-btn" onclick="selectToggle('vacina-status-group',this,'active-gray')">Não aplicada</button>
-                            <button class="toggle-btn" onclick="selectToggle('vacina-status-group',this,'active-red')">Recusada</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="field-group" style="margin-top:12px;">
-                    <label class="field-label">Reações e Observações</label>
-                    <textarea class="field-input" id="fv-obs" placeholder="Reações adversas, observações..."></textarea>
-                </div>
-                <button class="save-btn" onclick="saveVacina()">Registrar Vacina</button>
-                <button class="cancel-btn" onclick="toggleForm('form-vacina')">Cancelar</button>
-            </div>
-        </div>
-        <div id="vacinas-list"></div>
-    </div>
-
-    <!-- SEÇÃO 8: NOTAS DA MÉDICA -->
-    <div class="notes-section">
-        <p class="section-title" style="border-bottom:none;padding-bottom:0;margin-bottom:8px;">Notas da Médica</p>
-        <div class="notes-private-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A0AAB2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Conteúdo privado — visível só para você</span>
-        </div>
-        <textarea class="field-input" id="notas-medica" style="min-height:160px;" placeholder="Anotações clínicas privadas..." oninput="autoSaveNotas()"></textarea>
+        <textarea class="field-input" id="notas-medica" style="min-height:120px;" placeholder="Anotações clínicas privadas..." oninput="autoSaveNotas()"></textarea>
         <p class="notes-autosave" id="notas-status">—</p>
     </div>
 
 </div>
-<!-- FIM ABA CARTÃO -->
 
-<!-- ABA SINAIS VITAIS -->
-<div class="tab-panel" id="panel-sinais_vitais">
-
-    <!-- CONTRAÇÕES -->
-    <div class="sv-section" id="sv-contrac">
-        <div class="sv-header" onclick="toggleSV('sv-contrac')">
-            <svg class="sv-icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 12 Q4 6 6 12 Q8 18 10 12 Q12 6 14 12 Q16 18 18 12 Q20 6 22 12"/>
-            </svg>
-            <span class="sv-title">Contrações</span>
-            <svg class="sv-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="sv-body">
-            <div class="sv-content">
-                <div class="data-stats">
-                    <div class="ds-box"><p class="ds-num" id="cCount">0</p><p class="ds-label">Hoje</p></div>
-                    <div class="ds-box"><p class="ds-num" id="cAvgDur">—</p><p class="ds-label">Dur. média</p></div>
-                    <div class="ds-box"><p class="ds-num" id="cAvgInt">—</p><p class="ds-label">Int. médio</p></div>
-                    <div class="ds-box"><p class="ds-num" id="cLast">—</p><p class="ds-label">Última</p></div>
-                </div>
-                <div id="contracAlert511" class="alert-card" style="display:none;">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p class="alert-text">Padrão 5-1-1 detectado. Contrações frequentes. Avaliar contato com a paciente.</p>
-                </div>
-                <p class="contrac-hint" id="contrac-hint">Pressione e segure para cronometrar uma contração</p>
-                <div class="contrac-ring-wrap">
-                    <div class="contrac-ring" id="cr1"></div>
-                    <div class="contrac-ring" id="cr2"></div>
-                    <button class="contrac-btn" id="contracBtn">
-                        <span class="contrac-btn-label" id="contracBtnLabel">Segurar</span>
-                        <span class="contrac-btn-timer" id="contracBtnTimer">0s</span>
-                    </button>
-                </div>
-                <p class="contrac-last" id="contracLastMsg" style="display:none;"></p>
-                <div id="contracList"></div>
-                <button onclick="clearContracoes()" style="width:100%;padding:10px;border-radius:12px;border:1.5px solid var(--primary-light);background:transparent;color:var(--text-mid);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;font-family:Inter,sans-serif;">Limpar sessão</button>
-            </div>
-        </div>
+<!-- ══ CONSULTAS ══ -->
+<div class="tab-panel" id="panel-consultas">
+    <div class="add-row">
+        <span class="add-row-title" id="consultas-count">— consultas</span>
+        <button class="add-btn" onclick="openModal('modal-consulta')">+ Nova Consulta</button>
     </div>
+    <div id="consultas-list"></div>
+</div>
 
-    <!-- PRESSÃO -->
-    <div class="sv-section open" id="sv-pressao">
-        <div class="sv-header" onclick="toggleSV('sv-pressao')">
-            <svg class="sv-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            <span class="sv-title">Pressão Arterial</span>
-            <svg class="sv-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="sv-body">
-            <div class="sv-content">
-                <div class="data-stats">
-                    <div class="ds-box"><p class="ds-num" id="pCount">0</p><p class="ds-label">Medições</p></div>
-                    <div class="ds-box"><p class="ds-num" id="pAvgSys">—</p><p class="ds-label">Média Sist.</p></div>
-                    <div class="ds-box"><p class="ds-num" id="pAvgDia">—</p><p class="ds-label">Média Diast.</p></div>
-                    <div class="ds-box"><p class="ds-num" id="pMax">—</p><p class="ds-label">Pico</p></div>
-                </div>
-                <div id="pressaoAlert" style="display:none;" class="alert-card">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p class="alert-text" id="pressaoAlertText"></p>
-                </div>
-                <div id="pressaoList"></div>
-                <button class="inline-add-btn" onclick="openModal('modal-pressao')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Registrar Pressão
-                </button>
-            </div>
-        </div>
+<!-- ══ USG ══ -->
+<div class="tab-panel" id="panel-usg">
+    <div class="add-row">
+        <span class="add-row-title" id="usg-count">— exames</span>
+        <button class="add-btn" onclick="openModal('modal-usg')">+ Novo USG</button>
     </div>
+    <div id="usg-list"></div>
+</div>
 
-    <!-- GLICOSE -->
-    <div class="sv-section open" id="sv-glicose">
-        <div class="sv-header" onclick="toggleSV('sv-glicose')">
-            <svg class="sv-icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary-dk)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-            </svg>
-            <span class="sv-title">Glicose</span>
-            <svg class="sv-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="sv-body">
-            <div class="sv-content">
-                <div class="data-stats">
-                    <div class="ds-box"><p class="ds-num" id="gCount">0</p><p class="ds-label">Medições</p></div>
-                    <div class="ds-box"><p class="ds-num" id="gAvg">—</p><p class="ds-label">Média</p></div>
-                    <div class="ds-box"><p class="ds-num" id="gMin">—</p><p class="ds-label">Menor</p></div>
-                    <div class="ds-box"><p class="ds-num" id="gMax">—</p><p class="ds-label">Maior</p></div>
-                </div>
-                <div id="glicoseAlert" style="display:none;" class="alert-card">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p class="alert-text">Há registros de glicose elevada. Considerar avaliação para diabetes gestacional.</p>
-                </div>
-                <div id="glicoseList"></div>
-                <button class="inline-add-btn" onclick="openModal('modal-glicose')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Registrar Glicose
-                </button>
-            </div>
-        </div>
+<!-- ══ EXAMES ══ -->
+<div class="tab-panel" id="panel-exames">
+    <div class="add-row">
+        <span class="add-row-title" id="exames-count">— coletas</span>
+        <button class="add-btn" onclick="openModal('modal-lab')">+ Nova Coleta</button>
     </div>
+    <div id="lab-list"></div>
+</div>
+
+<!-- ══ VACINAS ══ -->
+<div class="tab-panel" id="panel-vacinas">
+    <div class="add-row">
+        <span class="add-row-title">Calendário vacinal</span>
+        <button class="add-btn" onclick="openModal('modal-vacina')">+ Registrar</button>
+    </div>
+    <div class="info-card" style="padding: 12px 16px;">
+        <div id="vacinas-list"></div>
+    </div>
+</div>
+
+<!-- ══ SINAIS VITAIS ══ -->
+<div class="tab-panel" id="panel-sinais">
+
+    <p class="sv-section-title">Pressão Arterial</p>
+    <div class="sv-stats">
+        <div class="sv-box"><p class="sv-num" id="pCount">—</p><p class="sv-label">Medições</p></div>
+        <div class="sv-box"><p class="sv-num" id="pAvgSys">—</p><p class="sv-label">Média Sist.</p></div>
+        <div class="sv-box"><p class="sv-num" id="pAvgDia">—</p><p class="sv-label">Média Diast.</p></div>
+        <div class="sv-box"><p class="sv-num" id="pMax">—</p><p class="sv-label">Pico</p></div>
+    </div>
+    <div id="pressaoAlert" style="display:none;" class="alert-card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p class="alert-text" id="pressaoAlertText"></p>
+    </div>
+    <div id="pressaoList"></div>
+    <button class="sv-add-btn" onclick="openModal('modal-pressao')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Pressão
+    </button>
+
+    <p class="sv-section-title" style="margin-top:20px;">Glicose</p>
+    <div class="sv-stats">
+        <div class="sv-box"><p class="sv-num" id="gCount">—</p><p class="sv-label">Medições</p></div>
+        <div class="sv-box"><p class="sv-num" id="gAvg">—</p><p class="sv-label">Média</p></div>
+        <div class="sv-box"><p class="sv-num" id="gMin">—</p><p class="sv-label">Menor</p></div>
+        <div class="sv-box"><p class="sv-num" id="gMax">—</p><p class="sv-label">Maior</p></div>
+    </div>
+    <div id="glicoseAlert" style="display:none;" class="alert-card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p class="alert-text">Registros de glicose elevada. Considerar avaliação para diabetes gestacional.</p>
+    </div>
+    <div id="glicoseList"></div>
+    <button class="sv-add-btn" onclick="openModal('modal-glicose')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Glicose
+    </button>
 
 </div>
-<!-- FIM ABA SINAIS VITAIS -->
 
 </main>
 
-<!-- MODAL PRESSÃO -->
+<!-- ═══════════════════════════════════════
+     MODAIS DE EDIÇÃO
+═══════════════════════════════════════ -->
+
+<!-- MODAL: Identificação -->
+<div class="modal-overlay" id="modal-ident" onclick="if(event.target===this)closeModal('modal-ident')">
+    <div class="modal-sheet">
+        <p class="modal-title">Identificação</p>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Nome do Bebê</label><input class="field-input" id="fi-nomebebe" type="text" value="Aurora"></div>
+            <div class="field-group"><label class="field-label">Acompanhante</label><input class="field-input" id="fi-acompanhante" type="text" value="Carlos Silva"></div>
+            <div class="field-group"><label class="field-label">Hospital</label><input class="field-input" id="fi-hospital" type="text" value="Hospital São Luiz"></div>
+            <div class="field-group">
+                <label class="field-label">Risco</label>
+                <select class="field-input" id="fi-risco">
+                    <option value="Habitual" selected>Habitual</option>
+                    <option value="Alto risco">Alto risco</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">Paridade</label><input class="field-input" id="fi-paridade" type="text" value="G1P0"></div>
+            <div class="field-group"><label class="field-label">Nº de Fetos</label><input class="field-input" id="fi-fetos" type="number" value="1"></div>
+            <div class="field-group"><label class="field-label">Fatores de Risco</label><input class="field-input" id="fi-fatores" type="text" value="Nenhum"></div>
+            <div class="field-group"><label class="field-label">DPP</label><input class="field-input" id="fi-dpp" type="date" value="2026-06-06"></div>
+        </div>
+        <div class="grid-3" style="margin-top:12px;">
+            <div class="field-group"><label class="field-label">Altura (cm)</label><input class="field-input" id="fi-altura" type="number" value="165"></div>
+            <div class="field-group"><label class="field-label">Peso Inicial (kg)</label><input class="field-input" id="fi-peso" type="number" value="62"></div>
+            <div class="field-group"><label class="field-label">Previsão Cesárea</label><input class="field-input" id="fi-cesarea" type="date"></div>
+        </div>
+        <button class="modal-save" onclick="saveIdent()">Salvar</button>
+        <button class="modal-cancel" onclick="closeModal('modal-ident')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Dados Clínicos -->
+<div class="modal-overlay" id="modal-clinico" onclick="if(event.target===this)closeModal('modal-clinico')">
+    <div class="modal-sheet">
+        <p class="modal-title">Dados Clínicos</p>
+        <div class="field-group"><label class="field-label">Alergias Conhecidas</label><textarea class="field-input" id="fc-alergias">Dipirona</textarea></div>
+        <div class="field-group"><label class="field-label">Medicamentos em Uso</label><textarea class="field-input" id="fc-meds">Ácido fólico 5mg/dia · Sulfato ferroso 40mg/dia</textarea></div>
+        <div class="field-group"><label class="field-label">Doenças Crônicas</label><textarea class="field-input" id="fc-doencas">Nenhuma</textarea></div>
+        <div class="field-group"><label class="field-label">Cirurgias Anteriores</label><textarea class="field-input" id="fc-cirurgias">Nenhuma</textarea></div>
+        <div class="field-group"><label class="field-label">Histórico Ginecológico</label><textarea class="field-input" id="fc-historico">Menarca aos 13 anos. Ciclos regulares 28/5. Sem abortos.</textarea></div>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Antecedentes Familiares</label><textarea class="field-input" id="fc-antecedentes">Mãe: HAS. Pai: DM2</textarea></div>
+            <div class="field-group"><label class="field-label">Profissão</label><input class="field-input" id="fc-profissao" type="text" value="Professora"></div>
+        </div>
+        <div class="field-group" style="margin-top:4px;"><label class="field-label">Vícios e Hábitos</label><textarea class="field-input" id="fc-vicios">Não fuma. Não ingere álcool.</textarea></div>
+        <button class="modal-save" onclick="saveClinicos()">Salvar</button>
+        <button class="modal-cancel" onclick="closeModal('modal-clinico')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Exames Especiais -->
+<div class="modal-overlay" id="modal-especiais" onclick="if(event.target===this)closeModal('modal-especiais')">
+    <div class="modal-sheet">
+        <p class="modal-title">Exames Especiais</p>
+        <div class="grid-2">
+            <div class="field-group">
+                <label class="field-label">Tipo Sanguíneo</label>
+                <select class="field-input" id="fe-tipo-sang">
+                    <option value="">(selecione)</option>
+                    <option value="A+" selected>A+</option><option value="A-">A-</option>
+                    <option value="B+">B+</option><option value="B-">B-</option>
+                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                    <option value="O+">O+</option><option value="O-">O-</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">NIPT</label><input class="field-input" id="fe-nipt" type="text" value="Não realizado"></div>
+        </div>
+        <p class="field-label" style="margin-top:12px;display:block;">TOTG / Curva Glicêmica</p>
+        <p style="font-size:11px;color:var(--text-inactive);margin-bottom:8px;">Referência: Jejum &lt;92 · 60' &lt;180 · 120' &lt;153 mg/dL</p>
+        <div class="grid-3">
+            <div class="input-with-unit"><input class="field-input" id="fe-totg-j" type="number" placeholder="Jejum" value="88"><span class="input-unit">mg/dL</span></div>
+            <div class="input-with-unit"><input class="field-input" id="fe-totg-60" type="number" placeholder="60'" value="165"><span class="input-unit">mg/dL</span></div>
+            <div class="input-with-unit"><input class="field-input" id="fe-totg-120" type="number" placeholder="120'" value="138"><span class="input-unit">mg/dL</span></div>
+        </div>
+        <div class="field-group" style="margin-top:14px;">
+            <label class="field-label">Estreptococo do Grupo B</label>
+            <div class="toggle-group" id="strep-group">
+                <button class="toggle-btn" onclick="selToggle('strep-group',this,'active-red')">Positivo</button>
+                <button class="toggle-btn" onclick="selToggle('strep-group',this,'active-green')">Negativo</button>
+                <button class="toggle-btn active-gray" onclick="selToggle('strep-group',this,'active-gray')">Não testado</button>
+            </div>
+        </div>
+        <button class="modal-save" onclick="saveEspeciais()">Salvar</button>
+        <button class="modal-cancel" onclick="closeModal('modal-especiais')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Nova Consulta -->
+<div class="modal-overlay" id="modal-consulta" onclick="if(event.target===this)closeModal('modal-consulta')">
+    <div class="modal-sheet">
+        <p class="modal-title">Nova Consulta</p>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Data</label><input class="field-input" id="nc-data" type="date" oninput="calcIGField('nc-data','nc-ig')"></div>
+            <div class="field-group"><label class="field-label">Idade Gestacional</label><input class="field-input" id="nc-ig" type="text" readonly></div>
+            <div class="field-group"><label class="field-label">Pressão Arterial</label><div class="input-with-unit"><input class="field-input" id="nc-pa" type="text" placeholder="120/80" style="padding-right:52px;"><span class="input-unit">mmHg</span></div></div>
+            <div class="field-group"><label class="field-label">Peso</label><div class="input-with-unit"><input class="field-input" id="nc-peso" type="number" placeholder="68"><span class="input-unit">kg</span></div></div>
+            <div class="field-group"><label class="field-label">BCF</label><div class="input-with-unit"><input class="field-input" id="nc-bcf" type="number" placeholder="140"><span class="input-unit">bpm</span></div></div>
+            <div class="field-group"><label class="field-label">Altura Uterina</label><div class="input-with-unit"><input class="field-input" id="nc-au" type="number" placeholder="28"><span class="input-unit">cm</span></div></div>
+            <div class="field-group"><label class="field-label">Apresentação Fetal</label>
+                <select class="field-input" id="nc-apres">
+                    <option value="">(selecione)</option>
+                    <option>Variável</option><option>Cefálico</option><option>Pélvico</option><option>Transverso</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">Edema</label>
+                <select class="field-input" id="nc-edema">
+                    <option value="">(selecione)</option>
+                    <option>0 – Ausente</option><option>+/4+ – Leve</option>
+                    <option>2+/4+ – Moderado</option><option>3+/4+ – Importante</option>
+                </select>
+            </div>
+        </div>
+        <div class="field-group" style="margin-top:4px;"><label class="field-label">Conduta</label><textarea class="field-input" id="nc-conduta" placeholder="Descreva a conduta clínica..."></textarea></div>
+        <div class="field-group"><label class="field-label">Observações</label><textarea class="field-input" id="nc-obs" placeholder="Anotações adicionais..."></textarea></div>
+        <div class="field-group"><label class="field-label">CID</label><input class="field-input" id="nc-cid" type="text" placeholder="Ex: Z34.1"></div>
+        <button class="modal-save" onclick="saveConsulta()">Salvar Consulta</button>
+        <button class="modal-cancel" onclick="closeModal('modal-consulta')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Novo USG -->
+<div class="modal-overlay" id="modal-usg" onclick="if(event.target===this)closeModal('modal-usg')">
+    <div class="modal-sheet">
+        <p class="modal-title">Novo USG</p>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Tipo de Exame</label>
+                <select class="field-input" id="nu-tipo">
+                    <option>US Obstétrico</option><option>US Obstétrico Transvaginal</option>
+                    <option>US Morfológico 1º Tri</option><option>US Morfológico 2º Tri</option>
+                    <option>US com Doppler e PBF</option><option>Ecocardiografia Fetal</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">Data</label><input class="field-input" id="nu-data" type="date" oninput="calcIGField('nu-data','nu-ig')"></div>
+            <div class="field-group"><label class="field-label">Idade Gestacional</label><input class="field-input" id="nu-ig" type="text" readonly></div>
+            <div class="field-group"><label class="field-label">Apresentação Fetal</label>
+                <select class="field-input" id="nu-apres">
+                    <option value="">(selecione)</option>
+                    <option>Variável</option><option>Cefálico</option><option>Pélvico</option><option>Transverso</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">Placenta</label><input class="field-input" id="nu-placenta" type="text" placeholder="Ex: Anterior..."></div>
+            <div class="field-group"><label class="field-label">Líquido Amniótico</label><input class="field-input" id="nu-la" type="text" placeholder="Ex: Normal..."></div>
+            <div class="field-group"><label class="field-label">BCF</label><div class="input-with-unit"><input class="field-input" id="nu-bcf" type="number" placeholder="142"><span class="input-unit">bpm</span></div></div>
+            <div class="field-group"><label class="field-label">Peso Fetal</label><div class="input-with-unit"><input class="field-input" id="nu-peso" type="number" placeholder="1850"><span class="input-unit">g</span></div></div>
+            <div class="field-group"><label class="field-label">Percentil</label><input class="field-input" id="nu-percentil" type="number" placeholder="52"></div>
+        </div>
+        <div class="field-group" style="margin-top:4px;"><label class="field-label">Observações</label><textarea class="field-input" id="nu-obs" placeholder="Observações do exame..."></textarea></div>
+        <button class="modal-save" onclick="saveUSG()">Salvar USG</button>
+        <button class="modal-cancel" onclick="closeModal('modal-usg')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Nova Coleta Lab -->
+<div class="modal-overlay" id="modal-lab" onclick="if(event.target===this)closeModal('modal-lab')">
+    <div class="modal-sheet">
+        <p class="modal-title">Nova Coleta</p>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Data da Coleta</label><input class="field-input" id="nl-data" type="date"></div>
+            <div class="field-group"><label class="field-label">Interpretação</label><input class="field-input" id="nl-interp" type="text" placeholder="Ex: Normal..."></div>
+        </div>
+        <div class="grid-3" style="margin-top:4px;">
+            <div class="field-group"><label class="field-label">Hb/Ht</label><input class="field-input" id="nl-hb" type="text" placeholder="11.8/35"></div>
+            <div class="field-group"><label class="field-label">Plaquetas (mil)</label><input class="field-input" id="nl-plaq" type="number" placeholder="210"></div>
+            <div class="field-group"><label class="field-label">Glicemia Jejum</label><div class="input-with-unit"><input class="field-input" id="nl-glic" type="number" placeholder="88"><span class="input-unit">mg/dL</span></div></div>
+            <div class="field-group"><label class="field-label">TSH</label><input class="field-input" id="nl-tsh" type="number" placeholder="1.8"></div>
+            <div class="field-group"><label class="field-label">Ferritina</label><input class="field-input" id="nl-ferr" type="number" placeholder="32"></div>
+            <div class="field-group"><label class="field-label">Vitamina D</label><input class="field-input" id="nl-vitd" type="number" placeholder="38"></div>
+        </div>
+        <p class="field-label" style="display:block;margin-top:14px;margin-bottom:10px;">Sorologias</p>
+        <div class="sor-grid" id="sor-grid-modal"></div>
+        <button class="modal-save" onclick="saveLab()">Salvar Coleta</button>
+        <button class="modal-cancel" onclick="closeModal('modal-lab')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Registrar Vacina -->
+<div class="modal-overlay" id="modal-vacina" onclick="if(event.target===this)closeModal('modal-vacina')">
+    <div class="modal-sheet">
+        <p class="modal-title">Registrar Vacina</p>
+        <div class="grid-2">
+            <div class="field-group"><label class="field-label">Vacina</label>
+                <select class="field-input" id="fv-nome">
+                    <option>COVID-19</option><option selected>dTpa</option>
+                    <option>Gripe</option><option>Hepatite B</option><option>VSR</option><option>Personalizada</option>
+                </select>
+            </div>
+            <div class="field-group"><label class="field-label">Data de Aplicação</label><input class="field-input" id="fv-data" type="date"></div>
+            <div class="field-group"><label class="field-label">Dose</label><input class="field-input" id="fv-dose" type="text" placeholder="Ex: Dose única"></div>
+            <div class="field-group">
+                <label class="field-label">Status</label>
+                <div class="toggle-group" id="vacina-status-group">
+                    <button class="toggle-btn active-green" onclick="selToggle('vacina-status-group',this,'active-green')">Aplicada</button>
+                    <button class="toggle-btn" onclick="selToggle('vacina-status-group',this,'active-gray')">Não aplicada</button>
+                    <button class="toggle-btn" onclick="selToggle('vacina-status-group',this,'active-red')">Recusada</button>
+                </div>
+            </div>
+        </div>
+        <div class="field-group" style="margin-top:4px;"><label class="field-label">Observações</label><textarea class="field-input" id="fv-obs" placeholder="Reações adversas..."></textarea></div>
+        <button class="modal-save" onclick="saveVacina()">Registrar Vacina</button>
+        <button class="modal-cancel" onclick="closeModal('modal-vacina')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: Registrar Pressão -->
 <div class="modal-overlay" id="modal-pressao" onclick="if(event.target===this)closeModal('modal-pressao')">
     <div class="modal-sheet">
         <p class="modal-title">Registrar Pressão</p>
         <div class="grid-2">
-            <div class="field-group">
-                <label class="field-label">Sistólica</label>
-                <div class="input-with-unit">
-                    <input class="field-input" id="mp-sys" type="number" placeholder="120">
-                    <span class="input-unit">mmHg</span>
-                </div>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Diastólica</label>
-                <div class="input-with-unit">
-                    <input class="field-input" id="mp-dia" type="number" placeholder="80">
-                    <span class="input-unit">mmHg</span>
-                </div>
-            </div>
-        </div>
-        <div class="grid-2" style="margin-top:12px;">
-            <div class="field-group">
-                <label class="field-label">Pulso</label>
-                <div class="input-with-unit">
-                    <input class="field-input" id="mp-pulse" type="number" placeholder="Opcional">
-                    <span class="input-unit">bpm</span>
-                </div>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Momento</label>
-                <select class="field-input" id="mp-moment">
-                    <option>Manhã</option><option>Tarde</option><option>Noite</option>
-                    <option>Após atividade</option><option>Em repouso</option>
-                </select>
-            </div>
+            <div class="field-group"><label class="field-label">Sistólica</label><div class="input-with-unit"><input class="field-input" id="mp-sys" type="number" placeholder="120"><span class="input-unit">mmHg</span></div></div>
+            <div class="field-group"><label class="field-label">Diastólica</label><div class="input-with-unit"><input class="field-input" id="mp-dia" type="number" placeholder="80"><span class="input-unit">mmHg</span></div></div>
+            <div class="field-group"><label class="field-label">Pulso</label><div class="input-with-unit"><input class="field-input" id="mp-pulse" type="number" placeholder="Opcional"><span class="input-unit">bpm</span></div></div>
+            <div class="field-group"><label class="field-label">Momento</label><select class="field-input" id="mp-moment"><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Repouso</option></select></div>
         </div>
         <button class="modal-save" onclick="savePressao()">Salvar</button>
+        <button class="modal-cancel" onclick="closeModal('modal-pressao')">Cancelar</button>
     </div>
 </div>
 
-<!-- MODAL GLICOSE -->
+<!-- MODAL: Registrar Glicose -->
 <div class="modal-overlay" id="modal-glicose" onclick="if(event.target===this)closeModal('modal-glicose')">
     <div class="modal-sheet">
         <p class="modal-title">Registrar Glicose</p>
-        <div class="field-group">
-            <label class="field-label">Valor</label>
-            <div class="input-with-unit">
-                <input class="field-input" id="mg-val" type="number" placeholder="95">
-                <span class="input-unit">mg/dL</span>
-            </div>
-        </div>
-        <div class="field-group" style="margin-top:12px;">
-            <label class="field-label">Momento</label>
-            <select class="field-input" id="mg-moment">
-                <option>Jejum</option><option>Pós café</option><option>Pós almoço</option>
-                <option>Pós jantar</option><option>Antes de dormir</option>
-            </select>
-        </div>
-        <div class="field-group" style="margin-top:12px;">
-            <label class="field-label">Observação</label>
-            <input class="field-input" id="mg-note" type="text" placeholder="Opcional" maxlength="80">
-        </div>
+        <div class="field-group"><label class="field-label">Valor</label><div class="input-with-unit"><input class="field-input" id="mg-val" type="number" placeholder="95"><span class="input-unit">mg/dL</span></div></div>
+        <div class="field-group" style="margin-top:12px;"><label class="field-label">Momento</label><select class="field-input" id="mg-moment"><option>Jejum</option><option>Pós café</option><option>Pós almoço</option><option>Pós jantar</option><option>Antes de dormir</option></select></div>
+        <div class="field-group" style="margin-top:12px;"><label class="field-label">Observação</label><input class="field-input" id="mg-note" type="text" placeholder="Opcional" maxlength="80"></div>
         <button class="modal-save" onclick="saveGlicose()">Salvar</button>
+        <button class="modal-cancel" onclick="closeModal('modal-glicose')">Cancelar</button>
     </div>
 </div>
 
 <nav>
-    <a href="dashboard_medico.html" class="nav-item" aria-label="Início">
+    <a href="dashboard_medico.html" class="nav-item">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span class="nav-label">Início</span>
     </a>
-    <button class="nav-item active" aria-label="Paciente">
+    <button class="nav-item active">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span class="nav-label">Paciente</span>
     </button>
-    <button class="nav-item" aria-label="Chat">
+    <button class="nav-item">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span class="nav-label">Chat</span>
     </button>
@@ -922,122 +629,36 @@
 <script>
 const DPP = new Date('2026-06-06');
 
-/* TAB */
+/* ─── TAB ─── */
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
-    if (tab === 'sinais_vitais') { loadContracoes(); loadPressao(); loadGlicose(); }
+    if (tab === 'sinais') { loadPressao(); loadGlicose(); }
 }
 
-function toggleSV(id) { document.getElementById(id).classList.toggle('open'); }
-
-function toggleForm(id) {
-    const el = document.getElementById(id);
-    el.classList.toggle('open');
+/* ─── MODAL ─── */
+function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    if (id === 'modal-consulta') { const t = new Date().toISOString().split('T')[0]; document.getElementById('nc-data').value = t; calcIGField('nc-data','nc-ig'); }
+    if (id === 'modal-usg') { const t = new Date().toISOString().split('T')[0]; document.getElementById('nu-data').value = t; calcIGField('nu-data','nu-ig'); }
+    if (id === 'modal-lab') { document.getElementById('nl-data').value = new Date().toISOString().split('T')[0]; }
 }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-/* IG CALC */
+/* ─── HELPERS ─── */
 function calcIG(dateStr) {
     if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    const diffDays = Math.round((DPP - d) / 86400000);
-    const igDays = 280 - diffDays;
+    const diff = Math.round((DPP - new Date(dateStr)) / 86400000);
+    const igDays = 280 - diff;
     if (igDays < 0) return '—';
-    const w = Math.floor(igDays / 7), dy = igDays % 7;
-    return w + 's' + (dy > 0 ? dy + 'd' : '');
+    const w = Math.floor(igDays / 7), d = igDays % 7;
+    return w + 's' + (d > 0 ? d + 'd' : '');
 }
-function calcIGFromInput(inputId, outputId) {
-    document.getElementById(outputId).value = calcIG(document.getElementById(inputId).value);
+function calcIGField(inId, outId) {
+    document.getElementById(outId).value = calcIG(document.getElementById(inId).value);
 }
-
-/* IMC */
-function calcIMC() {
-    const h = parseFloat(document.getElementById('f-altura').value) / 100;
-    const w = parseFloat(document.getElementById('f-peso-ini').value);
-    const badge = document.getElementById('imc-badge');
-    if (!h || !w) { document.getElementById('f-imc').value = ''; badge.innerHTML = ''; return; }
-    const imc = (w / (h * h)).toFixed(1);
-    document.getElementById('f-imc').value = imc;
-    let cls, label;
-    if (imc < 18.5) { cls = 'badge-yellow'; label = 'Abaixo do peso'; }
-    else if (imc < 25) { cls = 'badge-green'; label = 'Normal'; }
-    else if (imc < 30) { cls = 'badge-yellow'; label = 'Sobrepeso'; }
-    else { cls = 'badge-red'; label = 'Obesidade'; }
-    badge.innerHTML = '<span class="badge ' + cls + '">' + label + '</span>';
-}
-
-/* RISCO / TIPO SANG */
-function onRiscoChange(sel) {
-    sel.classList.remove('border-red', 'border-green');
-    if (sel.value === 'Alto risco') sel.classList.add('border-red');
-    else if (sel.value === 'Habitual') sel.classList.add('border-green');
-}
-function onTipoSangChange(sel) {
-    const neg = sel.value.includes('-');
-    const badge = document.getElementById('tipo-sang-badge');
-    badge.textContent = sel.value || '—';
-    badge.className = 'badge ' + (sel.value ? (neg ? 'badge-yellow' : 'badge-green') : 'badge-gray');
-}
-
-/* TOTG */
-function checkTOTG() {
-    const j = parseFloat(document.getElementById('f-totg-jejum').value);
-    const s = parseFloat(document.getElementById('f-totg-60').value);
-    const t = parseFloat(document.getElementById('f-totg-120').value);
-    const badge = document.getElementById('totg-badge');
-    document.getElementById('f-totg-jejum').style.borderColor = (j && j >= 92) ? '#E15B5B' : '';
-    document.getElementById('f-totg-60').style.borderColor = (s && s >= 180) ? '#E15B5B' : '';
-    document.getElementById('f-totg-120').style.borderColor = (t && t >= 153) ? '#E15B5B' : '';
-    const altered = (j && j >= 92) || (s && s >= 180) || (t && t >= 153);
-    if (!j && !s && !t) { badge.style.display = 'none'; return; }
-    badge.style.display = 'inline-block';
-    badge.className = 'badge ' + (altered ? 'badge-red' : 'badge-green');
-    badge.textContent = altered ? 'Alterado' : 'Normal';
-}
-
-/* TOGGLES */
-function selectToggle(groupId, btn, activeClass) {
-    document.getElementById(groupId).querySelectorAll('.toggle-btn').forEach(b =>
-        b.classList.remove('active-green', 'active-gray', 'active-red'));
-    btn.classList.add(activeClass);
-}
-
-/* SOROLOGIAS */
-const SOROLOGIAS = ['Anti-HIV','VDRL','HBsAg','Anti-HCV','HTLV','Toxoplasmose IgG','Toxoplasmose IgM','Rubéola','CMV','Coombs Indireto'];
-function buildSorologias() {
-    const grid = document.getElementById('sorologia-grid');
-    grid.innerHTML = SOROLOGIAS.map((s, i) => {
-        const id = 'sor-' + i;
-        return '<div class="sorologia-item"><span class="sorologia-label">' + s + '</span>' +
-            '<div class="toggle-group" id="' + id + '">' +
-            '<button class="toggle-btn" onclick="selectToggle(\'' + id + '\',this,\'active-red\')">Reagente</button>' +
-            '<button class="toggle-btn active-green" onclick="selectToggle(\'' + id + '\',this,\'active-green\')">Não reagente</button>' +
-            '</div></div>';
-    }).join('');
-}
-
-/* SAVE SECTION */
-function saveSection(sectionId, storageKey, dataFn) {
-    const existing = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    localStorage.setItem(storageKey, JSON.stringify(Object.assign(existing, dataFn())));
-    const sec = document.getElementById(sectionId);
-    sec.classList.add('saved');
-    setTimeout(() => sec.classList.remove('saved'), 1500);
-}
-function getIdentificacaoData() {
-    return { nomebebe: document.getElementById('f-nomebebe').value, acompanhante: document.getElementById('f-acompanhante').value, hospital: document.getElementById('f-hospital').value, risco: document.getElementById('f-risco').value, altura: document.getElementById('f-altura').value, pesoIni: document.getElementById('f-peso-ini').value, fetos: document.getElementById('f-fetos').value, paridade: document.getElementById('f-paridade').value, fatores: document.getElementById('f-fatores').value, dpp: document.getElementById('f-dpp').value, cesarea: document.getElementById('f-cesarea').value };
-}
-function getClinicosData() {
-    return { alergias: document.getElementById('f-alergias').value, meds: document.getElementById('f-meds').value, doencas: document.getElementById('f-doencas').value, cirurgias: document.getElementById('f-cirurgias').value, historico: document.getElementById('f-historico').value, antecedentes: document.getElementById('f-antecedentes').value, profissao: document.getElementById('f-profissao').value, vicios: document.getElementById('f-vicios').value, obsClinico: document.getElementById('f-obs-clinicos').value };
-}
-function getEspeciaisData() {
-    const strepActive = document.querySelector('#strep-group .toggle-btn.active-green, #strep-group .toggle-btn.active-red, #strep-group .toggle-btn.active-gray');
-    return { tipoSang: document.getElementById('f-tipo-sang').value, nipt: document.getElementById('f-nipt').value, totgJejum: document.getElementById('f-totg-jejum').value, totg60: document.getElementById('f-totg-60').value, totg120: document.getElementById('f-totg-120').value, strep: strepActive ? strepActive.textContent.trim() : 'Não testado' };
-}
-
-/* HELPERS */
 function fmtDate(s) {
     if (!s) return '—';
     const [y,m,d] = s.split('-');
@@ -1048,254 +669,234 @@ function fmtDT(iso) {
     const d = new Date(iso);
     return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}) + ' · ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
-function fmtDur(s) { return s < 60 ? s + 's' : Math.floor(s/60) + 'min ' + (s%60) + 's'; }
-function fmtInt(s) { if (!s) return '—'; const m = Math.floor(s/60); return m > 0 ? m + 'min' : s + 's'; }
-
 function toggleHistory(id) { document.getElementById(id).classList.toggle('open'); }
-
-/* CONSULTAS */
-const MOCK_CONSULTAS = [
-    {data:'2026-04-13',ig:'32s',pa:'120/78',peso:70,bcf:142,au:30,movim:'✓ Presente',apres:'Cefálico',edema:'0 – Ausente',conduta:'Manter acompanhamento quinzenal. Solicitar USG doppler.',cid:'Z34.2',obs:''},
-    {data:'2026-03-20',ig:'28s',pa:'118/76',peso:68,bcf:138,au:27,movim:'✓ Presente',apres:'Cefálico',edema:'0 – Ausente',conduta:'Solicitar TOTG. Orientar hidratação.',cid:'Z34.2',obs:''},
-    {data:'2026-02-20',ig:'24s',pa:'115/74',peso:66,bcf:140,au:24,movim:'✓ Presente',apres:'Variável',edema:'0 – Ausente',conduta:'Solicitar morfológico 2º trimestre.',cid:'Z34.2',obs:''}
-];
-function paBadgeClass(pa) {
-    if (!pa) return '';
-    const p = pa.split('/'); const sys = parseInt(p[0]); const dia = parseInt(p[1]);
-    if (sys >= 140 || dia >= 90) return 'badge-red';
-    if (sys >= 130 || dia >= 85) return 'badge-yellow';
-    return 'badge-green';
+function selToggle(gid, btn, cls) {
+    document.getElementById(gid).querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active-green','active-gray','active-red'));
+    btn.classList.add(cls);
 }
-function paBadgeLabel(pa) {
+
+/* ─── ALERTAS ─── */
+function loadAlerts() {
+    const area = document.getElementById('alertsArea');
+    area.innerHTML = '';
+    const pList = JSON.parse(localStorage.getItem('gv_pressao') || '[]');
+    if (pList.filter(r => r.sys >= 140 || r.dia >= 90).length > 0)
+        area.innerHTML += '<div class="alert-card"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="alert-text">Registros de pressão elevada (≥140/90). Ver aba Sinais Vitais.</p></div>';
+    const gList = JSON.parse(localStorage.getItem('gv_glicose') || '[]');
+    if (gList.filter(r => r.moment.includes('Jejum') ? r.value >= 126 : r.value >= 200).length > 0)
+        area.innerHTML += '<div class="alert-card"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="alert-text">Registros de glicose elevada. Ver aba Sinais Vitais.</p></div>';
+}
+
+/* ─── IDENTIFICAÇÃO ─── */
+function saveIdent() {
+    const d = { nomebebe: document.getElementById('fi-nomebebe').value, acompanhante: document.getElementById('fi-acompanhante').value, hospital: document.getElementById('fi-hospital').value, risco: document.getElementById('fi-risco').value, paridade: document.getElementById('fi-paridade').value, fetos: document.getElementById('fi-fetos').value, fatores: document.getElementById('fi-fatores').value, dpp: document.getElementById('fi-dpp').value, altura: document.getElementById('fi-altura').value, peso: document.getElementById('fi-peso').value };
+    const stored = JSON.parse(localStorage.getItem('gv_cartao_1498') || '{}');
+    localStorage.setItem('gv_cartao_1498', JSON.stringify(Object.assign(stored, d)));
+    const h = parseFloat(d.altura) / 100, w = parseFloat(d.peso);
+    const imc = (h && w) ? (w / (h * h)).toFixed(1) : '—';
+    document.getElementById('v-nomebebe').textContent = d.nomebebe || '—';
+    document.getElementById('v-acompanhante').textContent = d.acompanhante || '—';
+    document.getElementById('v-hospital').textContent = d.hospital || '—';
+    document.getElementById('v-paridade').textContent = d.paridade || '—';
+    document.getElementById('v-fetos').textContent = d.fetos || '—';
+    document.getElementById('v-fatores').textContent = d.fatores || '—';
+    document.getElementById('v-antrop').textContent = (d.altura ? d.altura + ' cm' : '') + (d.peso ? ' · ' + d.peso + ' kg' : '') + (imc !== '—' ? ' · IMC ' + imc : '');
+    document.getElementById('v-dpp').textContent = fmtDate(d.dpp);
+    closeModal('modal-ident');
+}
+
+/* ─── CLÍNICOS ─── */
+function saveClinicos() {
+    const d = { alergias: document.getElementById('fc-alergias').value, meds: document.getElementById('fc-meds').value, doencas: document.getElementById('fc-doencas').value, cirurgias: document.getElementById('fc-cirurgias').value, historico: document.getElementById('fc-historico').value, antecedentes: document.getElementById('fc-antecedentes').value, profissao: document.getElementById('fc-profissao').value, vicios: document.getElementById('fc-vicios').value };
+    const stored = JSON.parse(localStorage.getItem('gv_cartao_1498') || '{}');
+    localStorage.setItem('gv_cartao_1498', JSON.stringify(Object.assign(stored, d)));
+    document.getElementById('v-alergias').textContent = d.alergias || 'Nenhuma';
+    document.getElementById('v-meds').textContent = d.meds || '—';
+    document.getElementById('v-doencas').textContent = d.doencas || 'Nenhuma';
+    document.getElementById('v-cirurgias').textContent = d.cirurgias || 'Nenhuma';
+    document.getElementById('v-antecedentes').textContent = d.antecedentes || '—';
+    document.getElementById('v-profissao').textContent = d.profissao || '—';
+    document.getElementById('v-vicios').textContent = d.vicios || '—';
+    closeModal('modal-clinico');
+}
+
+/* ─── ESPECIAIS ─── */
+function saveEspeciais() {
+    const strepBtn = document.querySelector('#strep-group .toggle-btn.active-green, #strep-group .toggle-btn.active-red, #strep-group .toggle-btn.active-gray');
+    const strep = strepBtn ? strepBtn.textContent.trim() : 'Não testado';
+    const tipo = document.getElementById('fe-tipo-sang').value;
+    const j = document.getElementById('fe-totg-j').value;
+    const s60 = document.getElementById('fe-totg-60').value;
+    const s120 = document.getElementById('fe-totg-120').value;
+    const altered = (j && j >= 92) || (s60 && s60 >= 180) || (s120 && s120 >= 153);
+    document.getElementById('v-tipo-sang').textContent = tipo || '—';
+    document.getElementById('v-nipt').textContent = document.getElementById('fe-nipt').value || '—';
+    document.getElementById('v-totg').innerHTML = (j||'—') + ' / ' + (s60||'—') + ' / ' + (s120||'—') + ' mg/dL <span class="badge ' + (altered ? 'badge-red' : 'badge-green') + '">' + (altered ? 'Alterado' : 'Normal') + '</span>';
+    const strepClass = strep === 'Positivo' ? 'badge-red' : strep === 'Negativo' ? 'badge-green' : 'badge-gray';
+    document.getElementById('v-strep').innerHTML = '<span class="badge ' + strepClass + '">' + strep + '</span>';
+    closeModal('modal-especiais');
+}
+
+/* ─── CONSULTAS ─── */
+const MOCK_CONSULTAS = [
+    {data:'2026-04-13',ig:'32s',pa:'120/78',peso:70,bcf:142,au:30,apres:'Cefálico',edema:'0 – Ausente',conduta:'Manter acompanhamento quinzenal. Solicitar USG doppler.',cid:'Z34.2',obs:''},
+    {data:'2026-03-20',ig:'28s',pa:'118/76',peso:68,bcf:138,au:27,apres:'Cefálico',edema:'0 – Ausente',conduta:'Solicitar TOTG. Orientar hidratação.',cid:'Z34.2',obs:''},
+    {data:'2026-02-20',ig:'24s',pa:'115/74',peso:66,bcf:140,au:24,apres:'Variável',edema:'0 – Ausente',conduta:'Solicitar morfológico 2º trimestre.',cid:'Z34.2',obs:''}
+];
+function paBadge(pa) {
     if (!pa) return '';
-    const p = pa.split('/'); const sys = parseInt(p[0]); const dia = parseInt(p[1]);
-    if (sys >= 140 || dia >= 90) return 'Alto';
-    if (sys >= 130 || dia >= 85) return 'Atenção';
-    return 'Normal';
+    const p = pa.split('/'); const sys = parseInt(p[0]), dia = parseInt(p[1]);
+    if (sys >= 140 || dia >= 90) return '<span class="badge badge-red">Alto</span>';
+    if (sys >= 130 || dia >= 85) return '<span class="badge badge-yellow">Atenção</span>';
+    return '<span class="badge badge-green">Normal</span>';
 }
 function renderConsultas() {
     const saved = JSON.parse(localStorage.getItem('gv_consultas_1498') || '[]');
     const all = [...saved, ...MOCK_CONSULTAS];
+    document.getElementById('consultas-count').textContent = all.length + ' consulta' + (all.length !== 1 ? 's' : '');
     const el = document.getElementById('consultas-list');
-    el.innerHTML = all.length === 0 ? '<div class="empty-mini">Nenhuma consulta registrada.</div>' :
+    el.innerHTML = all.length === 0 ? '<div class="empty-mini"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Nenhuma consulta registrada</div>' :
         all.map((c,i) => '<div class="history-card" id="hc-' + i + '">' +
             '<div class="history-header" onclick="toggleHistory(\'hc-' + i + '\')">' +
             '<div class="history-header-left"><p class="history-date">' + fmtDate(c.data) + ' · ' + c.ig + '</p>' +
-            '<p class="history-meta">PA: ' + (c.pa||'—') + ' · Peso: ' + (c.peso||'—') + 'kg' + (c.bcf ? ' · BCF: '+c.bcf+'bpm' : '') + '</p></div>' +
-            (c.pa ? '<span class="badge ' + paBadgeClass(c.pa) + '" style="flex-shrink:0;">' + paBadgeLabel(c.pa) + '</span>' : '') +
+            '<p class="history-meta">PA: ' + (c.pa||'—') + (c.peso ? ' · Peso: '+c.peso+'kg' : '') + (c.bcf ? ' · BCF: '+c.bcf+'bpm' : '') + '</p></div>' +
+            paBadge(c.pa) +
             '<svg class="history-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>' +
-            '<div class="history-body"><div class="history-grid">' +
-            (c.au ? '<div class="history-field"><p class="history-key">Alt. Uterina</p><p class="history-val">'+c.au+' cm</p></div>' : '') +
-            (c.movim ? '<div class="history-field"><p class="history-key">Movimentação</p><p class="history-val">'+c.movim+'</p></div>' : '') +
-            (c.apres ? '<div class="history-field"><p class="history-key">Apresentação</p><p class="history-val">'+c.apres+'</p></div>' : '') +
-            (c.edema ? '<div class="history-field"><p class="history-key">Edema</p><p class="history-val">'+c.edema+'</p></div>' : '') +
-            (c.toque ? '<div class="history-field"><p class="history-key">Toque</p><p class="history-val">'+c.toque+'</p></div>' : '') +
-            (c.cid ? '<div class="history-field"><p class="history-key">CID</p><p class="history-val">'+c.cid+'</p></div>' : '') +
-            (c.conduta ? '<div class="history-field history-full"><p class="history-key">Conduta</p><p class="history-val">'+c.conduta+'</p></div>' : '') +
-            (c.obs ? '<div class="history-field history-full"><p class="history-key">Observações</p><p class="history-val">'+c.obs+'</p></div>' : '') +
-            '</div></div></div>'
+            '<div class="history-body"><div class="history-body-inner"><div class="hb-grid">' +
+            (c.au ? '<div class="hb-field"><p class="hb-key">Alt. Uterina</p><p class="hb-val">'+c.au+' cm</p></div>' : '') +
+            (c.apres ? '<div class="hb-field"><p class="hb-key">Apresentação</p><p class="hb-val">'+c.apres+'</p></div>' : '') +
+            (c.edema ? '<div class="hb-field"><p class="hb-key">Edema</p><p class="hb-val">'+c.edema+'</p></div>' : '') +
+            (c.cid ? '<div class="hb-field"><p class="hb-key">CID</p><p class="hb-val">'+c.cid+'</p></div>' : '') +
+            (c.conduta ? '<div class="hb-full"><p class="hb-key">Conduta</p><p class="hb-val" style="font-weight:500;font-size:13px;line-height:1.5;">'+c.conduta+'</p></div>' : '') +
+            (c.obs ? '<div class="hb-full"><p class="hb-key">Observações</p><p class="hb-val" style="font-weight:500;font-size:13px;">'+c.obs+'</p></div>' : '') +
+            '</div></div></div></div>'
         ).join('');
 }
 function saveConsulta() {
-    const entry = { data: document.getElementById('fc-data').value, ig: document.getElementById('fc-ig').value, pa: document.getElementById('fc-pa').value, peso: document.getElementById('fc-peso').value, bcf: document.getElementById('fc-bcf').value, au: document.getElementById('fc-au').value, toque: document.getElementById('fc-toque').value, movim: document.getElementById('fc-movim').value, apres: document.getElementById('fc-apres').value, edema: document.getElementById('fc-edema').value, obs: document.getElementById('fc-obs').value, conduta: document.getElementById('fc-conduta').value, cid: document.getElementById('fc-cid').value };
+    const e = { data: document.getElementById('nc-data').value, ig: document.getElementById('nc-ig').value, pa: document.getElementById('nc-pa').value, peso: document.getElementById('nc-peso').value, bcf: document.getElementById('nc-bcf').value, au: document.getElementById('nc-au').value, apres: document.getElementById('nc-apres').value, edema: document.getElementById('nc-edema').value, conduta: document.getElementById('nc-conduta').value, obs: document.getElementById('nc-obs').value, cid: document.getElementById('nc-cid').value };
     const saved = JSON.parse(localStorage.getItem('gv_consultas_1498') || '[]');
-    saved.unshift(entry);
+    saved.unshift(e);
     localStorage.setItem('gv_consultas_1498', JSON.stringify(saved));
-    toggleForm('form-consulta');
+    closeModal('modal-consulta');
     renderConsultas();
 }
 
-/* USG */
+/* ─── USG ─── */
 const MOCK_USG = [
-    {tipo:'US Obstétrico',data:'2026-04-13',ig:'32s',apres:'Cefálico',placenta:'Anterior',la:'Normal',bcf:142,pesoFetal:1850,percentil:52,obs:''},
-    {tipo:'US Morfológico 2º Tri',data:'2026-03-15',ig:'28s',apres:'Cefálico',placenta:'Anterior',la:'Normal',bcf:140,pesoFetal:1100,percentil:48,obs:''},
-    {tipo:'US Morfológico 1º Tri',data:'2026-01-10',ig:'12s',apres:'',placenta:'',la:'',bcf:162,pesoFetal:'',percentil:'',obs:'Morfologia normal. Translucência nucal 1.2mm.'}
+    {tipo:'US Obstétrico',data:'2026-04-13',ig:'32s',apres:'Cefálico',placenta:'Anterior',la:'Normal',bcf:142,peso:1850,percentil:52,obs:''},
+    {tipo:'US Morfológico 2º Tri',data:'2026-03-15',ig:'28s',apres:'Cefálico',placenta:'Anterior',la:'Normal',bcf:140,peso:1100,percentil:48,obs:''},
+    {tipo:'US Morfológico 1º Tri',data:'2026-01-10',ig:'12s',apres:'',placenta:'',la:'',bcf:162,peso:'',percentil:'',obs:'Morfologia normal. Translucência nucal 1.2mm.'}
 ];
 function renderUSG() {
     const saved = JSON.parse(localStorage.getItem('gv_usg_1498') || '[]');
     const all = [...saved, ...MOCK_USG];
+    document.getElementById('usg-count').textContent = all.length + ' exame' + (all.length !== 1 ? 's' : '');
     const el = document.getElementById('usg-list');
-    el.innerHTML = all.length === 0 ? '<div class="empty-mini">Nenhum USG registrado.</div>' :
+    el.innerHTML = all.length === 0 ? '<div class="empty-mini">Nenhum USG registrado</div>' :
         all.map((u,i) => '<div class="history-card" id="hu-' + i + '">' +
             '<div class="history-header" onclick="toggleHistory(\'hu-' + i + '\')">' +
-            '<div class="history-header-left"><p class="history-date">' + u.tipo + ' · ' + fmtDate(u.data) + '</p>' +
-            '<p class="history-meta">' + u.ig + (u.bcf ? ' · BCF: '+u.bcf+'bpm' : '') + (u.pesoFetal ? ' · '+u.pesoFetal+'g' : '') + '</p></div>' +
+            '<div class="history-header-left"><p class="history-date">' + u.tipo + '</p>' +
+            '<p class="history-meta">' + fmtDate(u.data) + ' · ' + u.ig + (u.bcf ? ' · BCF: '+u.bcf+'bpm' : '') + (u.peso ? ' · '+u.peso+'g' : '') + '</p></div>' +
             '<svg class="history-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>' +
-            '<div class="history-body"><div class="history-grid">' +
-            (u.apres ? '<div class="history-field"><p class="history-key">Apresentação</p><p class="history-val">'+u.apres+'</p></div>' : '') +
-            (u.placenta ? '<div class="history-field"><p class="history-key">Placenta</p><p class="history-val">'+u.placenta+'</p></div>' : '') +
-            (u.la ? '<div class="history-field"><p class="history-key">Líq. Amniótico</p><p class="history-val">'+u.la+'</p></div>' : '') +
-            (u.percentil ? '<div class="history-field"><p class="history-key">Percentil</p><p class="history-val">'+u.percentil+'º</p></div>' : '') +
-            (u.obs ? '<div class="history-field history-full"><p class="history-key">Observações</p><p class="history-val">'+u.obs+'</p></div>' : '') +
-            '</div></div></div>'
+            '<div class="history-body"><div class="history-body-inner"><div class="hb-grid">' +
+            (u.apres ? '<div class="hb-field"><p class="hb-key">Apresentação</p><p class="hb-val">'+u.apres+'</p></div>' : '') +
+            (u.placenta ? '<div class="hb-field"><p class="hb-key">Placenta</p><p class="hb-val">'+u.placenta+'</p></div>' : '') +
+            (u.la ? '<div class="hb-field"><p class="hb-key">Líq. Amniótico</p><p class="hb-val">'+u.la+'</p></div>' : '') +
+            (u.percentil ? '<div class="hb-field"><p class="hb-key">Percentil</p><p class="hb-val">'+u.percentil+'º</p></div>' : '') +
+            (u.obs ? '<div class="hb-full"><p class="hb-key">Observações</p><p class="hb-val" style="font-weight:500;font-size:13px;">'+u.obs+'</p></div>' : '') +
+            '</div></div></div></div>'
         ).join('');
 }
 function saveUSG() {
-    const entry = { tipo: document.getElementById('fu-tipo').value, data: document.getElementById('fu-data').value, ig: document.getElementById('fu-ig').value, apres: document.getElementById('fu-apres').value, placenta: document.getElementById('fu-placenta').value, la: document.getElementById('fu-la').value, bcf: document.getElementById('fu-bcf').value, pesoFetal: document.getElementById('fu-peso-fetal').value, percentil: document.getElementById('fu-percentil').value, obs: document.getElementById('fu-obs').value };
+    const e = { tipo: document.getElementById('nu-tipo').value, data: document.getElementById('nu-data').value, ig: document.getElementById('nu-ig').value, apres: document.getElementById('nu-apres').value, placenta: document.getElementById('nu-placenta').value, la: document.getElementById('nu-la').value, bcf: document.getElementById('nu-bcf').value, peso: document.getElementById('nu-peso').value, percentil: document.getElementById('nu-percentil').value, obs: document.getElementById('nu-obs').value };
     const saved = JSON.parse(localStorage.getItem('gv_usg_1498') || '[]');
-    saved.unshift(entry);
-    localStorage.setItem('gv_usg_1498', JSON.stringify(saved));
-    toggleForm('form-usg');
-    renderUSG();
+    saved.unshift(e); localStorage.setItem('gv_usg_1498', JSON.stringify(saved));
+    closeModal('modal-usg'); renderUSG();
 }
 
-/* LAB */
+/* ─── EXAMES LAB ─── */
 const MOCK_LAB = [
-    {data:'2026-03-28',ig:'28s',hb:'11.8/35',plaq:210,glicemia:88,tsh:1.8,ferr:32,vitd:38,interp:'Normal',sorologias:{'Anti-HIV':'NR','VDRL':'NR','HBsAg':'NR','Toxoplasmose IgG':'R','Toxoplasmose IgM':'NR'}},
-    {data:'2026-01-05',ig:'8s',hb:'12.2/37',plaq:'',glicemia:'',interp:'Normal',sorologias:{'Anti-HIV':'NR','VDRL':'NR','Rubéola':'R','CMV':'R'}}
+    {data:'2026-03-28',ig:'28s',hb:'11.8/35',plaq:210,glic:88,tsh:1.8,ferr:32,vitd:38,interp:'Normal',sor:{'Anti-HIV':'NR','VDRL':'NR','HBsAg':'NR','Toxo IgG':'R','Toxo IgM':'NR'}},
+    {data:'2026-01-05',ig:'8s',hb:'12.2/37',plaq:'',glic:'',interp:'Normal',sor:{'Anti-HIV':'NR','VDRL':'NR','Rubéola':'R','CMV':'R'}}
 ];
+const SOROLOGIAS = ['Anti-HIV','VDRL','HBsAg','Anti-HCV','HTLV','Toxo IgG','Toxo IgM','Rubéola','CMV','Coombs Indireto'];
+function buildSorGrid() {
+    document.getElementById('sor-grid-modal').innerHTML = SOROLOGIAS.map((s,i) => {
+        const gid = 'sor-' + i;
+        return '<div class="sor-item"><span class="sor-label">' + s + '</span><div class="toggle-group" id="' + gid + '">' +
+            '<button class="toggle-btn" onclick="selToggle(\'' + gid + '\',this,\'active-red\')">Reagente</button>' +
+            '<button class="toggle-btn active-green" onclick="selToggle(\'' + gid + '\',this,\'active-green\')">Não reagente</button>' +
+            '</div></div>';
+    }).join('');
+}
 function renderLab() {
     const saved = JSON.parse(localStorage.getItem('gv_exames_1498') || '[]');
     const all = [...saved, ...MOCK_LAB];
+    document.getElementById('exames-count').textContent = all.length + ' coleta' + (all.length !== 1 ? 's' : '');
     const el = document.getElementById('lab-list');
-    el.innerHTML = all.length === 0 ? '<div class="empty-mini">Nenhuma coleta registrada.</div>' :
+    el.innerHTML = all.length === 0 ? '<div class="empty-mini">Nenhuma coleta registrada</div>' :
         all.map((l,i) => {
-            const sorHtml = l.sorologias ? Object.entries(l.sorologias).map(([k,v]) =>
-                '<span style="font-size:11px;margin-right:8px;"><b>' + k + ':</b> <span style="color:' + (v==='R'?'#c0584a':'var(--primary-dk)') + '">' + (v==='R'?'Reagente':'Não reagente') + '</span></span>'
+            const sorHtml = l.sor ? Object.entries(l.sor).map(([k,v]) =>
+                '<span style="font-size:11.5px;margin-right:10px;"><b>' + k + '</b> <span style="color:' + (v==='R'?'#c0584a':'var(--primary-dk)') + ';font-weight:700;">' + (v==='R'?'R':'NR') + '</span></span>'
             ).join('') : '';
             return '<div class="history-card" id="hl-' + i + '">' +
                 '<div class="history-header" onclick="toggleHistory(\'hl-' + i + '\')">' +
-                '<div class="history-header-left"><p class="history-date">Coleta ' + fmtDate(l.data) + (l.ig ? ' · '+l.ig : '') + '</p>' +
-                '<p class="history-meta">' + (l.hb?'Hb/Ht: '+l.hb:'') + (l.plaq?' · Plaq: '+l.plaq+'k':'') + (l.glicemia?' · Glic: '+l.glicemia:'') + '</p></div>' +
+                '<div class="history-header-left"><p class="history-date">Coleta de ' + fmtDate(l.data) + (l.ig ? ' · ' + l.ig : '') + '</p>' +
+                '<p class="history-meta">' + (l.hb?'Hb/Ht: '+l.hb:'') + (l.plaq?' · Plaq: '+l.plaq+'k':'') + (l.glic?' · Glic. jejum: '+l.glic:'') + '</p></div>' +
+                (l.interp ? '<span class="badge badge-green">'+l.interp+'</span>' : '') +
                 '<svg class="history-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>' +
-                '<div class="history-body"><div class="history-grid">' +
-                (l.tsh ? '<div class="history-field"><p class="history-key">TSH</p><p class="history-val">'+l.tsh+' µUI/mL</p></div>' : '') +
-                (l.ferr ? '<div class="history-field"><p class="history-key">Ferritina</p><p class="history-val">'+l.ferr+' ng/mL</p></div>' : '') +
-                (l.vitd ? '<div class="history-field"><p class="history-key">Vitamina D</p><p class="history-val">'+l.vitd+' ng/mL</p></div>' : '') +
-                (l.interp ? '<div class="history-field"><p class="history-key">Interpretação</p><p class="history-val">'+l.interp+'</p></div>' : '') +
-                (sorHtml ? '<div class="history-field history-full" style="margin-top:6px;">'+sorHtml+'</div>' : '') +
-                '</div></div></div>';
+                '<div class="history-body"><div class="history-body-inner"><div class="hb-grid">' +
+                (l.tsh ? '<div class="hb-field"><p class="hb-key">TSH</p><p class="hb-val">'+l.tsh+' µUI/mL</p></div>' : '') +
+                (l.ferr ? '<div class="hb-field"><p class="hb-key">Ferritina</p><p class="hb-val">'+l.ferr+' ng/mL</p></div>' : '') +
+                (l.vitd ? '<div class="hb-field"><p class="hb-key">Vitamina D</p><p class="hb-val">'+l.vitd+' ng/mL</p></div>' : '') +
+                (sorHtml ? '<div class="hb-full" style="margin-top:8px;line-height:2;">' + sorHtml + '</div>' : '') +
+                '</div></div></div></div>';
         }).join('');
 }
 function saveLab() {
-    const entry = { data: document.getElementById('fl-data').value, hb: document.getElementById('fl-hb').value, plaq: document.getElementById('fl-plaq').value, glicemia: document.getElementById('fl-glicemia').value, tsh: document.getElementById('fl-tsh').value, ferr: document.getElementById('fl-ferr').value, vitd: document.getElementById('fl-vitd').value, b12: document.getElementById('fl-b12').value, eas: document.getElementById('fl-eas').value, uroc: document.getElementById('fl-uroc').value, interp: document.getElementById('fl-interp').value };
+    const e = { data: document.getElementById('nl-data').value, hb: document.getElementById('nl-hb').value, plaq: document.getElementById('nl-plaq').value, glic: document.getElementById('nl-glic').value, tsh: document.getElementById('nl-tsh').value, ferr: document.getElementById('nl-ferr').value, vitd: document.getElementById('nl-vitd').value, interp: document.getElementById('nl-interp').value };
     const saved = JSON.parse(localStorage.getItem('gv_exames_1498') || '[]');
-    saved.unshift(entry);
-    localStorage.setItem('gv_exames_1498', JSON.stringify(saved));
-    toggleForm('form-lab');
-    renderLab();
+    saved.unshift(e); localStorage.setItem('gv_exames_1498', JSON.stringify(saved));
+    closeModal('modal-lab'); renderLab();
 }
 
-/* VACINAS */
+/* ─── VACINAS ─── */
 const MOCK_VACINAS = [
     {nome:'dTpa',dose:'Dose única',data:'2026-02-15',status:'Aplicada'},
     {nome:'Gripe (Influenza)',dose:'Dose única',data:'2026-02-15',status:'Aplicada'},
     {nome:'Hepatite B',dose:'3ª dose',data:'',status:'Pendente'},
     {nome:'COVID-19',dose:'Esquema completo',data:'',status:'Aplicada'}
 ];
-function vacinaBadge(s) { return s==='Aplicada'?'badge-green':s==='Recusada'?'badge-red':'badge-yellow'; }
+function vBadge(s) { return s==='Aplicada'?'badge-green':s==='Recusada'?'badge-red':'badge-yellow'; }
 function renderVacinas() {
     const saved = JSON.parse(localStorage.getItem('gv_vacinas_1498') || '[]');
     const all = [...saved, ...MOCK_VACINAS];
     document.getElementById('vacinas-list').innerHTML = all.map(v =>
-        '<div class="vaccine-row"><div style="flex:1;"><p class="vaccine-name">' + v.nome + '</p>' +
-        '<p class="vaccine-info">' + v.dose + (v.data ? ' · '+fmtDate(v.data) : '') + '</p></div>' +
-        '<span class="badge ' + vacinaBadge(v.status) + '">' + v.status + '</span></div>'
+        '<div class="vaccine-row"><div><p class="vaccine-name">' + v.nome + '</p>' +
+        '<p class="vaccine-info">' + (v.dose||'') + (v.data ? ' · ' + fmtDate(v.data) : '') + '</p></div>' +
+        '<span class="badge ' + vBadge(v.status) + '">' + v.status + '</span></div>'
     ).join('');
 }
 function saveVacina() {
-    const statusBtn = document.querySelector('#vacina-status-group .toggle-btn.active-green, #vacina-status-group .toggle-btn.active-gray, #vacina-status-group .toggle-btn.active-red');
-    const entry = { nome: document.getElementById('fv-nome').value, data: document.getElementById('fv-data').value, dose: document.getElementById('fv-dose').value, status: statusBtn ? statusBtn.textContent.trim() : 'Aplicada', obs: document.getElementById('fv-obs').value };
+    const sb = document.querySelector('#vacina-status-group .toggle-btn.active-green, #vacina-status-group .toggle-btn.active-gray, #vacina-status-group .toggle-btn.active-red');
+    const e = { nome: document.getElementById('fv-nome').value, data: document.getElementById('fv-data').value, dose: document.getElementById('fv-dose').value, status: sb ? sb.textContent.trim() : 'Aplicada', obs: document.getElementById('fv-obs').value };
     const saved = JSON.parse(localStorage.getItem('gv_vacinas_1498') || '[]');
-    saved.unshift(entry);
-    localStorage.setItem('gv_vacinas_1498', JSON.stringify(saved));
-    toggleForm('form-vacina');
-    renderVacinas();
+    saved.unshift(e); localStorage.setItem('gv_vacinas_1498', JSON.stringify(saved));
+    closeModal('modal-vacina'); renderVacinas();
 }
 
-/* NOTAS */
+/* ─── NOTAS ─── */
 let notasTimer;
 function autoSaveNotas() {
     clearTimeout(notasTimer);
     notasTimer = setTimeout(() => {
         localStorage.setItem('gv_notas_medica_1498', document.getElementById('notas-medica').value);
-        const now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-        document.getElementById('notas-status').textContent = 'Salvo automaticamente às ' + now;
+        document.getElementById('notas-status').textContent = 'Salvo automaticamente às ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     }, 800);
 }
 
-/* CONTRAÇÕES */
-let contrTimerInterval = null, contrStartTime = null, contrLastEnd = null;
-const contrBtn = document.getElementById('contracBtn');
-const contrLabel = document.getElementById('contracBtnLabel');
-const contrTimer = document.getElementById('contracBtnTimer');
-const cr1 = document.getElementById('cr1');
-const cr2 = document.getElementById('cr2');
-
-function startContrac() {
-    if (contrTimerInterval) return;
-    contrStartTime = Date.now();
-    contrBtn.style.background = 'var(--accent)';
-    contrLabel.textContent = 'Solte';
-    cr1.style.animationName = 'ring-active';
-    cr2.style.animationName = 'ring-active';
-    contrTimerInterval = setInterval(() => {
-        contrTimer.textContent = Math.floor((Date.now() - contrStartTime) / 1000) + 's';
-    }, 100);
-}
-function endContrac() {
-    if (!contrTimerInterval || !contrStartTime) return;
-    clearInterval(contrTimerInterval); contrTimerInterval = null;
-    const duration = Math.floor((Date.now() - contrStartTime) / 1000);
-    const interval = contrLastEnd ? Math.floor((contrStartTime - contrLastEnd) / 1000) : null;
-    contrLastEnd = Date.now();
-    contrBtn.style.background = 'var(--primary)';
-    contrLabel.textContent = 'Segurar'; contrTimer.textContent = '0s';
-    cr1.style.animationName = 'ring-idle'; cr2.style.animationName = 'ring-idle';
-    const all = JSON.parse(localStorage.getItem('gv_contracoes') || '[]');
-    all.push({ startTime: new Date(contrStartTime).toISOString(), duration, interval });
-    localStorage.setItem('gv_contracoes', JSON.stringify(all));
-    const msg = document.getElementById('contracLastMsg');
-    msg.style.display = 'block';
-    msg.textContent = 'Última: ' + fmtDur(duration) + (interval ? ' · Intervalo: ' + fmtInt(interval) : '');
-    document.getElementById('contrac-hint').textContent = 'Pressione novamente quando sentir a próxima contração';
-    loadContracoes();
-}
-contrBtn.addEventListener('mousedown', startContrac);
-contrBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startContrac(); }, { passive: false });
-document.addEventListener('mouseup', endContrac);
-contrBtn.addEventListener('touchend', endContrac);
-
-function loadContracoes() {
-    const all = JSON.parse(localStorage.getItem('gv_contracoes') || '[]');
-    const today = new Date().toDateString();
-    const list = all.filter(c => new Date(c.startTime).toDateString() === today);
-    document.getElementById('cCount').textContent = list.length;
-    if (list.length > 0) {
-        const avgDur = Math.round(list.reduce((a,c) => a+c.duration,0) / list.length);
-        document.getElementById('cAvgDur').textContent = fmtDur(avgDur);
-        const withInt = list.filter(c => c.interval !== null);
-        if (withInt.length > 0) {
-            const avgInt = Math.round(withInt.reduce((a,c) => a+c.interval,0) / withInt.length);
-            document.getElementById('cAvgInt').textContent = fmtInt(avgInt);
-            document.getElementById('contracAlert511').style.display = (avgInt <= 300 && list.length >= 3) ? 'flex' : 'none';
-        }
-        document.getElementById('cLast').textContent = fmtDur(list[list.length-1].duration);
-    } else {
-        document.getElementById('cAvgDur').textContent = '—';
-        document.getElementById('cAvgInt').textContent = '—';
-        document.getElementById('cLast').textContent = '—';
-    }
-    const container = document.getElementById('contracList');
-    if (list.length === 0) { container.innerHTML = '<div class="empty-mini">Nenhuma contração registrada hoje.</div>'; return; }
-    container.innerHTML = [...list].reverse().map((c, i) => {
-        const idx = list.length - i;
-        return '<div class="data-row">' +
-            '<div class="dr-bar c-normal"></div>' +
-            '<div style="flex:1;"><p class="dr-main">' + fmtDur(c.duration) + ' <span>duração</span></p>' +
-            '<p class="dr-sub">' + fmtDT(c.startTime) + ' · Intervalo: ' + fmtInt(c.interval) + '</p></div>' +
-            '<span style="font-size:11px;color:var(--text-inactive);font-weight:600;">#' + idx + '</span></div>';
-    }).join('');
-}
-function clearContracoes() {
-    localStorage.removeItem('gv_contracoes'); contrLastEnd = null;
-    document.getElementById('contracLastMsg').style.display = 'none';
-    document.getElementById('contrac-hint').textContent = 'Pressione e segure para cronometrar uma contração';
-    loadContracoes();
-}
-
-/* PRESSÃO */
-function classifyPressao(sys, dia) {
+/* ─── PRESSÃO ─── */
+function classifyPA(sys, dia) {
     if (sys < 90 || dia < 60) return {label:'Hipotensão',s:'s-low',c:'c-low'};
     if (sys < 120 && dia < 80) return {label:'Normal',s:'s-normal',c:'c-normal'};
     if (sys < 130 && dia < 80) return {label:'Elevada',s:'s-pre',c:'c-pre'};
@@ -1304,103 +905,70 @@ function classifyPressao(sys, dia) {
 }
 function loadPressao() {
     const list = JSON.parse(localStorage.getItem('gv_pressao') || '[]');
-    document.getElementById('pCount').textContent = list.length;
+    document.getElementById('pCount').textContent = list.length || '—';
     if (list.length > 0) {
-        const avgSys = Math.round(list.reduce((a,r) => a+r.sys,0)/list.length);
-        const avgDia = Math.round(list.reduce((a,r) => a+r.dia,0)/list.length);
-        const maxSys = Math.max(...list.map(r=>r.sys));
-        const maxDia = list.find(r=>r.sys===maxSys)?.dia||0;
-        document.getElementById('pAvgSys').textContent = avgSys;
-        document.getElementById('pAvgDia').textContent = avgDia;
-        document.getElementById('pMax').textContent = maxSys+'/'+maxDia;
-        const highList = list.filter(r => r.sys>=140||r.dia>=90);
-        const alertEl = document.getElementById('pressaoAlert');
-        if (highList.length > 0) { alertEl.style.display='flex'; document.getElementById('pressaoAlertText').textContent = highList.length + ' registro(s) de hipertensão grau 2 (≥140/90 mmHg). Avaliação médica recomendada.'; }
-        else { alertEl.style.display='none'; }
+        document.getElementById('pAvgSys').textContent = Math.round(list.reduce((a,r)=>a+r.sys,0)/list.length);
+        document.getElementById('pAvgDia').textContent = Math.round(list.reduce((a,r)=>a+r.dia,0)/list.length);
+        const mx = list.reduce((a,r)=>r.sys>a.sys?r:a,list[0]);
+        document.getElementById('pMax').textContent = mx.sys+'/'+mx.dia;
+        const hi = list.filter(r=>r.sys>=140||r.dia>=90);
+        const al = document.getElementById('pressaoAlert');
+        if (hi.length > 0) { al.style.display='flex'; document.getElementById('pressaoAlertText').textContent = hi.length+' registro(s) de hipertensão grau 2 (≥140/90 mmHg).'; }
+        else al.style.display='none';
     }
-    const container = document.getElementById('pressaoList');
-    if (list.length === 0) { container.innerHTML = '<div class="empty-mini">Nenhuma medição registrada.</div>'; return; }
-    container.innerHTML = [...list].reverse().map(r => {
-        const c = classifyPressao(r.sys, r.dia);
-        return '<div class="data-row"><div class="dr-bar ' + c.c + '"></div>' +
-            '<div style="flex:1;"><p class="dr-main">' + r.sys + '/' + r.dia + ' <span>mmHg' + (r.pulse ? ' · '+r.pulse+' bpm' : '') + '</span></p>' +
-            '<p class="dr-sub">' + fmtDT(r.datetime) + ' · ' + r.moment + '</p></div>' +
-            '<span class="dr-status ' + c.s + '">' + c.label + '</span></div>';
-    }).join('');
+    const c = document.getElementById('pressaoList');
+    c.innerHTML = list.length === 0 ? '<div class="empty-mini">Nenhuma medição registrada pela paciente.</div>' :
+        [...list].reverse().map(r => { const cl=classifyPA(r.sys,r.dia); return '<div class="data-row"><div class="dr-bar '+cl.c+'"></div><div style="flex:1;"><p class="dr-main">'+r.sys+'/'+r.dia+' <span>mmHg'+(r.pulse?' · '+r.pulse+' bpm':'')+'</span></p><p class="dr-sub">'+fmtDT(r.datetime)+' · '+r.moment+'</p></div><span class="dr-status '+cl.s+'">'+cl.label+'</span></div>'; }).join('');
 }
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function savePressao() {
-    const sys = parseInt(document.getElementById('mp-sys').value);
-    const dia = parseInt(document.getElementById('mp-dia').value);
-    if (!sys || !dia) return;
-    const list = JSON.parse(localStorage.getItem('gv_pressao') || '[]');
-    list.push({sys, dia, pulse: document.getElementById('mp-pulse').value, moment: document.getElementById('mp-moment').value, datetime: new Date().toISOString()});
-    localStorage.setItem('gv_pressao', JSON.stringify(list));
-    closeModal('modal-pressao');
-    loadPressao();
+    const sys=parseInt(document.getElementById('mp-sys').value), dia=parseInt(document.getElementById('mp-dia').value);
+    if(!sys||!dia) return;
+    const list=JSON.parse(localStorage.getItem('gv_pressao')||'[]');
+    list.push({sys,dia,pulse:document.getElementById('mp-pulse').value,moment:document.getElementById('mp-moment').value,datetime:new Date().toISOString()});
+    localStorage.setItem('gv_pressao',JSON.stringify(list));
+    closeModal('modal-pressao'); loadPressao(); loadAlerts();
 }
 
-/* GLICOSE */
-function classifyGlicose(value, moment) {
-    const isFasting = moment.includes('Jejum');
-    if (value < 70) return {label:'Hipoglicemia',s:'s-low',c:'c-low'};
-    if (isFasting) {
-        if (value <= 95) return {label:'Normal',s:'s-normal',c:'c-normal'};
-        if (value <= 125) return {label:'Atenção',s:'s-pre',c:'c-pre'};
-        return {label:'Elevada',s:'s-high',c:'c-high'};
-    } else {
-        if (value < 140) return {label:'Normal',s:'s-normal',c:'c-normal'};
-        if (value < 200) return {label:'Atenção',s:'s-pre',c:'c-pre'};
-        return {label:'Elevada',s:'s-high',c:'c-high'};
-    }
+/* ─── GLICOSE ─── */
+function classifyGlic(v, m) {
+    const f=m.includes('Jejum');
+    if(v<70) return {label:'Hipoglicemia',s:'s-low',c:'c-low'};
+    if(f){ if(v<=95)return{label:'Normal',s:'s-normal',c:'c-normal'}; if(v<=125)return{label:'Atenção',s:'s-pre',c:'c-pre'}; return{label:'Elevada',s:'s-high',c:'c-high'}; }
+    if(v<140)return{label:'Normal',s:'s-normal',c:'c-normal'}; if(v<200)return{label:'Atenção',s:'s-pre',c:'c-pre'}; return{label:'Elevada',s:'s-high',c:'c-high'};
 }
 function loadGlicose() {
-    const list = JSON.parse(localStorage.getItem('gv_glicose') || '[]');
-    document.getElementById('gCount').textContent = list.length;
-    if (list.length > 0) {
-        const vals = list.map(r=>r.value);
-        document.getElementById('gAvg').textContent = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-        document.getElementById('gMin').textContent = Math.min(...vals);
-        document.getElementById('gMax').textContent = Math.max(...vals);
-        const highList = list.filter(r => { const f=r.moment.includes('Jejum'); return f?r.value>=126:r.value>=200; });
-        document.getElementById('glicoseAlert').style.display = highList.length>0?'flex':'none';
+    const list=JSON.parse(localStorage.getItem('gv_glicose')||'[]');
+    document.getElementById('gCount').textContent=list.length||'—';
+    if(list.length>0){
+        const vals=list.map(r=>r.value);
+        document.getElementById('gAvg').textContent=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+        document.getElementById('gMin').textContent=Math.min(...vals);
+        document.getElementById('gMax').textContent=Math.max(...vals);
+        const hi=list.filter(r=>{const f=r.moment.includes('Jejum');return f?r.value>=126:r.value>=200;});
+        document.getElementById('glicoseAlert').style.display=hi.length>0?'flex':'none';
     }
-    const container = document.getElementById('glicoseList');
-    if (list.length === 0) { container.innerHTML = '<div class="empty-mini">Nenhuma medição registrada.</div>'; return; }
-    container.innerHTML = [...list].reverse().map(r => {
-        const c = classifyGlicose(r.value, r.moment);
-        return '<div class="data-row"><div class="dr-bar ' + c.c + '"></div>' +
-            '<div style="flex:1;"><p class="dr-main">' + r.value + ' <span>mg/dL</span></p>' +
-            '<p class="dr-sub">' + fmtDT(r.datetime) + ' · ' + r.moment + (r.note?' · '+r.note:'') + '</p></div>' +
-            '<span class="dr-status ' + c.s + '">' + c.label + '</span></div>';
-    }).join('');
+    const c=document.getElementById('glicoseList');
+    c.innerHTML=list.length===0?'<div class="empty-mini">Nenhuma medição registrada pela paciente.</div>':
+        [...list].reverse().map(r=>{const cl=classifyGlic(r.value,r.moment);return '<div class="data-row"><div class="dr-bar '+cl.c+'"></div><div style="flex:1;"><p class="dr-main">'+r.value+' <span>mg/dL</span></p><p class="dr-sub">'+fmtDT(r.datetime)+' · '+r.moment+(r.note?' · '+r.note:'')+'</p></div><span class="dr-status '+cl.s+'">'+cl.label+'</span></div>';}).join('');
 }
 function saveGlicose() {
-    const value = parseInt(document.getElementById('mg-val').value);
-    if (!value) return;
-    const list = JSON.parse(localStorage.getItem('gv_glicose') || '[]');
-    list.push({value, moment: document.getElementById('mg-moment').value, note: document.getElementById('mg-note').value, datetime: new Date().toISOString()});
-    localStorage.setItem('gv_glicose', JSON.stringify(list));
-    closeModal('modal-glicose');
-    loadGlicose();
+    const v=parseInt(document.getElementById('mg-val').value); if(!v)return;
+    const list=JSON.parse(localStorage.getItem('gv_glicose')||'[]');
+    list.push({value:v,moment:document.getElementById('mg-moment').value,note:document.getElementById('mg-note').value,datetime:new Date().toISOString()});
+    localStorage.setItem('gv_glicose',JSON.stringify(list));
+    closeModal('modal-glicose'); loadGlicose(); loadAlerts();
 }
 
-/* INIT */
-(function() {
-    calcIMC();
-    checkTOTG();
-    onRiscoChange(document.getElementById('f-risco'));
-    onTipoSangChange(document.getElementById('f-tipo-sang'));
-    buildSorologias();
-    document.getElementById('fl-data').value = new Date().toISOString().split('T')[0];
-    calcIGFromInput('fc-data','fc-ig');
+/* ─── INIT ─── */
+(function(){
+    buildSorGrid();
     renderConsultas();
     renderUSG();
     renderLab();
     renderVacinas();
-    const savedNotas = localStorage.getItem('gv_notas_medica_1498');
-    if (savedNotas) document.getElementById('notas-medica').value = savedNotas;
+    loadAlerts();
+    const n=localStorage.getItem('gv_notas_medica_1498');
+    if(n) document.getElementById('notas-medica').value=n;
 })();
 </script>
 </body>
