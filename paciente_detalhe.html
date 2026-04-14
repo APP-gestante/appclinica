@@ -187,6 +187,44 @@
         .nav-item.active .nav-label { color: var(--primary); }
 
         @media (max-width: 380px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+        /* IA CONSULTA */
+        .consulta-hoje-card { background: linear-gradient(135deg, var(--primary-dk) 0%, var(--primary) 100%); border-radius: 18px; padding: 18px; margin-bottom: 14px; color: white; }
+        .chc-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+        .chc-title { font-size: 16px; font-weight: 800; color: white; margin-bottom: 2px; }
+        .chc-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-bottom: 14px; }
+        .chc-ia-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; border-radius: 13px; background: white; color: var(--primary-dk); font-size: 14px; font-weight: 800; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.15s; }
+        .chc-ia-btn:active { opacity: 0.85; }
+        .chc-ia-btn svg { width: 18px; height: 18px; }
+
+        .ia-modal-sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 24px 20px; padding-bottom: max(24px, env(safe-area-inset-bottom)); width: 100%; animation: slideUp 0.28s ease; max-height: 90dvh; overflow-y: auto; }
+        .ia-status { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 20px; }
+        .ia-status.listening { color: var(--accent); }
+        .ia-status.done { color: var(--primary-dk); }
+
+        .mic-wrap { display: flex; justify-content: center; margin: 4px 0 20px; }
+        .mic-btn { position: relative; width: 88px; height: 88px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .mic-btn.active { background: var(--accent); }
+        .mic-btn svg { width: 32px; height: 32px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .mic-ring { position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; }
+        .mic-btn.active .mic-ring { animation: ring-pulse 1.2s ease-out infinite; }
+        .mic-btn.active .mic-ring:nth-child(2) { inset: -22px; animation-delay: 0.4s; }
+        @keyframes ring-pulse { 0%{opacity:0.6;transform:scale(0.94)} 100%{opacity:0;transform:scale(1.08)} }
+
+        .transcript-box { background: var(--bg); border-radius: 14px; padding: 14px; min-height: 80px; max-height: 140px; overflow-y: auto; font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 16px; scrollbar-width: none; }
+        .transcript-box::-webkit-scrollbar { display: none; }
+        .transcript-interim { color: var(--text-inactive); }
+
+        .extracted-preview { margin-bottom: 16px; }
+        .ep-title { font-size: 11px; font-weight: 800; color: var(--primary-dk); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+        .ep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .ep-field { background: rgba(141,170,145,0.1); border-radius: 10px; padding: 8px 12px; }
+        .ep-key { font-size: 10px; font-weight: 700; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 0.4px; }
+        .ep-val { font-size: 14px; font-weight: 800; color: var(--primary-dk); margin-top: 1px; }
+        .ep-full { grid-column: 1/-1; }
+
+        .ia-use-btn { width: 100%; padding: 14px; border-radius: 14px; background: var(--primary); color: white; font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+        .ia-hint { text-align: center; font-size: 12px; color: var(--text-inactive); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -301,6 +339,10 @@
 
 <!-- ══ CONSULTAS ══ -->
 <div class="tab-panel" id="panel-consultas">
+
+    <!-- Card consulta de hoje (injetado por JS se houver) -->
+    <div id="consulta-hoje-wrap"></div>
+
     <div class="add-row">
         <span class="add-row-title" id="consultas-count">— consultas</span>
         <button class="add-btn" onclick="openModal('modal-consulta')">+ Nova Consulta</button>
@@ -621,6 +663,34 @@
         <div class="field-group" style="margin-top:12px;"><label class="field-label">Observação</label><input class="field-input" id="mg-note" type="text" placeholder="Opcional" maxlength="80"></div>
         <button class="modal-save" onclick="saveGlicose()">Salvar</button>
         <button class="modal-cancel" onclick="closeModal('modal-glicose')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL: IA Consulta -->
+<div class="modal-overlay" id="modal-ia-consulta" onclick="if(event.target===this)stopIARecording()">
+    <div class="ia-modal-sheet">
+        <p class="modal-title">Registrar Consulta com IA</p>
+        <p class="ia-status" id="ia-status">Pronto para gravar</p>
+
+        <div class="mic-wrap">
+            <button class="mic-btn" id="mic-btn" onclick="toggleIARecording()">
+                <div class="mic-ring"></div>
+                <div class="mic-ring"></div>
+                <svg id="mic-icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+        </div>
+
+        <p class="ia-hint" id="ia-hint">Toque no microfone e fale normalmente durante a consulta</p>
+
+        <div class="transcript-box" id="ia-transcript" style="display:none;"></div>
+
+        <div class="extracted-preview" id="ia-extracted" style="display:none;">
+            <p class="ep-title">Dados extraídos</p>
+            <div class="ep-grid" id="ia-ep-grid"></div>
+        </div>
+
+        <button class="ia-use-btn" id="ia-use-btn" style="display:none;" onclick="usarDadosIA()">Revisar e salvar consulta</button>
+        <button class="modal-cancel" onclick="stopIARecording()">Cancelar</button>
     </div>
 </div>
 
@@ -1006,9 +1076,239 @@ function saveGlicose() {
     closeModal('modal-glicose'); loadGlicose(); loadAlerts();
 }
 
+/* ─── CONSULTA HOJE + IA ─── */
+
+// Consulta agendada para hoje (mock — em produção viria do backend)
+const CONSULTA_HOJE = {
+    hora: '14h00',
+    medica: 'Dra. Ana Lima',
+    data: new Date().toISOString().split('T')[0]
+};
+
+function initConsultaHoje() {
+    const wrap = document.getElementById('consulta-hoje-wrap');
+    wrap.innerHTML = '<div class="consulta-hoje-card">' +
+        '<p class="chc-label">Consulta de hoje</p>' +
+        '<p class="chc-title">Maria da Silva · ' + CONSULTA_HOJE.hora + '</p>' +
+        '<p class="chc-sub">' + CONSULTA_HOJE.medica + ' · Clínica Gerar Vida</p>' +
+        '<button class="chc-ia-btn" onclick="openIAModal()">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>' +
+        'Registrar com IA</button>' +
+        '</div>';
+}
+
+// Estado do reconhecimento
+let recognition = null;
+let iaRecording = false;
+let iaFinalText = '';
+let iaInterimText = '';
+let iaExtracted = {};
+
+function openIAModal() {
+    iaFinalText = ''; iaInterimText = ''; iaExtracted = {};
+    document.getElementById('ia-status').textContent = 'Pronto para gravar';
+    document.getElementById('ia-status').className = 'ia-status';
+    document.getElementById('ia-transcript').style.display = 'none';
+    document.getElementById('ia-transcript').innerHTML = '';
+    document.getElementById('ia-extracted').style.display = 'none';
+    document.getElementById('ia-use-btn').style.display = 'none';
+    document.getElementById('ia-hint').style.display = 'block';
+    document.getElementById('mic-btn').classList.remove('active');
+    document.getElementById('modal-ia-consulta').classList.add('open');
+}
+
+function toggleIARecording() {
+    if (iaRecording) {
+        stopIARecording(false);
+    } else {
+        startIARecording();
+    }
+}
+
+function startIARecording() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+        // Fallback demo se browser não suportar
+        runIADemo(); return;
+    }
+    recognition = new SR();
+    recognition.lang = 'pt-BR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+        iaRecording = true;
+        document.getElementById('mic-btn').classList.add('active');
+        document.getElementById('ia-status').textContent = 'Ouvindo...';
+        document.getElementById('ia-status').className = 'ia-status listening';
+        document.getElementById('ia-transcript').style.display = 'block';
+        document.getElementById('ia-hint').style.display = 'none';
+    };
+
+    recognition.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            if (e.results[i].isFinal) iaFinalText += e.results[i][0].transcript + ' ';
+            else interim += e.results[i][0].transcript;
+        }
+        iaInterimText = interim;
+        document.getElementById('ia-transcript').innerHTML =
+            iaFinalText + '<span class="transcript-interim">' + interim + '</span>';
+        const tb = document.getElementById('ia-transcript');
+        tb.scrollTop = tb.scrollHeight;
+    };
+
+    recognition.onerror = (e) => {
+        if (e.error === 'not-allowed') {
+            alert('Permissão de microfone negada. Verifique as configurações do navegador.');
+        }
+        stopIARecording(false);
+    };
+
+    recognition.start();
+}
+
+function stopIARecording(closeModal = true) {
+    if (recognition) { recognition.stop(); recognition = null; }
+    iaRecording = false;
+    document.getElementById('mic-btn').classList.remove('active');
+
+    if (closeModal) {
+        document.getElementById('modal-ia-consulta').classList.remove('open');
+        return;
+    }
+
+    const fullText = (iaFinalText + ' ' + iaInterimText).trim();
+    if (!fullText) {
+        document.getElementById('ia-status').textContent = 'Pronto para gravar';
+        document.getElementById('ia-status').className = 'ia-status';
+        return;
+    }
+
+    document.getElementById('ia-status').textContent = 'Processando...';
+    setTimeout(() => processIATranscript(fullText), 400);
+}
+
+function runIADemo() {
+    // Demo simulado para browsers sem Speech API
+    iaRecording = true;
+    document.getElementById('mic-btn').classList.add('active');
+    document.getElementById('ia-status').textContent = 'Ouvindo...';
+    document.getElementById('ia-status').className = 'ia-status listening';
+    document.getElementById('ia-transcript').style.display = 'block';
+    document.getElementById('ia-hint').style.display = 'none';
+
+    const demoText = 'Pressão 118 por 76. Peso 70 quilos. BCF 144. Altura uterina 30 centímetros. Apresentação cefálica. Sem edema. Conduta: manter acompanhamento quinzenal, solicitar doppler obstétrico. CID Z34.2.';
+    let i = 0;
+    const interval = setInterval(() => {
+        i = Math.min(i + 4, demoText.length);
+        document.getElementById('ia-transcript').textContent = demoText.slice(0, i);
+        if (i >= demoText.length) {
+            clearInterval(interval);
+            iaFinalText = demoText;
+            iaRecording = false;
+            document.getElementById('mic-btn').classList.remove('active');
+            document.getElementById('ia-status').textContent = 'Processando...';
+            setTimeout(() => processIATranscript(demoText), 600);
+        }
+    }, 40);
+}
+
+function processIATranscript(text) {
+    const t = text.toLowerCase();
+    const data = {};
+
+    // Pressão arterial
+    const paMatch = t.match(/press[aã]o\s+(\d{2,3})\s*(?:por|\/|x)\s*(\d{2,3})/);
+    if (paMatch) data.pa = paMatch[1] + '/' + paMatch[2];
+
+    // Peso
+    const pesoMatch = t.match(/peso\s+(\d{2,3}(?:[.,]\d)?)\s*(?:quilos?|kg)?/);
+    if (pesoMatch) data.peso = pesoMatch[1].replace(',', '.');
+
+    // BCF
+    const bcfMatch = t.match(/(?:bcf|batimentos?(?:\s+fetais?)?)\s+(?:de\s+)?(\d{3})/);
+    if (bcfMatch) data.bcf = bcfMatch[1];
+
+    // Altura uterina
+    const auMatch = t.match(/(?:altura\s+uterina|au)\s+(?:de\s+)?(\d{2})/);
+    if (auMatch) data.au = auMatch[1];
+
+    // Apresentação
+    if (/cef[aá]l/.test(t)) data.apres = 'Cefálico';
+    else if (/p[eé]lvic/.test(t)) data.apres = 'Pélvico';
+    else if (/transvers/.test(t)) data.apres = 'Transverso';
+    else if (/vari[aá]vel/.test(t)) data.apres = 'Variável';
+
+    // Edema
+    if (/sem\s+edema|edema\s+(?:ausente|zero|0)/.test(t)) data.edema = '0 – Ausente';
+    else if (/edema\s+leve|edema\s+\+\/4/.test(t)) data.edema = '+/4+ – Leve';
+
+    // Toque / colo
+    const toqueMatch = t.match(/(?:toque|colo)\s+(?:[eé]\s+)?(\d\s*cm|fechado|impérvi)/);
+    if (toqueMatch) data.toque = toqueMatch[1];
+
+    // CID
+    const cidMatch = text.match(/[Cc][Ii][Dd]\s*([A-Z]\d{2}(?:\.\d)?)/i);
+    if (cidMatch) data.cid = cidMatch[1].toUpperCase();
+
+    // Conduta (tudo após "conduta:" ou "solicitar" ou "orientei")
+    const condutaMatch = text.match(/(?:conduta\s*[:—]\s*|condutas?\s*)((?:.|\n)+?)(?:\.\s*[Cc][Ii][Dd]|$)/i);
+    if (condutaMatch) data.conduta = condutaMatch[1].trim().replace(/\s+/g, ' ');
+
+    iaExtracted = data;
+    showExtractedPreview(data, text);
+}
+
+function showExtractedPreview(data, fullText) {
+    document.getElementById('ia-status').textContent = 'Concluído';
+    document.getElementById('ia-status').className = 'ia-status done';
+
+    const labels = { pa: 'Pressão', peso: 'Peso (kg)', bcf: 'BCF (bpm)', au: 'Alt. Uterina (cm)', apres: 'Apresentação', edema: 'Edema', toque: 'Toque', cid: 'CID', conduta: 'Conduta' };
+    const keys = Object.keys(data).filter(k => data[k]);
+
+    if (keys.length === 0) {
+        document.getElementById('ia-extracted').style.display = 'none';
+        document.getElementById('ia-use-btn').style.display = 'block';
+        document.getElementById('ia-use-btn').textContent = 'Abrir formulário';
+        return;
+    }
+
+    const grid = document.getElementById('ia-ep-grid');
+    grid.innerHTML = keys.map(k => {
+        const isFull = k === 'conduta' || k === 'apres' || k === 'edema';
+        return '<div class="ep-field' + (isFull ? ' ep-full' : '') + '">' +
+            '<p class="ep-key">' + (labels[k] || k) + '</p>' +
+            '<p class="ep-val">' + data[k] + '</p></div>';
+    }).join('');
+
+    document.getElementById('ia-extracted').style.display = 'block';
+    document.getElementById('ia-use-btn').style.display = 'block';
+}
+
+function usarDadosIA() {
+    // Pre-preenche o formulário de consulta
+    const d = iaExtracted;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('nc-data').value = today;
+    calcIGField('nc-data', 'nc-ig');
+    if (d.pa) document.getElementById('nc-pa').value = d.pa;
+    if (d.peso) document.getElementById('nc-peso').value = d.peso;
+    if (d.bcf) document.getElementById('nc-bcf').value = d.bcf;
+    if (d.au) document.getElementById('nc-au').value = d.au;
+    if (d.apres) { const sel = document.getElementById('nc-apres'); for (let o of sel.options) { if (o.value === d.apres) { sel.value = d.apres; break; } } }
+    if (d.edema) { const sel = document.getElementById('nc-edema'); for (let o of sel.options) { if (o.value.startsWith(d.edema.split(' ')[0])) { sel.value = o.value; break; } } }
+    if (d.conduta) document.getElementById('nc-conduta').value = d.conduta;
+    if (d.cid) document.getElementById('nc-cid').value = d.cid;
+
+    document.getElementById('modal-ia-consulta').classList.remove('open');
+    openModal('modal-consulta');
+}
+
 /* ─── INIT ─── */
 (function(){
     buildSorGrid();
+    initConsultaHoje();
     renderConsultas();
     renderUSG();
     renderLab();
