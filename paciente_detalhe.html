@@ -204,11 +204,11 @@
 
 <div class="tabs-wrap" role="tablist">
     <button class="tab-btn active" onclick="switchTab('geral')"    id="tab-geral">Geral</button>
+    <button class="tab-btn"        onclick="switchTab('sinais')"    id="tab-sinais">Sinais Vitais</button>
     <button class="tab-btn"        onclick="switchTab('consultas')" id="tab-consultas">Consultas</button>
     <button class="tab-btn"        onclick="switchTab('usg')"       id="tab-usg">USG</button>
     <button class="tab-btn"        onclick="switchTab('exames')"    id="tab-exames">Exames</button>
     <button class="tab-btn"        onclick="switchTab('vacinas')"   id="tab-vacinas">Vacinas</button>
-    <button class="tab-btn"        onclick="switchTab('sinais')"    id="tab-sinais">Sinais Vitais</button>
 </div>
 
 <main class="main-scroll">
@@ -340,7 +340,20 @@
 <!-- ══ SINAIS VITAIS ══ -->
 <div class="tab-panel" id="panel-sinais">
 
-    <p class="sv-section-title">Pressão Arterial</p>
+    <p class="sv-section-title">Contrações</p>
+    <div class="sv-stats">
+        <div class="sv-box"><p class="sv-num" id="cCount">—</p><p class="sv-label">Hoje</p></div>
+        <div class="sv-box"><p class="sv-num" id="cAvgDur">—</p><p class="sv-label">Dur. média</p></div>
+        <div class="sv-box"><p class="sv-num" id="cAvgInt">—</p><p class="sv-label">Int. médio</p></div>
+        <div class="sv-box"><p class="sv-num" id="cLast">—</p><p class="sv-label">Última</p></div>
+    </div>
+    <div id="contracAlert511" class="alert-card" style="display:none;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p class="alert-text">Padrão 5-1-1 detectado. Contrações frequentes registradas pela paciente. Considerar contato.</p>
+    </div>
+    <div id="contracList"></div>
+
+    <p class="sv-section-title" style="margin-top:20px;">Pressão Arterial</p>
     <div class="sv-stats">
         <div class="sv-box"><p class="sv-num" id="pCount">—</p><p class="sv-label">Medições</p></div>
         <div class="sv-box"><p class="sv-num" id="pAvgSys">—</p><p class="sv-label">Média Sist.</p></div>
@@ -635,7 +648,7 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
-    if (tab === 'sinais') { loadPressao(); loadGlicose(); }
+    if (tab === 'sinais') { loadContracoes(); loadPressao(); loadGlicose(); }
 }
 
 /* ─── MODAL ─── */
@@ -893,6 +906,40 @@ function autoSaveNotas() {
         localStorage.setItem('gv_notas_medica_1498', document.getElementById('notas-medica').value);
         document.getElementById('notas-status').textContent = 'Salvo automaticamente às ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     }, 800);
+}
+
+/* ─── CONTRAÇÕES (read-only) ─── */
+function fmtDur(s) { return s < 60 ? s + 's' : Math.floor(s/60) + 'min ' + (s%60) + 's'; }
+function fmtInt(s) { if (!s) return '—'; const m = Math.floor(s/60); return m > 0 ? m + 'min' : s + 's'; }
+function loadContracoes() {
+    const all = JSON.parse(localStorage.getItem('gv_contracoes') || '[]');
+    const today = new Date().toDateString();
+    const list = all.filter(c => new Date(c.startTime).toDateString() === today);
+    document.getElementById('cCount').textContent = list.length || '—';
+    if (list.length > 0) {
+        const avgDur = Math.round(list.reduce((a,c) => a+c.duration,0) / list.length);
+        document.getElementById('cAvgDur').textContent = fmtDur(avgDur);
+        const withInt = list.filter(c => c.interval !== null);
+        if (withInt.length > 0) {
+            const avgInt = Math.round(withInt.reduce((a,c) => a+c.interval,0) / withInt.length);
+            document.getElementById('cAvgInt').textContent = fmtInt(avgInt);
+            document.getElementById('contracAlert511').style.display = (avgInt <= 300 && list.length >= 3) ? 'flex' : 'none';
+        }
+        document.getElementById('cLast').textContent = fmtDur(list[list.length-1].duration);
+    } else {
+        document.getElementById('cAvgDur').textContent = '—';
+        document.getElementById('cAvgInt').textContent = '—';
+        document.getElementById('cLast').textContent = '—';
+    }
+    const c = document.getElementById('contracList');
+    if (list.length === 0) { c.innerHTML = '<div class="empty-mini">Nenhuma contração registrada hoje pela paciente.</div>'; return; }
+    c.innerHTML = [...list].reverse().map((ct, i) => {
+        const idx = list.length - i;
+        return '<div class="data-row"><div class="dr-bar c-normal"></div>' +
+            '<div style="flex:1;"><p class="dr-main">' + fmtDur(ct.duration) + ' <span>duração</span></p>' +
+            '<p class="dr-sub">' + fmtDT(ct.startTime) + ' · Intervalo: ' + fmtInt(ct.interval) + '</p></div>' +
+            '<span style="font-size:11px;color:var(--text-inactive);font-weight:600;">#' + idx + '</span></div>';
+    }).join('');
 }
 
 /* ─── PRESSÃO ─── */
