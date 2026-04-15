@@ -217,7 +217,7 @@ export function HomeScreen() {
 
         {/* ── ATALHOS RÁPIDOS ── */}
         <View style={{ paddingTop: 20 }}>
-          <Text style={styles.sectionTitle}>Atalhos Rápidos</Text>
+          <Text style={[styles.sectionTitle, { paddingHorizontal: 24 }]}>Atalhos Rápidos</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
